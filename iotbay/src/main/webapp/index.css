@@ -4,19 +4,16 @@ body {
 
 .banner {
     display: block;
-    position: fixed;
+    position: sticky;
+    box-sizing: border-box;
     width: 100%;
-    left: 0;
-    top: 0;
+    padding: 10px 20px 0 20px;
     background-color: black;
     color:  white;
-    padding: 0 20px;
 }
 
 .banner navbar {
     display: block;
-    width: 100%;
-    padding-top: 10px;
 }
 
 .banner navbar a {
@@ -36,9 +33,10 @@ body {
     color: black;
 }
 
-
+.banner navbar a.login-logout {
+    float: right;
+}
 
 .content {
-    margin: 30px;
-    padding-top: 100px;
+    margin: 20px;
 }
