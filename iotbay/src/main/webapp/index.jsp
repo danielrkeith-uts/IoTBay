@@ -6,6 +6,7 @@
             <navbar>
                 <a href="index.jsp" class="active">Home</a>
                 <a href="products.jsp">Products</a>
+                <a href="login.jsp" class="login-logout">Login</a> 
             </navbar>
         </div>
         <div class="content">
