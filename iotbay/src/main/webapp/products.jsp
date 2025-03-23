@@ -7,6 +7,7 @@
                 <a href="index.jsp">Hello world</a>
                 <a href="products.jsp" class="active">Products</a>
                 <a href="login.jsp" class="login-logout">Login</a> 
+                <a href="register.jsp" class="active">Register</a>
             </navbar>
         </div>
         <div class="content">
