@@ -4,12 +4,12 @@
         <div class="banner">
             <h1>Internet of Things Store</h1>
             <navbar>
-                <a href="index.jsp" class="active">Hello world</a>
+                <a href="index.jsp" class="active">Home</a>
                 <a href="products.jsp">Products</a>
             </navbar>
         </div>
         <div class="content">
-            <h2>Hello World!</h2>
+            <h2>Home Page</h2>
         </div>
     </body>
 </html>
