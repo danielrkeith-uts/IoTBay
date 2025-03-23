@@ -29,7 +29,6 @@
                 <input type="checkbox" name="tos"><br>
                 <input type="submit" value="Submit">
             </form>
-            <p>Test</p>
         </div>
     </body>
 </html>
