@@ -12,15 +12,15 @@
         </div>
         <div class="content">
             <h2>Register Here</h2>
-            <form action="index.jsp" methods="post">
+            <form action="welcome.jsp" methods="post">
                 <label>First Name: </label><br>
-                <input type="text" name="fname"><br>
+                <input type="text" name="firstName"><br>
                 <label>Last Name: </label><br>
-                <input type="text" name="lname"><br>
+                <input type="text" name="lastName"><br>
                 <label>Email: </label><br>
                 <input type="text" name="email"><br>
                 <label>Phone Number: </label><br>
-                <input type="text" name="number"><br>
+                <input type="text" name="phone"><br>
                 <label>Password: </label><br>
                 <input type="password" name="password"><br>
                 <label>Gender: </label><br>
