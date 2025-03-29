@@ -1,6 +1,8 @@
 package model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
@@ -63,5 +65,9 @@ public class User {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getGreeting() {
+        return "Hello, " + this.firstName + "!";
     }
 }
