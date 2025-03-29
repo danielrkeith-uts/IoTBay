@@ -132,7 +132,6 @@ form > * {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
 }
 
-/* Customer Support Section */
 .customer-support {
     background-color: #eaf0f2;
     padding: 40px;
@@ -143,23 +142,22 @@ form > * {
 }
 
 .customer-support h2 {
-    font-size: 32px; /* Slightly larger for emphasis */
-    color: #333; /* Darker text for better readability */
+    font-size: 32px; 
+    color: #333; 
     margin-bottom: 20px;
 }
 
 .customer-support p {
     font-size: 18px;
-    color: #666; /* Subtle grey text */
+    color: #666;
     margin-bottom: 30px;
 }
 
-/* Support Options Section */
 .support-options {
     display: flex;
     justify-content: space-around;
     gap: 20px;
-    flex-wrap: wrap; /* For responsiveness on smaller screens */
+    flex-wrap: wrap;
     margin-top: 50px;
 }
 
@@ -167,19 +165,19 @@ form > * {
     background-color: white;
     border-radius: 12px;
     padding: 25px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
     text-align: center;
-    width: 22%; /* Slightly smaller to allow more breathing space */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+    width: 22%; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
 
 .support-option:hover {
-    transform: translateY(-5px); /* Lift the option on hover */
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* Darker shadow for hover effect */
+    transform: translateY(-5px); 
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); 
 }
 
 .support-option h3 {
-    font-size: 22px; /* Slightly larger for better readability */
+    font-size: 22px;
     color: #333;
     margin-bottom: 10px;
 }
