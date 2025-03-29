@@ -10,8 +10,42 @@
                 <a href="register.jsp">Register</a>
             </navbar>
         </div>
+      
         <div class="content">
             <h2>Products</h2>
+             <div class="product-grid">
+                <div class="product-card">
+                    <img src="https://www.iot-store.com.au/cdn/shop/products/home8-smart-home-valuable-tracking-sensor-home8-161035747347.png?crop=center&height=533&v=1550466641&width=533" alt="Tracking Sensor - Home 8">
+                    <h3>Tracking Sensor - Home 8</h3>
+                    <p>$40.00</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <img src="https://www.iot-store.com.au/cdn/shop/products/bivocom-gateway-default-single-sim-tg462-industrial-cellular-4g-touch-screen-iot-edge-gateway-13672912027735.jpg?crop=center&height=720&v=1581765519&width=720" alt="TG462 Industrial Cellular 4G LTE Touch Screen IOT Edge Gateway">
+                    <h3>TG462 Industrial Cellular 4G LTE Touch Screen IOT Edge Gateway</h3>
+                    <p>$700.00</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <img src="https://www.firgelliauto.com.au/cdn/shop/products/FA-35-S_FA-150-S_FA-240-S_Light_Duty-min_540x_d36f03bb-c3ed-410e-8f6e-adc7b3f40291_300x.jpg?v=1677875868" alt="Classic Rod Linear Actuator">
+                    <h3>Classic Rod Linear Actuator</h3>
+                    <p>$150.00</p>
+                    <button>Add to Cart</button>
+                </div>
+                <div class="product-card">
+                    <img src="https://www.iot-store.com.au/cdn/shop/products/industrial-shields-open-plc-plc-arduino-ardbox-20-i-os-analog-hf-modbus-open-industrial-plc-28536079123.jpg?crop=center&height=1066&v=1550410414&width=1066" alt="PLC Arduino ARDBOX 20 I/Os Analog - Open Industrial PLC">
+                    <h3>PLC Arduino ARDBOX 20 I/Os Analog - Open Industrial PLC</h3>
+                    <p>$360.00</p>
+                    <button>Add to Cart</button>
+                </div>
+                 <div class="product-card">
+                    <img src="https://m.media-amazon.com/images/I/51Y9gLPnLCL.__AC_SX300_SY300_QL70_ML2_.jpg" alt="SHELFY Smart Refrigerator Device">
+                    <h3>SHELFY Smart Refrigerator Device</h3>
+                    <p>$240.00</p>
+                    <button>Add to Cart</button>
+                </div>
+            </div>
+        </div>
         </div>
     </body>
 </html>
