@@ -1,0 +1,46 @@
+.banner {
+    background-color: #333; 
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.banner h1 {
+    font-size: 36px;
+    margin: 0;
+    margin-top: 10px; 
+}
+
+.banner navbar {
+    margin-top: 30px; 
+    display: flex; 
+    justify-content: center; 
+    gap: 30px;
+}
+
+.banner navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.banner navbar a:hover {
+    background-color: #9CAFAA; 
+}
+
+.banner navbar a.active {
+    background-color: #EFBC9B; 
+    color: #333
+}
+
+.content {
+    margin: 20px;
+}
+
+.content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
