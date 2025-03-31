@@ -19,11 +19,12 @@
         </div>
         <div class="content">
             <h2>Login</h2>
-            <form>
-                <label for="username">Username</label>
-                <input name="username" placeholder="Enter your username" />
+            <form action="welcome.jsp" methods="post">
+                <label for="email">Email</label>
+                <input name="email" placeholder="Enter your email" />
                 <label for="password">Password</label>
                 <input name="password" type="password" placeholder="Enter your password" />
+                <input type="checkbox" name="tos" checked hidden>
                 <input type="submit" />
             </form>
         </div>

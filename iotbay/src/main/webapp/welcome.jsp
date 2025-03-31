@@ -1,7 +1,15 @@
 <%@ page import="model.User"%>
-
 <html>
 
+<%!
+    public boolean isNullOrEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    public String valueOrUnknown(String value) {
+        return isNullOrEmpty(value) ? "unknown" : value;
+    }
+%>
 <%
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
@@ -19,12 +27,12 @@
     <% 
         if (tos != null && tos.equals("on")) {
     %>
-        <h1>Welcome, <%= firstName %>!</h1>
-        <h1>Your last name is <%= lastName %>.</h1>
-        <h1>Your email is <%= email %>.</h1>
-        <h1>Your phone number is <%= phone %>.</h1>
-        <p>Your password is <%= password %>.</p>
-        <p>Your gender is <%= gender %>.</p>
+        <h1>Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h1>
+        <h1>Your last name is <%= valueOrUnknown(lastName) %>.</h1>
+        <h1>Your email is <%= valueOrUnknown(email) %>.</h1>
+        <h1>Your phone number is <%= valueOrUnknown(phone) %>.</h1>
+        <p>Your password is <%= valueOrUnknown(password) %>.</p>
+        <p>Your gender is <%= valueOrUnknown(gender) %>.</p>
         <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
 
     <% 
