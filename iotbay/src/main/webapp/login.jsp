@@ -13,7 +13,6 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="register.jsp">Register</a>
                 <a href="login.jsp" class="active">Login</a> 
             </navbar>
         </div>
@@ -27,6 +26,7 @@
                 <input type="checkbox" name="tos" checked hidden>
                 <input type="submit" />
             </form>
+            <p>Don't have an account? Register <a href="register.jsp">here.</a></p>
         </div>
     </body>
 </html>

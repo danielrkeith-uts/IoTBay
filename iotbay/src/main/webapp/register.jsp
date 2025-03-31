@@ -13,7 +13,6 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="register.jsp" class="active">Register</a>
                 <a href="login.jsp">Login</a> 
             </navbar>
         </div>

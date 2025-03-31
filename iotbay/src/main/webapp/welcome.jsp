@@ -33,7 +33,6 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="register.jsp">Register</a>
                 <a href="login.jsp">Login</a> 
             </navbar>
         </div>
@@ -52,10 +51,10 @@
             <% 
                 } else { 
             %>
-                <h1>
+                <p>
                 Sorry, you must agree to the Terms of Service. </br>
                 Click <a href="register.jsp">here</a> to go back.</br>
-                </h1>
+                </p>
             <% 
                 }
             %>
