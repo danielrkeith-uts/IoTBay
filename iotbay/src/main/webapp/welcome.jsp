@@ -33,7 +33,11 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="login.jsp">Login</a> 
+                <% if (user == null) { %>
+                    <a href="login.jsp">Login</a>
+                <% } else { %>
+                    <a href="logout.jsp">Logout</a>
+                <% } %>
             </navbar>
         </div>
         <div class="content">
