@@ -16,7 +16,7 @@
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
         String tos = request.getParameter("tos");
-        User user = new User(firstName, lastName, email, phone, password, gender);
+        User user = new User(firstName, lastName, email, phone, password);
         session.setAttribute("user", user);
     %>
     <head>

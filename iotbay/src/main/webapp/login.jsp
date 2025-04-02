@@ -20,11 +20,11 @@
             <form action="welcome.jsp" methods="post">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input name="email" class="form-control" placeholder="Enter your email" />
+                    <input name="email" class="form-control" />
                 </div>
                 <div class="mb-3">
                     <label for="password" c-ass="form-label">Password</label>
-                    <input name="password" type="password" class="form-control" placeholder="Enter your password" />
+                    <input name="password" type="password" class="form-control" />
                 </div>
                 <input type="checkbox" name="tos" checked hidden>
                 <input type="submit" class="btn-green" />
