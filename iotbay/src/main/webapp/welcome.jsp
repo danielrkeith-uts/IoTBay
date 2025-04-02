@@ -15,7 +15,6 @@
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
-        String gender = request.getParameter("gender");
         String tos = request.getParameter("tos");
         User user = new User(firstName, lastName, email, phone, password, gender);
         session.setAttribute("user", user);
@@ -49,7 +48,6 @@
                 <p>Your email is <%= valueOrUnknown(email) %>.</p>
                 <p>Your phone number is <%= valueOrUnknown(phone) %>.</p>
                 <p>Your password is <%= valueOrUnknown(password) %>.</p>
-                <p>Your gender is <%= valueOrUnknown(gender) %>.</p>
                 <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
 
             <% 

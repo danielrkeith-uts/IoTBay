@@ -47,10 +47,6 @@
                     <input type="text" name="phone" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="gender" class="form-label">Gender</label>
-                    <input type="text" name="gender" class="form-control" />
-                </div>
-                <div class="mb-3">
                     <input type="checkbox" name="tos" class="form-check-input" />
                     <label for="tos" class="form-check-label">Agree to TOS</label>
                 </div>
