@@ -109,27 +109,8 @@
 }
 
 .welcome-section button {
-    background-color: #5e8c4e;
-    color: white;
     font-size: 18px;
     padding: 14px 30px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-}
-
-.welcome-section button:hover {
-    background-color: #467a39;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
-}
-
-.welcome-section button:active {
-    background-color: #3d6b34;
-    transform: translateY(0);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
 .image-container {

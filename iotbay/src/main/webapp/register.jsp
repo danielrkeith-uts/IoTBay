@@ -5,7 +5,6 @@
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
-        <link rel="stylesheet" href="register.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -27,21 +26,31 @@
         <div class="content">
             <h2>Register Here</h2>
             <form action="welcome.jsp" methods="post">
-                <label>First Name: </label>
-                <input type="text" name="firstName">
-                <label>Last Name: </label>
-                <input type="text" name="lastName">
-                <label>Email: </label>
-                <input type="text" name="email">
-                <label>Phone Number: </label>
-                <input type="text" name="phone">
-                <label>Password: </label>
-                <input type="password" name="password">
-                <label>Gender: </label>
-                <input type="text" name="gender">
-                <label>Agree to TOS: </label>
-                <input type="checkbox" name="tos">
-                <input type="submit" value="Submit">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" name="email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" name="firstName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" name="lastName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" name="phone" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <input type="checkbox" name="tos" class="form-check-input" />
+                    <label for="tos" class="form-check-label">Agree to TOS</label>
+                </div>
+                <input type="submit" class="btn-green">
             </form>
         </div>
     </body>
