@@ -1,4 +1,8 @@
+<%@ page import="model.User"%>
 <html>
+    <%
+        User user = (User)session.getAttribute("user");
+    %>
     <head>
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="register.css" />
@@ -13,8 +17,11 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="register.jsp" class="active">Register</a>
-                <a href="login.jsp">Login</a> 
+                <% if (user == null) { %>
+                    <a href="login.jsp">Login</a>
+                <% } else { %>
+                    <a href="logout.jsp">Logout</a>
+                <% } %>
             </navbar>
         </div>
         <div class="content">
