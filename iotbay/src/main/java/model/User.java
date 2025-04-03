@@ -49,15 +49,11 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getPassword() {
-        return this.password;
+    public boolean checkPassword(String password) {
+        return password == this.password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public boolean checkPassword(String password) {
-        return password == this.password;
     }
 }
