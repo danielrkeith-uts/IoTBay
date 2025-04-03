@@ -46,10 +46,6 @@
                     <label for="phone" class="form-label">Phone Number</label>
                     <input type="text" name="phone" class="form-control" />
                 </div>
-                <div class="mb-3">
-                    <input type="checkbox" name="tos" class="form-check-input" />
-                    <label for="tos" class="form-check-label">Agree to TOS</label>
-                </div>
                 <input type="submit" class="btn-green">
             </form>
         </div>

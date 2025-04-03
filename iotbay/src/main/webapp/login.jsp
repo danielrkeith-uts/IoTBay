@@ -25,6 +25,7 @@
                 <div class="mb-3">
                     <label for="password" c-ass="form-label">Password</label>
                     <input name="password" type="password" class="form-control" />
+                    <a href="">Forgot your password?</a>
                 </div>
                 <input type="checkbox" name="tos" checked hidden>
                 <input type="submit" class="btn-green" />

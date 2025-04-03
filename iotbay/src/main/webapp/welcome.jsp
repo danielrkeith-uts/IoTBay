@@ -15,7 +15,6 @@
         String email = request.getParameter("email");
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
-        String tos = request.getParameter("tos");
         User user = new User(firstName, lastName, email, phone, password);
         session.setAttribute("user", user);
     %>
@@ -40,25 +39,11 @@
             </navbar>
         </div>
         <div class="content">
-            <% 
-                if (tos != null && tos.equals("on")) {
-            %>
-                <h2>Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
-                <p>Your last name is <%= valueOrUnknown(lastName) %>.</p>
-                <p>Your email is <%= valueOrUnknown(email) %>.</p>
-                <p>Your phone number is <%= valueOrUnknown(phone) %>.</p>
-                <p>Your password is <%= valueOrUnknown(password) %>.</p>
-                <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
-
-            <% 
-                } else { 
-            %>
-                <p>
-                Sorry, you must agree to the Terms of Service. </br>
-                Click <a href="register.jsp">here</a> to go back.</br>
-                </p>
-            <% 
-                }
-            %>
+            <h2>Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
+            <p>Your last name is <%= valueOrUnknown(lastName) %>.</p>
+            <p>Your email is <%= valueOrUnknown(email) %>.</p>
+            <p>Your phone number is <%= valueOrUnknown(phone) %>.</p>
+            <p>Your password is <%= valueOrUnknown(password) %>.</p>
+            <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
     </body>
 </html>
