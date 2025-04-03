@@ -57,7 +57,7 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getGreeting() {
-        return "Hello, " + this.firstName + "!";
+    public boolean checkPassword(String password) {
+        return password == this.password;
     }
 }
