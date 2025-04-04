@@ -6,12 +6,12 @@ import java.util.List;
 public class Order implements Serializable {
     private List<ProductListEntry> productList;
     private Payment payment;
-    private Address address;
+    private Delivery delivery;
 
-    public Order(List<ProductListEntry> productList, Payment payment, Address address) {
+    public Order(List<ProductListEntry> productList, Payment payment, Delivery delivery) {
         this.productList = productList;
         this.payment = payment;
-        this.address = address;
+        this.delivery = delivery;
     }
 
     public List<ProductListEntry> getProductList() {
@@ -22,7 +22,7 @@ public class Order implements Serializable {
         return payment;
     }
 
-    public Address getAddress() {
-        return address;
+    public Delivery getDelivery() {
+        return delivery;
     }
 }
