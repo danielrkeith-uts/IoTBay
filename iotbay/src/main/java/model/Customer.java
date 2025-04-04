@@ -1,11 +1,17 @@
 package model;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Customer extends User {
     private Cart cart;
+    private List<Order> orders;
 
     public Customer(String firstName, String lastName, String email, String phone, String password) {
         super(firstName, lastName, email, phone, password);
+
         cart = new Cart();
+        orders = new LinkedList<Order>();
     }
 
     public Cart getCart() {
@@ -14,5 +20,13 @@ public class Customer extends User {
 
     public void clearCart() {
         cart = new Cart();
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void placeOrder(Order order) {
+        orders.add(order);
     }
 }
