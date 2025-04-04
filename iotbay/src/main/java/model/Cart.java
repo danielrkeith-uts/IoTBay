@@ -5,23 +5,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Cart implements Serializable {
-    private List<ProductQuantity> productQuantities;
+    private List<ProductListEntry> productList;
 
     public Cart() {
-        productQuantities = new LinkedList<ProductQuantity>();
+        productList = new LinkedList<ProductListEntry>();
     }
 
-    public List<ProductQuantity> getProductQuantities() {
-        return productQuantities;
+    public List<ProductListEntry> getProductList() {
+        return productList;
     }
 
     public void addProduct(Product product) {
-        productQuantities.add(new ProductQuantity(product));
+        productList.add(new ProductListEntry(product));
     }
 
     public double totalCost() {
         double sum = 0;
-        for (ProductQuantity productQuantity : productQuantities) {
+        for (ProductListEntry productQuantity : productList) {
             sum += productQuantity.totalCost();
         }
         return sum;

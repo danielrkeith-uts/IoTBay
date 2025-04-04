@@ -2,16 +2,16 @@ package model;
 
 import java.io.Serializable;
 
-public class ProductQuantity implements Serializable {
+public class ProductListEntry implements Serializable {
     private Product product;
     private int quantity;
 
-    public ProductQuantity(Product product, int quantity) {
+    public ProductListEntry(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
 
-    public ProductQuantity(Product product) {
+    public ProductListEntry(Product product) {
         this(product, 1);
     }
 
