@@ -18,7 +18,11 @@ public class UserTests {
     public void testCheckPassword() {
         Assert.assertTrue(greg.checkPassword("1234"));
         Assert.assertFalse(greg.checkPassword("5678"));
+
         Assert.assertTrue(james.checkPassword("myPassword"));
         Assert.assertFalse(james.checkPassword("mypassword"));
+
+        Assert.assertTrue(david.checkPassword("abcdefg"));
+        Assert.assertFalse(david.checkPassword("ABCDEFG"));
     }
 }
