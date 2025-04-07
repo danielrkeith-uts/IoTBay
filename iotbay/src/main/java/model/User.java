@@ -1,6 +1,8 @@
 package model;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 public class User implements Serializable {
     private String firstName;
@@ -8,6 +10,7 @@ public class User implements Serializable {
     private String email;
     private String phone;
     private String password;
+    private List<ApplicationAccessLog> applicationAccessLogs;
 
     public User(String firstName, String lastName, String email, String phone, String password) {
         this.firstName = firstName;
@@ -15,6 +18,8 @@ public class User implements Serializable {
         this.email = email;
         this.phone = phone;
         this.password = password;
+
+        this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
     }
 
     public String getFirstName() {
@@ -49,15 +54,15 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getPassword() {
-        return this.password;
+    public boolean checkPassword(String password) {
+        return this.password.equals(password);
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getGreeting() {
-        return "Hello, " + this.firstName + "!";
+    public List<ApplicationAccessLog> getApplicationAccessLogs() {
+        return applicationAccessLogs;
     }
 }
