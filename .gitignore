@@ -42,6 +42,8 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+*ssh*
+
 *.vscode
 .vscode/*
 !.vscode/settings.json
