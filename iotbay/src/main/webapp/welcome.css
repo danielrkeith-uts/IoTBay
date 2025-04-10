@@ -1,0 +1,83 @@
+.welcomebox {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px 40px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    animation: fadeSlideIn 1s ease-out;
+}
+
+.welcomebox h2 {
+    font-size: 32px;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-weight: 700;
+    text-align: center;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.welcomebox p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 15px;
+    animation: fadeInUp 1.4s ease-out;
+}
+
+.welcomebox a {
+    color: #5e8c4e;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.welcomebox a:hover {
+    color: #3d6b34;
+    text-decoration: underline;
+}
+
+.check-icon i {
+    color: #5e8c4e;
+    font-size: 48px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcomebox p {
+    animation-delay: 0.2s;
+}
+.welcomebox p:nth-child(3) {
+    animation-delay: 0.2s;
+}
+.welcomebox p:nth-child(4) {
+    animation-delay: 0.2s;
+}
+.welcomebox p:nth-child(5) {
+    animation-delay: 0.2s;
+}
+.welcomebox p:nth-child(6) {
+    animation-delay: 0.2s;
+}

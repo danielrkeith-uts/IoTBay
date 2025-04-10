@@ -20,6 +20,7 @@
         session.setAttribute("user", user);
     %>
     <head>
+        <link rel="stylesheet" href="welcome.css" />
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -39,26 +40,33 @@
                 <% } %>
             </navbar>
         </div>
-        <div class="content">
-            <% 
-                if (tos != null && tos.equals("on")) {
-            %>
-                <h2>Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
-                <p>Your last name is <%= valueOrUnknown(lastName) %>.</p>
-                <p>Your email is <%= valueOrUnknown(email) %>.</p>
-                <p>Your phone number is <%= valueOrUnknown(phone) %>.</p>
-                <p>Your password is <%= valueOrUnknown(password) %>.</p>
-                <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
 
-            <% 
-                } else { 
-            %>
-                <p>
-                Sorry, you must agree to the Terms of Service. </br>
-                Click <a href="register.jsp">here</a> to go back.</br>
-                </p>
-            <% 
-                }
-            %>
+        <div class="container">
+            <div class="welcomebox">
+                <% 
+                    if (tos != null && tos.equals("on")) {
+                %>
+                    <div class="check-icon text-center">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2 class="animated-title">Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
+                    <p class="animated-paragraph">Your name is <%= valueOrUnknown(firstName) + " " + valueOrUnknown(lastName)%>.</p>
+                    <p class="animated-paragraph">Your email is <%= valueOrUnknown(email) %>.</p>
+                    <p class="animated-paragraph">Your phone number is <%= valueOrUnknown(phone) %>.</p>
+                    <p class="animated-paragraph">Your password is <%= valueOrUnknown(password) %>.</p>
+                    <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
+                <% 
+                    } else { 
+                %>
+                    <p>
+                    Sorry, you must agree to the Terms of Service. </br>
+                    Click <a href="register.jsp">here</a> to go back.</br>
+                    </p>
+                <% 
+                    }
+                %>
+            </div>
+        </div>
+
     </body>
 </html>
