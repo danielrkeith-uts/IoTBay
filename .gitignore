@@ -23,8 +23,8 @@
 hs_err_pid*
 replay_pid*
 
+WEB-INF/
 target/
-*pom.xml
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -41,6 +41,8 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+*ssh*
 
 *.vscode
 .vscode/*

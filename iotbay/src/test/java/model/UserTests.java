@@ -9,15 +9,20 @@ public class UserTests {
     private User david;
 
     public UserTests() {
-        greg = new User("Gregory");
-        james = new User("James");
-        david = new User("David");
+        greg = new User("Gregory", null, null, null, "1234");
+        james = new User("James", null, null, null, "myPassword");
+        david = new User("David", null, null, null, "abcdefg");
     }
 
     @Test
-    public void testGreeting() {
-        Assert.assertEquals(greg.greeting(), "Hello, Gregory!");
-        Assert.assertEquals(james.greeting(), "Hello, James!");
-        Assert.assertEquals(david.greeting(), "Hello, David!");
+    public void testCheckPassword() {
+        Assert.assertTrue(greg.checkPassword("1234"));
+        Assert.assertFalse(greg.checkPassword("5678"));
+
+        Assert.assertTrue(james.checkPassword("myPassword"));
+        Assert.assertFalse(james.checkPassword("mypassword"));
+
+        Assert.assertTrue(david.checkPassword("abcdefg"));
+        Assert.assertFalse(david.checkPassword("ABCDEFG"));
     }
 }
