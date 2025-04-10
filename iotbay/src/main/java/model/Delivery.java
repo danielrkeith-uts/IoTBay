@@ -37,4 +37,8 @@ public class Delivery implements Serializable {
     public String getCourierDeliveryId() {
         return courierDeliveryId;
     }
+
+    public void setCourierDeliveryId(String courierDeliveryId) {
+        this.courierDeliveryId = courierDeliveryId;
+    }
 }
