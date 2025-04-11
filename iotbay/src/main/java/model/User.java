@@ -65,4 +65,8 @@ public class User implements Serializable {
     public List<ApplicationAccessLog> getApplicationAccessLogs() {
         return applicationAccessLogs;
     }
+
+    public void addApplicationAccessLog(ApplicationAccessLog aal) {
+        applicationAccessLogs.add(aal);
+    }
 }
