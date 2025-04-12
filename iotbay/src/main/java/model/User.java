@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class User implements Serializable {
+public abstract class User implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
