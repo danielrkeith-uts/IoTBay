@@ -1,14 +1,14 @@
 package model;
 
 public class Staff extends User {
-    private String staffId;
-    public Staff(String firstName, String lastName, String email, String phone, String password, String staffId) {
+    private String staffCardId;
+    public Staff(String firstName, String lastName, String email, String phone, String password, String staffCardId) {
         super(firstName, lastName, email, phone, password);
 
-        this.staffId = staffId;
+        this.staffCardId = staffCardId;
     }
 
-    public String getStaffId() {
-        return staffId;
+    public String getStaffCardId() {
+        return staffCardId;
     }
 }
