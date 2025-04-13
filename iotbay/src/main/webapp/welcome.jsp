@@ -1,4 +1,4 @@
-<%@ page import="model.User"%>
+<%@ page import="model.User, model.Customer"%>
 <html>
     <%!
         public boolean isNullOrEmpty(String str) {
@@ -16,7 +16,7 @@
         String phone = request.getParameter("phone");
         String password = request.getParameter("password");
         String tos = request.getParameter("tos");
-        User user = new User(firstName, lastName, email, phone, password);
+        User user = new Customer(firstName, lastName, email, phone, password);
         session.setAttribute("user", user);
     %>
     <head>
