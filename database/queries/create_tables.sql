@@ -1,4 +1,3 @@
--- 01 User
 CREATE TABLE User (
     UserId INT PRIMARY KEY,
     FirstName VARCHAR(30),
@@ -8,14 +7,12 @@ CREATE TABLE User (
     Password VARCHAR(20)
 );
 
--- 02 Staff
 CREATE TABLE Staff (
     UserId INT PRIMARY KEY,
     StaffCardId INT NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId)
 );
 
--- 03 Customer
 CREATE TABLE Customer (
     UserId INT PRIMARY KEY,
     CartId INT,
@@ -23,7 +20,6 @@ CREATE TABLE Customer (
     FOREIGN KEY (CartId) REFERENCES Cart(CartId)
 );
 
--- 04 Product
 CREATE TABLE Product (
     ProductId INT PRIMARY KEY,
     Name VARCHAR(30) NOT NULL,
@@ -32,7 +28,6 @@ CREATE TABLE Product (
     Stock INT NOT NULL
 );
 
--- 05 ProductListEntry
 CREATE TABLE ProductListEntry (
     ProductListId INT,
     ProductId INT,
@@ -41,7 +36,6 @@ CREATE TABLE ProductListEntry (
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId)
 );
 
--- 06 Cart
 CREATE TABLE Cart (
     CartId INT PRIMARY KEY,
     ProductListId INT,
@@ -49,7 +43,6 @@ CREATE TABLE Cart (
     FOREIGN KEY (ProductListId) REFERENCES ProductListEntry(ProductListId)
 );
 
--- 07 Order
 CREATE TABLE `Order` (
     OrderId INT PRIMARY KEY,
     UserId INT,
@@ -63,7 +56,6 @@ CREATE TABLE `Order` (
     FOREIGN KEY (DeliveryId) REFERENCES Delivery(DeliveryId)
 );
 
--- 08 Delivery
 CREATE TABLE Delivery (
     DeliveryId INT PRIMARY KEY,
     SourceAddressId INT,
@@ -74,7 +66,6 @@ CREATE TABLE Delivery (
     FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
 );
 
--- 09 Address
 CREATE TABLE Address (
     AddressId INT PRIMARY KEY,
     StreetNumber VARCHAR(5),
@@ -84,7 +75,6 @@ CREATE TABLE Address (
     Postcode INT NOT NULL
 );
 
--- 10 Payment
 CREATE TABLE Payment (
     PaymentId INT PRIMARY KEY,
     CardId INT,
@@ -93,7 +83,6 @@ CREATE TABLE Payment (
     FOREIGN KEY (CardId) REFERENCES Card(CardId)
 );
 
--- 11 Card
 CREATE TABLE Card (
     CardId INT PRIMARY KEY,
     Name VARCHAR(30),
@@ -102,7 +91,6 @@ CREATE TABLE Card (
     CVC VARCHAR(3) NOT NULL
 );
 
--- 12 ApplicationAccessLog
 CREATE TABLE ApplicationAccessLog (
     AppAccLogId INT PRIMARY KEY,
     UserId INT,
