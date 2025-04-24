@@ -9,9 +9,9 @@ public class UserTests {
     private User david;
 
     public UserTests() {
-        greg = new User("Gregory", null, null, null, "1234");
-        james = new User("James", null, null, null, "myPassword");
-        david = new User("David", null, null, null, "abcdefg");
+        greg = new Customer("Gregory", null, null, null, "1234");
+        james = new Customer("James", null, null, null, "myPassword");
+        david = new Staff("David", null, null, null, "abcdefg", null);
     }
 
     @Test
