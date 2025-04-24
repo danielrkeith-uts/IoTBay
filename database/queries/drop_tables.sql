@@ -14,6 +14,3 @@ DROP TABLE IF EXISTS Address;
 DROP TABLE IF EXISTS User;
 
 PRAGMA foreign_keys = ON;
-
-
-.read create_tables.sql
