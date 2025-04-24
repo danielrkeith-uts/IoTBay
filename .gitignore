@@ -42,6 +42,10 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+.DS_Store
+
+*/database.db
+
 *ssh*
 
 *.vscode
