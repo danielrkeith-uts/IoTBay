@@ -31,7 +31,9 @@
                         <div class="text-content">
                             <h2>Welcome to IoTBay</h2>
                             <p>We offer the best Internet of Things (IoT) products, designed to enhance your lifestyle and bring convenience to your home or business. Explore our range of smart devices and enjoy seamless integration with your everyday life.</p>
-                            <button class="btn-green">Shop Now</button>
+                            <a href="products.jsp">
+                                <button class="btn-green">Shop Now</button>
+                            </a>
                         </div>
                     </div>
                     <div class="image-container">
@@ -40,7 +42,7 @@
                 </div>
             </div>
             <section class="why-choose-us">
-                <h2>Why Choose Us?</h2>
+                <h2>Why Choose Us?</h2> 
                 <p>We offer the best in class IoT devices and customer service.</p>
                 <div class="features">
                     <div class="feature">
