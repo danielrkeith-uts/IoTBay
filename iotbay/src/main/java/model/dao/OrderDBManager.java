@@ -8,8 +8,10 @@ import java.util.ArrayList;
 public class OrderDBManager {
     
     private Statement st;
+    private Connection conn;
         
     public OrderDBManager(Connection conn) throws SQLException {       
+        this.conn = conn;
         st = conn.createStatement();   
     }
 
@@ -28,7 +30,7 @@ public class OrderDBManager {
             ResultSet entryRs = st.executeQuery(entryQuery);
 
             List<ProductListEntry> ProductList = new ArrayList<>();
-            ProductDBManager productDBManager = new ProductDBManager();
+            ProductDBManager productDBManager = new ProductDBManager(conn);
 
             while (entryRs.next()) {
                 int ProductId = entryRs.getInt("ProductId");
