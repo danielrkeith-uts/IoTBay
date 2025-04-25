@@ -2,9 +2,7 @@ package model.dao;
 
 import model.*;
 import model.Enums.AuState;
-import model.Enums.PaymentStatus;
 import java.sql.*;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
