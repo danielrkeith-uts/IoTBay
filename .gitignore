@@ -44,8 +44,6 @@ buildNumber.properties
 
 .DS_Store
 
-*/database.db
-
 *ssh*
 
 *.vscode
