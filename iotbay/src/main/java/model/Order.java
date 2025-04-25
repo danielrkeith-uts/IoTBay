@@ -10,11 +10,14 @@ public class Order implements Serializable {
     private Delivery delivery;
     private Date datePlaced;
 
-    public Order(List<ProductListEntry> productList, Payment payment, Delivery delivery) {
+    public Order(List<ProductListEntry> productList, Payment payment) {
         this.productList = productList;
         this.payment = payment;
-        this.delivery = delivery;
         datePlaced = new Date();
+    }
+
+    public void setDelivery(Delivery delivery) {
+        this.delivery = delivery;
     }
 
     public List<ProductListEntry> getProductList() {

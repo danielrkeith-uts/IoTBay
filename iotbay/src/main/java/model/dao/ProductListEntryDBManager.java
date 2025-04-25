@@ -7,7 +7,7 @@ import model.*;
 
 public class ProductListEntryDBManager {
 
-        private Statement st;
+    private Statement st;
 
     public ProductListEntry getProductListEntry(int ProductId, int ProductListId) throws SQLException {
 
@@ -20,5 +20,23 @@ public class ProductListEntryDBManager {
         int Quantity = rs.getInt("Quantity");
 
         return new ProductListEntry(Product, Quantity); 
+    }
+
+    public List<ProductListEntry> getProductList(int ProductListId) throws SQLException {
+        String query = "SELECT * FROM ProductListEntry WHERE ProductListId = '" + ProductListId + "'"; 
+        ResultSet rs = st.executeQuery(query);      
+
+        List<ProductListEntry> productList = new ArrayList<>();
+        ProductDBManager productDBManager = new ProductDBManager();
+
+        while (rs.next()) {
+            int ProductId = rs.getInt("ProductId");
+            Product Product = productDBManager.getProduct(ProductId);
+            int Quantity = rs.getInt("Quantity");
+            ProductListEntry entry = new ProductListEntry(Product, Quantity);
+            productList.add(entry);
+            return productList; 
+        }
+        return null;
     }
 }
