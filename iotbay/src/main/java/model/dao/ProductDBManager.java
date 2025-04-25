@@ -4,8 +4,11 @@ import model.*;
 import java.sql.*;
 
 public class ProductDBManager {
-
     private Statement st;
+
+    public ProductDBManager(Connection conn) throws SQLException {
+        st = conn.createStatement();
+    }
 
     public Product getProduct(int ProductId) throws SQLException {
         String query = "SELECT * FROM Product WHERE ProductId = '" + ProductId + "'"; 

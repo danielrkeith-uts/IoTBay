@@ -9,6 +9,12 @@ import java.util.List;
 public class DeliveryDBManager {
 
     private Statement st;
+    private Connection conn;
+
+    public DeliveryDBManager(Connection conn) throws SQLException {
+        this.conn = conn;
+        st = conn.createStatement();
+    }
 
     public Delivery getDelivery(int DeliveryId) throws SQLException {
         String query = "SELECT * FROM Delivery WHERE DeliveryId = '" + DeliveryId + "'"; 
@@ -57,7 +63,7 @@ public class DeliveryDBManager {
                         int PaymentId = rs.getInt("PaymentId");
                         Date DatePlaced = rs.getDate("DatePlaced");
 
-                        ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager();
+                        ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager(conn);
                         List<ProductListEntry> productList = productListEntryDBManager.getProductList(ProductListId);
 
                         PaymentDBManager paymentDBManager = new PaymentDBManager();

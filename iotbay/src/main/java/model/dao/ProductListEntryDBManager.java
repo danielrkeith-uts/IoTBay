@@ -8,11 +8,17 @@ import model.*;
 public class ProductListEntryDBManager {
 
     private Statement st;
+    private Connection conn;
+
+    public ProductListEntryDBManager(Connection conn) throws SQLException {
+        this.conn = conn;
+        st = conn.createStatement();
+    }
 
     public ProductListEntry getProductListEntry(int ProductId, int ProductListId) throws SQLException {
 
         //create a product instance first
-        ProductDBManager productDBManager = new ProductDBManager();
+        ProductDBManager productDBManager = new ProductDBManager(conn);
         Product Product = productDBManager.getProduct(ProductId);
 
         String query = "SELECT * FROM ProductListEntry WHERE ProductListId = '" + ProductListId + "'"; 
@@ -27,7 +33,7 @@ public class ProductListEntryDBManager {
         ResultSet rs = st.executeQuery(query);      
 
         List<ProductListEntry> productList = new ArrayList<>();
-        ProductDBManager productDBManager = new ProductDBManager();
+        ProductDBManager productDBManager = new ProductDBManager(conn);
 
         while (rs.next()) {
             int ProductId = rs.getInt("ProductId");
