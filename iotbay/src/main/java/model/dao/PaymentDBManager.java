@@ -8,6 +8,12 @@ import java.time.YearMonth;
 public class PaymentDBManager {
 
     private Statement st;
+    private Connection conn;
+
+    public PaymentDBManager(Connection conn) throws SQLException {
+        this.conn = conn;
+        st = conn.createStatement();
+    }
 
     public Payment getPayment(int PaymentId) throws SQLException {
         String query = "SELECT * FROM Payment WHERE PaymentId = '" + PaymentId + "'"; 
@@ -28,7 +34,7 @@ public class PaymentDBManager {
                 String Number = rs.getString("Number");
                 YearMonth Expiry = YearMonth.from(rs.getDate("Expiry").toLocalDate());
                 String CVC = rs.getString("CVC");
-                Card Card = new Card(Name, Number, Expiry, CVC);
+                Card Card = new Card(CardId, Name, Number, Expiry, CVC);
 
                 return new Payment(Amount, Card, paymentStatus);
             }

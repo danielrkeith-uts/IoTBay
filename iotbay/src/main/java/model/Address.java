@@ -5,18 +5,24 @@ import java.io.Serializable;
 import model.Enums.AuState;
 
 public class Address implements Serializable {
+    private int addressId;
     private int streetNumber;
     private String street;
     private String suburb;
     private AuState state;
     private String postcode;
 
-    public Address(int streetNumber, String street, String suburb, AuState state, String postcode) {
+    public Address(int addressId, int streetNumber, String street, String suburb, AuState state, String postcode) {
+        this.addressId = addressId;
         this.streetNumber = streetNumber;
         this.street = street;
         this.suburb = suburb;
         this.state = state;
         this.postcode = postcode;
+    }
+
+    public int getAddressId() {
+        return addressId;
     }
 
     public int getStreetNumber() {

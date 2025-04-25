@@ -17,6 +17,7 @@ public class DeliveryDBManager {
     }
 
     public Delivery getDelivery(int DeliveryId) throws SQLException {
+        System.out.println("Looking for Delivery ID: " + DeliveryId);
         String query = "SELECT * FROM Delivery WHERE DeliveryId = '" + DeliveryId + "'"; 
         ResultSet rs = st.executeQuery(query); 
 
@@ -24,63 +25,80 @@ public class DeliveryDBManager {
             int SourceAddressId = rs.getInt("SourceAddressId");
             int DestinationAddressId = rs.getInt("DestinationAddressId");
             String Courier = rs.getString("Courier");
-            String CourierDeliveryId = String.valueOf(rs.getInt("CourierDeliveryId"));
+            int CourierDeliveryId = rs.getInt("CourierDeliveryId");
 
             // create a source address
             String sourceAddQuery = "SELECT * FROM Address WHERE AddressId = '" + SourceAddressId + "'"; 
             ResultSet sourceAddRs = st.executeQuery(sourceAddQuery); 
             
             if (sourceAddRs.next()) {
-                int sourStreetNumber = Integer.parseInt(rs.getString("StreetNumber"));
-                String sourStreet = rs.getString("Street");
-                String sourSuburb = rs.getString("Suburb");
-                int sourStateIndex = rs.getInt("State");
+                int sourStreetNumber = Integer.parseInt(sourceAddRs.getString("StreetNumber"));
+                String sourStreet = sourceAddRs.getString("Street");
+                String sourSuburb = sourceAddRs.getString("Suburb");
+                int sourStateIndex = sourceAddRs.getInt("State");
                 AuState sourState = AuState.values()[sourStateIndex];
-                String sourPostcode = String.valueOf(rs.getInt("Postcode"));
-                Address source = new Address(sourStreetNumber, sourStreet, sourSuburb, sourState, sourPostcode);
+                String sourPostcode = String.valueOf(sourceAddRs.getInt("Postcode"));
+                Address source = new Address(SourceAddressId, sourStreetNumber, sourStreet, sourSuburb, sourState, sourPostcode);
 
                 // create a delivery address
                 String destinationAddQuery = "SELECT * FROM Address WHERE AddressId = '" + DestinationAddressId + "'"; 
                 ResultSet destinationAddRs = st.executeQuery(destinationAddQuery); 
                 
                 if (destinationAddRs.next()) {
-                    int destStreetNumber = Integer.parseInt(rs.getString("StreetNumber"));
-                    String destStreet = rs.getString("Street");
-                    String destSuburb = rs.getString("Suburb");
-                    int destStateIndex = rs.getInt("State");
+                    int destStreetNumber = Integer.parseInt(destinationAddRs.getString("StreetNumber"));
+                    String destStreet = destinationAddRs.getString("Street");
+                    String destSuburb = destinationAddRs.getString("Suburb");
+                    int destStateIndex = destinationAddRs.getInt("State");
                     AuState destState = AuState.values()[destStateIndex];
-                    String destPostcode = String.valueOf(rs.getInt("Postcode"));
-                    Address destination = new Address(destStreetNumber, destStreet, destSuburb, destState, destPostcode);
+                    String destPostcode = String.valueOf(destinationAddRs.getInt("Postcode"));
+                    Address destination = new Address(DestinationAddressId, destStreetNumber, destStreet, destSuburb, destState, destPostcode);
 
                     // create an order list 
-                    String orderQuery = "SELECT * FROM Order WHERE DeliveryId = '" + DeliveryId + "'"; 
+                    String orderQuery = "SELECT * FROM `Order` WHERE DeliveryId = '" + DeliveryId + "'"; 
                     ResultSet orderRs = st.executeQuery(orderQuery); 
+
+                    List<Order> orders = new ArrayList<>();
                     
                     while (orderRs.next()) {
-                        List<Order> orders = new ArrayList<>();
-                        int UserId = rs.getInt("UserId");
-                        int ProductListId = rs.getInt("ProductListId");
-                        int PaymentId = rs.getInt("PaymentId");
-                        Date DatePlaced = rs.getDate("DatePlaced");
+                        int UserId = orderRs.getInt("UserId");
+                        int ProductListId = orderRs.getInt("ProductListId");
+                        int PaymentId = orderRs.getInt("PaymentId");
+                        Date DatePlaced = orderRs.getDate("DatePlaced");
 
                         ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager(conn);
                         List<ProductListEntry> productList = productListEntryDBManager.getProductList(ProductListId);
 
-                        PaymentDBManager paymentDBManager = new PaymentDBManager();
+                        PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
                         Payment payment = paymentDBManager.getPayment(PaymentId);
 
-                        Order order = new Order(productList, payment);
+                        Order order = new Order(productList, payment, DatePlaced);
                         orders.add(order); 
-
-                        Delivery delivery = new Delivery(orders, source, destination, Courier, CourierDeliveryId);
-                        for (Order o : orders) {
-                            o.setDelivery(delivery);
-                        }
-                        return delivery;
                     }
+                    Delivery delivery = new Delivery(DeliveryId, orders, source, destination, Courier, CourierDeliveryId);
+                    for (Order o : orders) {
+                        o.setDelivery(delivery);
+                    }
+                    return delivery;
                 }
+                return null;
             }
+            return null;
         }
         return null;
+    }
+
+    //Add a delivery into the database   
+    public void addDelivery(int DeliveryId, Address source, Address destination, String courier, int courierDeliveryId) throws SQLException {       
+        st.executeUpdate("INSERT INTO Delivery VALUES ('" + source + "', '" + destination + "', '" + courier + "', " + courierDeliveryId + ")");   
+    }
+
+    //update a delivery's details in the database   
+    public void updateDelivery(int DeliveryId, Address source, Address destination, String courier, int courierDeliveryId) throws SQLException {       
+        st.executeUpdate("UPDATE Delivery SET SourceAddressId = '" + source + "', DestinationAddressId = '" + destination + "', Courier = '" + courier + "', CourierDeliveryId = '" + courierDeliveryId + "' WHERE DeliveryId = '" + DeliveryId);    
+    }       
+
+    //delete a delivery from the database   
+    public void deleteDelivery(int DeliveryId) throws SQLException{       
+        st.executeUpdate("DELETE FROM Delivery WHERE DeliveryId = '" + DeliveryId); 
     }
 }

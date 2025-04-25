@@ -16,14 +16,17 @@ public class OrderDBManager {
     }
 
     //Find an order by OrderId in the database   
-    public Order findOrder(int inputOrderId) throws SQLException {       
+    public Order getOrder(int inputOrderId) throws SQLException {       
         //get the ProductListId, PaymentId, and DatePlaced from the Order table
-        String query = "SELECT * FROM Order WHERE OrderID = '" + inputOrderId + "'"; 
+        String query = "SELECT * FROM `Order` WHERE OrderID = '" + inputOrderId + "'"; 
         ResultSet rs = st.executeQuery(query); 
 
         if (rs.next()) {
             int ProductListId = rs.getInt("ProductListId");
             int PaymentId = rs.getInt("PaymentId");
+            int DeliveryId = rs.getInt("DeliveryId");
+            Timestamp timestamp = rs.getTimestamp("DatePlaced");
+            Date DatePlaced = new Date(timestamp.getTime());
             
             //Step 1: Get all entries from ProductListEntry table with this ProductListId
             String entryQuery = "SELECT * FROM ProductListEntry WHERE ProductListId = '" + ProductListId + "'"; 
@@ -43,26 +46,32 @@ public class OrderDBManager {
             }
 
             //Step 3: Create Payment instance to add to Order constructor
-            PaymentDBManager paymentDBManager = new PaymentDBManager();
+            PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
-            return new Order(ProductList, Payment);
+            //Step 4: Create Delivery instance to get DeliveryId for setDelivery()
+            DeliveryDBManager deliveryDBManager = new DeliveryDBManager(conn);
+            Delivery Delivery = deliveryDBManager.getDelivery(DeliveryId);
+
+            Order order = new Order(ProductList, Payment, DatePlaced);
+            order.setDelivery(Delivery);
+            return order;
         } 
         return null;
     }
 
     //Add an order into the database   
     public void addOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("INSERT INTO Order VALUES ('" + OrderId + "', '" + UserId + "', '" + ProductListId + "', '" + PaymentId + "', " + DeliveryId + "', " + DatePlaced + ")");   
+        st.executeUpdate("INSERT INTO `Order` VALUES ('" + OrderId + "', '" + UserId + "', '" + ProductListId + "', '" + PaymentId + "', " + DeliveryId + "', " + DatePlaced + ")");   
     }
 
     //update an order's details in the database   
     public void updateOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("UPDATE Order SET UserId = '" + UserId + "', ProductListId = '" + ProductListId + "', PaymentId = '" + PaymentId + "', DeliveryId = '" + DeliveryId + "', DatePlaced = '" + DatePlaced + "' WHERE OrderId = '" + OrderId);    
+        st.executeUpdate("UPDATE `Order` SET UserId = '" + UserId + "', ProductListId = '" + ProductListId + "', PaymentId = '" + PaymentId + "', DeliveryId = '" + DeliveryId + "', DatePlaced = '" + DatePlaced + "' WHERE OrderId = '" + OrderId);    
     }       
 
     //delete an order from the database   
     public void deleteOrder(int OrderId) throws SQLException{       
-        st.executeUpdate("DELETE FROM Order WHERE OrderId = '" + OrderId); 
+        st.executeUpdate("DELETE FROM `Order` WHERE OrderId = '" + OrderId); 
     }
 }
