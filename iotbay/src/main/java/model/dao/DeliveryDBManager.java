@@ -60,7 +60,6 @@ public class DeliveryDBManager {
                     List<Order> orders = new ArrayList<>();
                     
                     while (orderRs.next()) {
-                        int UserId = orderRs.getInt("UserId");
                         int ProductListId = orderRs.getInt("ProductListId");
                         int PaymentId = orderRs.getInt("PaymentId");
                         Date DatePlaced = orderRs.getDate("DatePlaced");

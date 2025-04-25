@@ -8,10 +8,8 @@ import java.time.YearMonth;
 public class PaymentDBManager {
 
     private Statement st;
-    private Connection conn;
 
     public PaymentDBManager(Connection conn) throws SQLException {
-        this.conn = conn;
         st = conn.createStatement();
     }
 
