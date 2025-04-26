@@ -1,5 +1,5 @@
 CREATE TABLE User (
-    UserId INT PRIMARY KEY,
+    UserId INTEGER PRIMARY KEY AUTOINCREMENT,
     FirstName VARCHAR(30),
     LastName VARCHAR(30),
     Email VARCHAR(50) NOT NULL,
@@ -8,47 +8,47 @@ CREATE TABLE User (
 );
 
 CREATE TABLE Staff (
-    UserId INT PRIMARY KEY,
-    StaffCardId INT NOT NULL,
+    UserId INTEGER PRIMARY KEY,
+    StaffCardId INTEGER NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
 );
 
 CREATE TABLE Customer (
-    UserId INT PRIMARY KEY,
-    CartId INT,
+    UserId INTEGER PRIMARY KEY,
+    CartId INTEGER,
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
     FOREIGN KEY (CartId) REFERENCES Cart(CartId)
 );
 
 CREATE TABLE Product (
-    ProductId INT PRIMARY KEY,
+    ProductId INTEGER PRIMARY KEY,
     Name VARCHAR(30) NOT NULL,
     Description VARCHAR(30),
     Cost DECIMAL(10, 2) NOT NULL,
-    Stock INT NOT NULL
+    Stock INTEGER NOT NULL
 );
 
 CREATE TABLE ProductListEntry (
-    ProductListId INT,
-    ProductId INT,
-    Quantity INT NOT NULL,
+    ProductListId INTEGER,
+    ProductId INTEGER,
+    Quantity INTEGER NOT NULL,
     PRIMARY KEY (ProductListId, ProductId),
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId)
 );
 
 CREATE TABLE Cart (
-    CartId INT PRIMARY KEY,
-    ProductListId INT,
+    CartId INTEGER PRIMARY KEY,
+    ProductListId INTEGER,
     LastUpdated DATETIME,
     FOREIGN KEY (ProductListId) REFERENCES ProductListEntry(ProductListId)
 );
 
 CREATE TABLE `Order` (
-    OrderId INT PRIMARY KEY,
-    UserId INT,
-    ProductListId INT,
-    PaymentId INT,
-    DeliveryId INT,
+    OrderId INTEGER PRIMARY KEY,
+    UserId INTEGER,
+    ProductListId INTEGER,
+    PaymentId INTEGER,
+    DeliveryId INTEGER,
     DatePlaced DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId),
     FOREIGN KEY (ProductListId) REFERENCES ProductListEntry(ProductListId),
@@ -57,34 +57,34 @@ CREATE TABLE `Order` (
 );
 
 CREATE TABLE Delivery (
-    DeliveryId INT PRIMARY KEY,
-    SourceAddressId INT,
-    DestinationAddressId INT,
+    DeliveryId INTEGER PRIMARY KEY,
+    SourceAddressId INTEGER,
+    DestinationAddressId INTEGER,
     Courier VARCHAR(30) NOT NULL,
-    CourierDeliveryId INT NOT NULL,
+    CourierDeliveryId INTEGER NOT NULL,
     FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId),
     FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
 );
 
 CREATE TABLE Address (
-    AddressId INT PRIMARY KEY,
+    AddressId INTEGER PRIMARY KEY,
     StreetNumber VARCHAR(5),
     Street VARCHAR(30) NOT NULL,
     Suburb VARCHAR(30) NOT NULL,
-    State INT NOT NULL, 
-    Postcode INT NOT NULL
+    State INTEGER NOT NULL, 
+    Postcode INTEGER NOT NULL
 );
 
 CREATE TABLE Payment (
-    PaymentId INT PRIMARY KEY,
-    CardId INT,
+    PaymentId INTEGER PRIMARY KEY,
+    CardId INTEGER,
     Amount DECIMAL(10, 2) NOT NULL,
-    PaymentStatus INT NOT NULL,
+    PaymentStatus INTEGER NOT NULL,
     FOREIGN KEY (CardId) REFERENCES Card(CardId)
 );
 
 CREATE TABLE Card (
-    CardId INT PRIMARY KEY,
+    CardId INTEGER PRIMARY KEY,
     Name VARCHAR(30),
     Number VARCHAR(19) NOT NULL,
     Expiry DATE NOT NULL,
@@ -92,9 +92,9 @@ CREATE TABLE Card (
 );
 
 CREATE TABLE ApplicationAccessLog (
-    AppAccLogId INT PRIMARY KEY,
-    UserId INT,
-    ApplicationAction INT NOT NULL,
+    AppAccLogId INTEGER PRIMARY KEY,
+    UserId INTEGER,
+    ApplicationAction INTEGER NOT NULL,
     DateTime DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId)
 );

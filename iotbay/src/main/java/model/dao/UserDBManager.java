@@ -10,12 +10,18 @@ import model.Staff;
 import model.User;
 
 public class UserDBManager {
-    private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1";
-    private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1";
-    private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1";
-    private static final String GET_STAFF_STMT_B = "Select * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1";
-    private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?";
+    private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
+    private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId) VALUES (?)";
+    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?)";
+    private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
+    private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
+    private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
+    private static final String GET_STAFF_STMT_B = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1;";
+    private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
 
+    private final PreparedStatement addUserPs;
+    private final PreparedStatement addCustomerPs;
+    private final PreparedStatement addStaffPs;
     private final PreparedStatement getCustomerPsA;
     private final PreparedStatement getCustomerPsB;
     private final PreparedStatement getStaffPsA;
@@ -23,11 +29,31 @@ public class UserDBManager {
     private final PreparedStatement deleteUserPs;
 
     public UserDBManager(Connection conn) throws SQLException {
+        this.addUserPs = conn.prepareStatement(ADD_USER_STMT);
+        this.addCustomerPs = conn.prepareStatement(ADD_CUSTOMER_STMT);
+        this.addStaffPs = conn.prepareStatement(ADD_STAFF_STMT);
         this.getCustomerPsA = conn.prepareStatement(GET_CUSTOMER_STMT_A);
         this.getCustomerPsB = conn.prepareStatement(GET_CUSTOMER_STMT_B);
         this.getStaffPsA = conn.prepareStatement(GET_STAFF_STMT_A);
         this.getStaffPsB = conn.prepareStatement(GET_STAFF_STMT_B);
         this.deleteUserPs = conn.prepareStatement(DELETE_USER_STMT);
+    }
+
+    public void addCustomer(Customer customer) throws SQLException {
+        int userId = addUser(customer);
+
+        addCustomerPs.setInt(1, userId);
+
+        addCustomerPs.executeUpdate();
+    }
+
+    public void addStaff(Staff staff) throws SQLException {
+        int userId = addUser(staff);
+
+        addStaffPs.setInt(1, userId);
+        addStaffPs.setInt(2, staff.getStaffCardId());
+
+        addStaffPs.executeUpdate();
     }
 
     public User getUser(String email, String password) throws SQLException {
@@ -54,6 +80,26 @@ public class UserDBManager {
         deleteUserPs.setInt(1, userId);
 
         deleteUserPs.executeUpdate();
+    }
+
+    private int addUser(User user) throws SQLException {
+        addUserPs.setString(1, user.getFirstName());
+        addUserPs.setString(2, user.getLastName());
+        addUserPs.setString(3, user.getEmail());
+        addUserPs.setString(4, user.getPhone());
+        addUserPs.setString(5, user.getPassword());
+
+        addUserPs.executeUpdate();
+        ResultSet rs = addUserPs.getGeneratedKeys();
+
+        if (!rs.next()) {
+            throw new SQLException("Failed to insert user");
+        }
+
+        int userId = rs.getBigDecimal(1).intValue();
+
+        user.setUserId(userId);
+        return userId;
     }
 
     private Customer getCustomer(String email, String password) throws SQLException {

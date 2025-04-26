@@ -21,6 +21,23 @@ public class UserDBManagerTests {
     }
 
     @Test
+    public void testAddCustomer() {
+        try {
+            Savepoint savepoint = conn.setSavepoint();
+
+            Customer michaelJackson = new Customer(123456, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");
+            userDBManager.addCustomer(michaelJackson);
+
+            Customer mjResult = (Customer) userDBManager.getUser(michaelJackson.getUserId());
+            assertMichaelJackson(mjResult);
+
+            conn.rollback(savepoint);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void testGetCustomerA() {
         Customer johnSmith;
         try {
@@ -37,7 +54,7 @@ public class UserDBManagerTests {
     public void testGetCustomerB() {
         Customer johnSmith;
         try {
-            johnSmith = (Customer) userDBManager.getUser(1);
+            johnSmith = (Customer) userDBManager.getUser(0);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
@@ -63,7 +80,7 @@ public class UserDBManagerTests {
     public void testGetStaffB() {
         Staff gregoryStafferson;
         try {
-            gregoryStafferson = (Staff) userDBManager.getUser(100);
+            gregoryStafferson = (Staff) userDBManager.getUser(1);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
@@ -77,8 +94,8 @@ public class UserDBManagerTests {
         try {
             Savepoint savepoint = conn.setSavepoint();
 
-            userDBManager.deleteUser(1);
-            User deletedUser = userDBManager.getUser(1);
+            userDBManager.deleteUser(0);
+            User deletedUser = userDBManager.getUser(0);
 
             Assert.assertNull(deletedUser);
 
@@ -89,7 +106,7 @@ public class UserDBManagerTests {
     }
 
     private void assertJohnSmith(Customer johnSmith) {
-        Assert.assertEquals(1, johnSmith.getUserId());
+        Assert.assertEquals(0, johnSmith.getUserId());
         Assert.assertEquals("John", johnSmith.getFirstName());
         Assert.assertEquals("Smith", johnSmith.getLastName());
         Assert.assertEquals("+61 412 345 678", johnSmith.getPhone());
@@ -98,12 +115,20 @@ public class UserDBManagerTests {
     }
 
     private void assertGregoryStafferson(Staff gregoryStafferson) {
-        Assert.assertEquals(100, gregoryStafferson.getUserId());
+        Assert.assertEquals(1, gregoryStafferson.getUserId());
         Assert.assertEquals("Gregory", gregoryStafferson.getFirstName());
         Assert.assertEquals("Stafferson", gregoryStafferson.getLastName());
         Assert.assertEquals("+61 487 654 321", gregoryStafferson.getPhone());
         Assert.assertEquals(1001, gregoryStafferson.getStaffCardId());
         Assert.assertEquals("gregory.stafferson@iotbay.com", gregoryStafferson.getEmail());
         Assert.assertTrue(gregoryStafferson.checkPassword("!@#$%^&*()"));
+    }
+
+    private void assertMichaelJackson(Customer michaelJackson) {
+        Assert.assertEquals("Michael", michaelJackson.getFirstName());
+        Assert.assertEquals("Jackson", michaelJackson.getLastName());
+        Assert.assertEquals("+61 111 111 111", michaelJackson.getPhone());
+        Assert.assertEquals("michael.jackson@bad.com", michaelJackson.getEmail());
+        Assert.assertTrue(michaelJackson.checkPassword("smooth-criminal"));
     }
 }
