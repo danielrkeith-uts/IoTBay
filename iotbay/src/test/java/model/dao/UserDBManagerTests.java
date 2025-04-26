@@ -22,7 +22,7 @@ public class UserDBManagerTests {
 
         Customer johnSmith;
         try {
-            johnSmith = userDBManager.getCustomer(email, password);
+            johnSmith = (Customer) userDBManager.getUser(email, password);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
@@ -42,7 +42,7 @@ public class UserDBManagerTests {
 
         Staff gregoryStafferson;
         try {
-            gregoryStafferson = userDBManager.getStaff(email, password);
+            gregoryStafferson = (Staff) userDBManager.getUser(email, password);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;

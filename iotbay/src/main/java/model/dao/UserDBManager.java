@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import model.Customer;
 import model.Staff;
+import model.User;
 
 public class UserDBManager {
     private static final String GET_CUSTOMER_QUERY = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1";
@@ -20,7 +21,17 @@ public class UserDBManager {
         this.getStaffPs = conn.prepareStatement(GET_STAFF_QUERY);
     }
 
-    public Customer getCustomer(String email, String password) throws SQLException {
+    public User getUser(String email, String password) throws SQLException {
+        User user = getCustomer(email, password);
+
+        if (user != null) {
+            return user;
+        }
+
+        return getStaff(email, password);
+    }
+
+    private Customer getCustomer(String email, String password) throws SQLException {
         getCustomerPs.setString(1, email);
         getCustomerPs.setString(2, password);
 
@@ -39,7 +50,7 @@ public class UserDBManager {
         );
     }
 
-    public Staff getStaff(String email, String password) throws SQLException {
+    private Staff getStaff(String email, String password) throws SQLException {
         getStaffPs.setString(1, email);
         getStaffPs.setString(2, password);
 
