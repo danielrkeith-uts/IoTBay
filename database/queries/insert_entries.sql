@@ -19,3 +19,8 @@ VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123');
 INSERT INTO `Order`(OrderId, UserId, ProductListId, PaymentId, DeliveryId, DatePlaced)
 VALUES (1, 1, 1, 1, 1, '2025-04-25 00:00:00');
 
+INSERT INTO User (UserId, FirstName, LastName, Email, Phone, Password)
+VALUES (1, 'John', 'Smith', 'john.smith@gmail.com', '+61 412 345 678', 'johnsPassword');
+
+INSERT INTO Customer (UserId, CartId)
+VALUES (1, 999);
