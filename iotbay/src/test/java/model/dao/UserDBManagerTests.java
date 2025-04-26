@@ -2,7 +2,6 @@ package model.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,23 +16,27 @@ public class UserDBManagerTests {
 
     public UserDBManagerTests() throws ClassNotFoundException, SQLException {
         this.conn = new DBConnector().openConnection();
+        conn.setAutoCommit(false);
         this.userDBManager = new UserDBManager(conn);
     }
 
     @Test
     public void testAddCustomer() {
         try {
-            Savepoint savepoint = conn.setSavepoint();
-
             Customer michaelJackson = new Customer(123456, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");
             userDBManager.addCustomer(michaelJackson);
 
             Customer mjResult = (Customer) userDBManager.getUser(michaelJackson.getUserId());
             assertMichaelJackson(mjResult);
 
-            conn.rollback(savepoint);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
         }
     }
 
@@ -92,16 +95,18 @@ public class UserDBManagerTests {
     @Test
     public void testDeleteUser() {
         try {
-            Savepoint savepoint = conn.setSavepoint();
-
             userDBManager.deleteUser(0);
             User deletedUser = userDBManager.getUser(0);
 
             Assert.assertNull(deletedUser);
-
-            conn.rollback(savepoint);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
         }
     }
 
