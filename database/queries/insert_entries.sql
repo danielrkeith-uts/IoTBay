@@ -20,7 +20,11 @@ INSERT INTO `Order`(OrderId, UserId, ProductListId, PaymentId, DeliveryId, DateP
 VALUES (1, 1, 1, 1, 1, '2025-04-25 00:00:00');
 
 INSERT INTO User (UserId, FirstName, LastName, Email, Phone, Password)
-VALUES (1, 'John', 'Smith', 'john.smith@gmail.com', '+61 412 345 678', 'johnsPassword');
+VALUES (1, 'John', 'Smith', 'john.smith@gmail.com', '+61 412 345 678', 'johnsPassword'),
+(100, 'Gregory', 'Stafferson', 'gregory.stafferson@iotbay.com', '+61 487 654 321', '!@#$%^&*()');
 
 INSERT INTO Customer (UserId, CartId)
 VALUES (1, 999);
+
+INSERT INTO Staff (UserId, StaffCardId)
+Values (100, 1001);
