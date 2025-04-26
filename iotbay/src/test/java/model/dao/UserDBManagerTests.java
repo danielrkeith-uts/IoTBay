@@ -1,18 +1,23 @@
 package model.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import model.Customer;
 import model.Staff;
+import model.User;
 
 public class UserDBManagerTests {
-    private UserDBManager userDBManager;
+    private final Connection conn;
+    private final UserDBManager userDBManager;
 
     public UserDBManagerTests() throws ClassNotFoundException, SQLException {
-        this.userDBManager = new UserDBManager(new DBConnector().openConnection());
+        this.conn = new DBConnector().openConnection();
+        this.userDBManager = new UserDBManager(conn);
     }
 
     @Test
@@ -65,6 +70,22 @@ public class UserDBManagerTests {
         }
 
         assertGregoryStafferson(gregoryStafferson);
+    }
+
+    @Test
+    public void testDeleteUser() {
+        try {
+            Savepoint savepoint = conn.setSavepoint();
+
+            userDBManager.deleteUser(1);
+            User deletedUser = userDBManager.getUser(1);
+
+            Assert.assertNull(deletedUser);
+
+            conn.rollback(savepoint);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     private void assertJohnSmith(Customer johnSmith) {

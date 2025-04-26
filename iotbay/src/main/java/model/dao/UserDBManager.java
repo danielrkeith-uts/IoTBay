@@ -10,22 +10,24 @@ import model.Staff;
 import model.User;
 
 public class UserDBManager {
-    private static final String GET_CUSTOMER_QUERY_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1";
-    private static final String GET_CUSTOMER_QUERY_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1";
-    private static final String GET_STAFF_QUERY_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1";
-    private static final String GET_STAFF_QUERY_B = "Select * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1";
-    
+    private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1";
+    private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1";
+    private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1";
+    private static final String GET_STAFF_STMT_B = "Select * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1";
+    private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?";
 
     private final PreparedStatement getCustomerPsA;
     private final PreparedStatement getCustomerPsB;
     private final PreparedStatement getStaffPsA;
     private final PreparedStatement getStaffPsB;
+    private final PreparedStatement deleteUserPs;
 
     public UserDBManager(Connection conn) throws SQLException {
-        this.getCustomerPsA = conn.prepareStatement(GET_CUSTOMER_QUERY_A);
-        this.getCustomerPsB = conn.prepareStatement(GET_CUSTOMER_QUERY_B);
-        this.getStaffPsA = conn.prepareStatement(GET_STAFF_QUERY_A);
-        this.getStaffPsB = conn.prepareStatement(GET_STAFF_QUERY_B);
+        this.getCustomerPsA = conn.prepareStatement(GET_CUSTOMER_STMT_A);
+        this.getCustomerPsB = conn.prepareStatement(GET_CUSTOMER_STMT_B);
+        this.getStaffPsA = conn.prepareStatement(GET_STAFF_STMT_A);
+        this.getStaffPsB = conn.prepareStatement(GET_STAFF_STMT_B);
+        this.deleteUserPs = conn.prepareStatement(DELETE_USER_STMT);
     }
 
     public User getUser(String email, String password) throws SQLException {
@@ -46,6 +48,12 @@ public class UserDBManager {
         }
 
         return getStaff(userId);
+    }
+
+    public void deleteUser(int userId) throws SQLException {
+        deleteUserPs.setInt(1, userId);
+
+        deleteUserPs.executeUpdate();
     }
 
     private Customer getCustomer(String email, String password) throws SQLException {
