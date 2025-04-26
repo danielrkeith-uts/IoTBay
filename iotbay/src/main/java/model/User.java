@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class User implements Serializable {
+    private final int userId;
     private String firstName;
     private String lastName;
     private String email;
@@ -12,7 +13,8 @@ public abstract class User implements Serializable {
     private String password;
     private List<ApplicationAccessLog> applicationAccessLogs;
 
-    public User(String firstName, String lastName, String email, String phone, String password) {
+    public User(int userId, String firstName, String lastName, String email, String phone, String password) {
+        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -20,6 +22,10 @@ public abstract class User implements Serializable {
         this.password = password;
 
         this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
+    }
+
+    public int getUserId() {
+        return this.userId;
     }
 
     public String getFirstName() {
