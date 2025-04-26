@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-import model.Enums.AuState;
+import model.enums.AuState;
 
 public class Address implements Serializable {
     private int addressId;

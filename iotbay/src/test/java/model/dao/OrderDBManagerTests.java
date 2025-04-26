@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import model.*;
-import model.Enums.PaymentStatus;
+import model.enums.PaymentStatus;
 
 public class OrderDBManagerTests {
     OrderDBManager orderDBManager;

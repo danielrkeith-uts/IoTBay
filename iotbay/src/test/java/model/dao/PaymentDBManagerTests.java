@@ -6,7 +6,7 @@ import java.time.YearMonth;
 import org.junit.Assert;
 import org.junit.Test;
 import model.*;
-import model.Enums.PaymentStatus;
+import model.enums.PaymentStatus;
 
 public class PaymentDBManagerTests {
     PaymentDBManager paymentDBManager;

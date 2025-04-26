@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-import model.Enums.PaymentStatus;
+import model.enums.PaymentStatus;
 
 public class Payment implements Serializable {
     private double amount;

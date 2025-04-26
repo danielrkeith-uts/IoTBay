@@ -1,7 +1,8 @@
 package model.dao;
 
 import model.*;
-import model.Enums.PaymentStatus;
+import model.enums.PaymentStatus;
+
 import java.sql.*;
 import java.time.YearMonth;
 

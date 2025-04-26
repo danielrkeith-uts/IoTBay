@@ -1,7 +1,8 @@
 package model.dao;
 
 import model.*;
-import model.Enums.AuState;
+import model.enums.AuState;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

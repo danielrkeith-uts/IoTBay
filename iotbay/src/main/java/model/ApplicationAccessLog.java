@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.Date;
 
-import model.Enums.ApplicationAction;
+import model.enums.ApplicationAction;
 
 public class ApplicationAccessLog implements Serializable {
     private ApplicationAction applicationAction;
