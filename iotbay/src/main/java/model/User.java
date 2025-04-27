@@ -83,4 +83,23 @@ public abstract class User implements Serializable {
     public void addApplicationAccessLog(ApplicationAccessLog aal) {
         applicationAccessLogs.add(aal);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        User user = (User) obj;
+
+        return this.userId == user.userId
+            && this.firstName.equals(user.firstName)
+            && this.lastName.equals(user.lastName)
+            && this.email.equals(user.email)
+            && this.phone.equals(user.phone)
+            && this.password.equals(user.password);
+    }
 }

@@ -11,6 +11,13 @@ import model.Staff;
 import model.User;
 
 public class UserDBManagerTests {
+    // In database
+    private static final Customer johnSmith = new Customer(0, "John", "Smith", "john.smith@gmail.com", "+61 412 345 678", "johnsPassword");
+    private static final Staff gregoryStafferson = new Staff(1, "Gregory", "Stafferson", "gregory.stafferson@iotbay.com", "+61 487 654 321", "!@#$%^&*()", 1001);
+
+    // Not in database
+    private static final Customer michaelJackson = new Customer(999, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");
+
     private final Connection conn;
     private final UserDBManager userDBManager;
 
@@ -23,12 +30,11 @@ public class UserDBManagerTests {
     @Test
     public void testAddCustomer() {
         try {
-            Customer michaelJackson = new Customer(123456, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");
             userDBManager.addCustomer(michaelJackson);
 
             Customer mjResult = (Customer) userDBManager.getUser(michaelJackson.getUserId());
-            assertMichaelJackson(mjResult);
-
+            
+            Assert.assertEquals(michaelJackson, mjResult);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } finally {
@@ -42,54 +48,54 @@ public class UserDBManagerTests {
 
     @Test
     public void testGetCustomerA() {
-        Customer johnSmith;
+        Customer jsResult;
         try {
-            johnSmith = (Customer) userDBManager.getUser("john.smith@gmail.com", "johnsPassword");
+            jsResult = (Customer) userDBManager.getUser(johnSmith.getEmail(), johnSmith.getPassword());
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
         }
 
-        assertJohnSmith(johnSmith);
+        Assert.assertEquals(johnSmith, jsResult);
     }
 
     @Test
     public void testGetCustomerB() {
-        Customer johnSmith;
+        Customer jsResult;
         try {
-            johnSmith = (Customer) userDBManager.getUser(0);
+            jsResult = (Customer) userDBManager.getUser(0);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
         }
 
-        assertJohnSmith(johnSmith);
+        Assert.assertEquals(johnSmith, jsResult);
     }
 
     @Test
     public void testGetStaffA() {
-        Staff gregoryStafferson;
+        Staff gsResult;
         try {
-            gregoryStafferson = (Staff) userDBManager.getUser("gregory.stafferson@iotbay.com", "!@#$%^&*()");
+            gsResult = (Staff) userDBManager.getUser(gregoryStafferson.getEmail(), gregoryStafferson.getPassword());
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
         }
 
-        assertGregoryStafferson(gregoryStafferson);
+        Assert.assertEquals(gregoryStafferson, gsResult);
     }
 
     @Test
     public void testGetStaffB() {
-        Staff gregoryStafferson;
+        Staff gsResult;
         try {
-            gregoryStafferson = (Staff) userDBManager.getUser(1);
+            gsResult = (Staff) userDBManager.getUser(1);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
         }
 
-        assertGregoryStafferson(gregoryStafferson);
+        Assert.assertEquals(gregoryStafferson, gsResult);
     }
 
     @Test
@@ -108,32 +114,5 @@ public class UserDBManagerTests {
                 System.err.println(e);
             }
         }
-    }
-
-    private void assertJohnSmith(Customer johnSmith) {
-        Assert.assertEquals(0, johnSmith.getUserId());
-        Assert.assertEquals("John", johnSmith.getFirstName());
-        Assert.assertEquals("Smith", johnSmith.getLastName());
-        Assert.assertEquals("+61 412 345 678", johnSmith.getPhone());
-        Assert.assertEquals("john.smith@gmail.com", johnSmith.getEmail());
-        Assert.assertTrue(johnSmith.checkPassword("johnsPassword"));
-    }
-
-    private void assertGregoryStafferson(Staff gregoryStafferson) {
-        Assert.assertEquals(1, gregoryStafferson.getUserId());
-        Assert.assertEquals("Gregory", gregoryStafferson.getFirstName());
-        Assert.assertEquals("Stafferson", gregoryStafferson.getLastName());
-        Assert.assertEquals("+61 487 654 321", gregoryStafferson.getPhone());
-        Assert.assertEquals(1001, gregoryStafferson.getStaffCardId());
-        Assert.assertEquals("gregory.stafferson@iotbay.com", gregoryStafferson.getEmail());
-        Assert.assertTrue(gregoryStafferson.checkPassword("!@#$%^&*()"));
-    }
-
-    private void assertMichaelJackson(Customer michaelJackson) {
-        Assert.assertEquals("Michael", michaelJackson.getFirstName());
-        Assert.assertEquals("Jackson", michaelJackson.getLastName());
-        Assert.assertEquals("+61 111 111 111", michaelJackson.getPhone());
-        Assert.assertEquals("michael.jackson@bad.com", michaelJackson.getEmail());
-        Assert.assertTrue(michaelJackson.checkPassword("smooth-criminal"));
     }
 }

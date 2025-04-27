@@ -11,4 +11,18 @@ public class Staff extends User {
     public int getStaffCardId() {
         return staffCardId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Staff staff = (Staff) obj;
+
+        return super.equals(staff) && this.staffCardId == staff.staffCardId;
+    }
 }
