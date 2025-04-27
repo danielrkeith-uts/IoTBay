@@ -33,7 +33,7 @@ public class UserDBManagerTests {
             userDBManager.addCustomer(michaelJackson);
 
             Customer mjResult = (Customer) userDBManager.getUser(michaelJackson.getUserId());
-            
+
             Assert.assertEquals(michaelJackson, mjResult);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
@@ -96,6 +96,63 @@ public class UserDBManagerTests {
         }
 
         Assert.assertEquals(gregoryStafferson, gsResult);
+    }
+
+    @Test
+    public void testUpdateCustomer() {
+        Customer newJohnSmith = new Customer(
+            johnSmith.getUserId(),
+            johnSmith.getFirstName() + "1",
+            johnSmith.getLastName() + "2",
+            johnSmith.getEmail() + "3",
+            johnSmith.getPhone() + "4",
+            johnSmith.getPassword() + "5"
+        );
+
+        try {
+            userDBManager.updateCustomer(newJohnSmith);
+        
+            Customer newJsResult = (Customer) userDBManager.getUser(johnSmith.getUserId());
+    
+            Assert.assertEquals(newJohnSmith, newJsResult);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateStaff() {
+        Staff newGregoryStafferson = new Staff(
+            gregoryStafferson.getUserId(),
+            gregoryStafferson.getFirstName() +"1",
+            gregoryStafferson.getLastName() + "2",
+            gregoryStafferson.getEmail() + "3",
+            gregoryStafferson.getPhone() + "4",
+            gregoryStafferson.getPassword() + "5",
+            gregoryStafferson.getStaffCardId() + 6
+        );
+
+        try {
+            userDBManager.updateStaff(newGregoryStafferson);
+
+            Staff newGsResult = (Staff) userDBManager.getUser(gregoryStafferson.getUserId());
+
+            Assert.assertEquals(newGregoryStafferson, newGsResult);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
     }
 
     @Test

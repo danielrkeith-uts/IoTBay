@@ -11,12 +11,14 @@ import model.User;
 
 public class UserDBManager {
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
-    private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId) VALUES (?)";
-    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?)";
+    private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId) VALUES (?);";
+    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?);";
     private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_B = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1;";
+    private static final String UPDATE_USER_STMT = "UPDATE User SET FirstName = ?, LastName = ?, Email = ?, Phone = ?, Password = ? WHERE UserId = ?;";
+    private static final String UPDATE_STAFF_STMT = "UPDATE Staff SET StaffCardId = ? WHERE UserId = ?;";
     private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
 
     private final PreparedStatement addUserPs;
@@ -26,6 +28,8 @@ public class UserDBManager {
     private final PreparedStatement getCustomerPsB;
     private final PreparedStatement getStaffPsA;
     private final PreparedStatement getStaffPsB;
+    private final PreparedStatement updateUserPs;
+    private final PreparedStatement updateStaffPs;
     private final PreparedStatement deleteUserPs;
 
     public UserDBManager(Connection conn) throws SQLException {
@@ -36,6 +40,8 @@ public class UserDBManager {
         this.getCustomerPsB = conn.prepareStatement(GET_CUSTOMER_STMT_B);
         this.getStaffPsA = conn.prepareStatement(GET_STAFF_STMT_A);
         this.getStaffPsB = conn.prepareStatement(GET_STAFF_STMT_B);
+        this.updateUserPs = conn.prepareStatement(UPDATE_USER_STMT);
+        this.updateStaffPs = conn.prepareStatement(UPDATE_STAFF_STMT);
         this.deleteUserPs = conn.prepareStatement(DELETE_USER_STMT);
     }
 
@@ -74,6 +80,19 @@ public class UserDBManager {
         }
 
         return getStaff(userId);
+    }
+
+    public void updateCustomer(Customer customer) throws SQLException {
+        updateUser(customer);
+    }
+
+    public void updateStaff(Staff staff) throws SQLException {
+        updateUser(staff);
+
+        updateStaffPs.setInt(1, staff.getStaffCardId());
+        updateStaffPs.setInt(2, staff.getUserId());
+
+        updateStaffPs.executeUpdate();
     }
 
     public void deleteUser(int userId) throws SQLException {
@@ -165,5 +184,16 @@ public class UserDBManager {
             rs.getString("Password"),
             rs.getInt("StaffCardId")
         );
+    }
+
+    private void updateUser(User user) throws SQLException {
+        updateUserPs.setString(1, user.getFirstName());
+        updateUserPs.setString(2, user.getLastName());
+        updateUserPs.setString(3, user.getEmail());
+        updateUserPs.setString(4, user.getPhone());
+        updateUserPs.setString(5, user.getPassword());
+        updateUserPs.setInt(6, user.getUserId());
+
+        updateUserPs.executeUpdate();
     }
 }
