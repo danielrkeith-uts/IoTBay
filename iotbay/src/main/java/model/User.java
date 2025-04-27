@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class User implements Serializable {
+    private int userId;
     private String firstName;
     private String lastName;
     private String email;
@@ -12,7 +13,8 @@ public abstract class User implements Serializable {
     private String password;
     private List<ApplicationAccessLog> applicationAccessLogs;
 
-    public User(String firstName, String lastName, String email, String phone, String password) {
+    public User(int userId, String firstName, String lastName, String email, String phone, String password) {
+        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -20,6 +22,14 @@ public abstract class User implements Serializable {
         this.password = password;
 
         this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
+    }
+
+    public int getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getFirstName() {
@@ -54,6 +64,10 @@ public abstract class User implements Serializable {
         this.phone = phone;
     }
 
+    public String getPassword() {
+        return this.password;
+    }
+
     public boolean checkPassword(String password) {
         return this.password.equals(password);
     }
@@ -68,5 +82,24 @@ public abstract class User implements Serializable {
 
     public void addApplicationAccessLog(ApplicationAccessLog aal) {
         applicationAccessLogs.add(aal);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        User user = (User) obj;
+
+        return this.userId == user.userId
+            && this.firstName.equals(user.firstName)
+            && this.lastName.equals(user.lastName)
+            && this.email.equals(user.email)
+            && this.phone.equals(user.phone)
+            && this.password.equals(user.password);
     }
 }

@@ -10,7 +10,8 @@ public class DBConnector extends DB {
         conn = DriverManager.getConnection(URL);
     }
 
-    public Connection openConnection() {
+    public Connection openConnection() throws SQLException {
+        conn.createStatement().executeUpdate("PRAGMA foreign_keys = ON;");
         return this.conn;
     }
 
