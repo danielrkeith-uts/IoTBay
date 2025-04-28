@@ -1,5 +1,6 @@
 package model.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.junit.Assert;
@@ -7,52 +8,168 @@ import org.junit.Test;
 
 import model.Customer;
 import model.Staff;
+import model.User;
 
 public class UserDBManagerTests {
-    private UserDBManager userDBManager;
+    // In database
+    private static final Customer johnSmith = new Customer(0, "John", "Smith", "john.smith@gmail.com", "+61 412 345 678", "johnsPassword");
+    private static final Staff gregoryStafferson = new Staff(1, "Gregory", "Stafferson", "gregory.stafferson@iotbay.com", "+61 487 654 321", "!@#$%^&*()", 1001);
+
+    // Not in database
+    private static final Customer michaelJackson = new Customer(999, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");
+
+    private final Connection conn;
+    private final UserDBManager userDBManager;
 
     public UserDBManagerTests() throws ClassNotFoundException, SQLException {
-        this.userDBManager = new UserDBManager(new DBConnector().openConnection());
+        this.conn = new DBConnector().openConnection();
+        conn.setAutoCommit(false);
+        this.userDBManager = new UserDBManager(conn);
     }
 
     @Test
-    public void testGetCustomer() {
-        final String email = "john.smith@gmail.com";
-        final String password = "johnsPassword";
-
-        Customer johnSmith;
+    public void testAddCustomer() {
         try {
-            johnSmith = (Customer) userDBManager.getUser(email, password);
+            userDBManager.addCustomer(michaelJackson);
+
+            Customer mjResult = (Customer) userDBManager.getUser(michaelJackson.getUserId());
+
+            Assert.assertEquals(michaelJackson, mjResult);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
+    public void testGetCustomerA() {
+        Customer jsResult;
+        try {
+            jsResult = (Customer) userDBManager.getUser(johnSmith.getEmail(), johnSmith.getPassword());
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
         }
 
-        Assert.assertEquals("John", johnSmith.getFirstName());
-        Assert.assertEquals("Smith", johnSmith.getLastName());
-        Assert.assertEquals("+61 412 345 678", johnSmith.getPhone());
-        Assert.assertEquals(email, johnSmith.getEmail());
-        Assert.assertTrue(johnSmith.checkPassword(password));
+        Assert.assertEquals(johnSmith, jsResult);
     }
 
     @Test
-    public void testGetStaff() {
-        final String email = "gregory.stafferson@iotbay.com";
-        final String password = "!@#$%^&*()";
-
-        Staff gregoryStafferson;
+    public void testGetCustomerB() {
+        Customer jsResult;
         try {
-            gregoryStafferson = (Staff) userDBManager.getUser(email, password);
+            jsResult = (Customer) userDBManager.getUser(0);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
             return;
         }
 
-        Assert.assertEquals("Gregory", gregoryStafferson.getFirstName());
-        Assert.assertEquals("Stafferson", gregoryStafferson.getLastName());
-        Assert.assertEquals("+61 487 654 321", gregoryStafferson.getPhone());
-        Assert.assertEquals(1001, gregoryStafferson.getStaffCardId());
-        Assert.assertEquals(email, gregoryStafferson.getEmail());
-        Assert.assertTrue(gregoryStafferson.checkPassword(password));
+        Assert.assertEquals(johnSmith, jsResult);
+    }
+
+    @Test
+    public void testGetStaffA() {
+        Staff gsResult;
+        try {
+            gsResult = (Staff) userDBManager.getUser(gregoryStafferson.getEmail(), gregoryStafferson.getPassword());
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+            return;
+        }
+
+        Assert.assertEquals(gregoryStafferson, gsResult);
+    }
+
+    @Test
+    public void testGetStaffB() {
+        Staff gsResult;
+        try {
+            gsResult = (Staff) userDBManager.getUser(1);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+            return;
+        }
+
+        Assert.assertEquals(gregoryStafferson, gsResult);
+    }
+
+    @Test
+    public void testUpdateCustomer() {
+        Customer newJohnSmith = new Customer(
+            johnSmith.getUserId(),
+            johnSmith.getFirstName() + "1",
+            johnSmith.getLastName() + "2",
+            johnSmith.getEmail() + "3",
+            johnSmith.getPhone() + "4",
+            johnSmith.getPassword() + "5"
+        );
+
+        try {
+            userDBManager.updateCustomer(newJohnSmith);
+        
+            Customer newJsResult = (Customer) userDBManager.getUser(johnSmith.getUserId());
+    
+            Assert.assertEquals(newJohnSmith, newJsResult);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateStaff() {
+        Staff newGregoryStafferson = new Staff(
+            gregoryStafferson.getUserId(),
+            gregoryStafferson.getFirstName() +"1",
+            gregoryStafferson.getLastName() + "2",
+            gregoryStafferson.getEmail() + "3",
+            gregoryStafferson.getPhone() + "4",
+            gregoryStafferson.getPassword() + "5",
+            gregoryStafferson.getStaffCardId() + 6
+        );
+
+        try {
+            userDBManager.updateStaff(newGregoryStafferson);
+
+            Staff newGsResult = (Staff) userDBManager.getUser(gregoryStafferson.getUserId());
+
+            Assert.assertEquals(newGregoryStafferson, newGsResult);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
+    public void testDeleteUser() {
+        try {
+            userDBManager.deleteUser(0);
+            User deletedUser = userDBManager.getUser(0);
+
+            Assert.assertNull(deletedUser);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
     }
 }
