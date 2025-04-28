@@ -1,7 +1,7 @@
 package model.dao;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.Assert;
@@ -11,6 +11,16 @@ import model.ApplicationAccessLog;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLogDBManagerTests {
+    // In database
+    private static final ApplicationAccessLog log1 = new ApplicationAccessLog(
+        ApplicationAction.LOGIN,
+        new GregorianCalendar(2025, 3, 26, 12, 0, 0).getTime()
+    );
+    private static final ApplicationAccessLog log2 = new ApplicationAccessLog(
+        ApplicationAction.LOGOUT,
+        new GregorianCalendar(2025, 3, 26, 12, 5, 0).getTime()
+    );
+
     private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     public ApplicationAccessLogDBManagerTests() throws ClassNotFoundException, SQLException {
@@ -21,20 +31,16 @@ public class ApplicationAccessLogDBManagerTests {
     public void testGetApplicationAccessLogs() {
         List<ApplicationAccessLog> applicationAccessLogs;
         try {
-            applicationAccessLogs = applicationAccessLogDBManager.getApplicationAccessLogs(1);
+            applicationAccessLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
         } catch (SQLException e) {
             Assert.fail();
             return;
         }
 
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        ApplicationAccessLog log1Result = applicationAccessLogs.get(0);
+        ApplicationAccessLog log2Result = applicationAccessLogs.get(1);
 
-        ApplicationAccessLog log1 = applicationAccessLogs.get(0);
-        ApplicationAccessLog log2 = applicationAccessLogs.get(1);
-
-        Assert.assertEquals(ApplicationAction.LOGIN, log1.getApplicationAction());
-        Assert.assertEquals("2025-04-26 12:00:00.000", dateFormatter.format(log1.getDateTime()));
-        Assert.assertEquals(ApplicationAction.LOGOUT, log2.getApplicationAction());
-        Assert.assertEquals("2025-04-26 12:05:00.000", dateFormatter.format(log2.getDateTime()));
+        Assert.assertEquals(log1, log1Result);
+        Assert.assertEquals(log2, log2Result);
     }
 }
