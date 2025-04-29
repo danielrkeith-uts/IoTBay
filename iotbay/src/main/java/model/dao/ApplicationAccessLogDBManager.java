@@ -12,12 +12,23 @@ import model.ApplicationAccessLog;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLogDBManager {
-    private static final String GET_APPLICATION_ACCESS_LOGS_QUERY = "SELECT * FROM ApplicationAccessLog WHERE UserId = ?";
+    private static final String ADD_APPLICATION_ACCESS_LOG_STMT = "INSERT INTO ApplicationAccessLog (UserId, ApplicationAction, DateTime) VALUES (?, ?, ?)";
+    private static final String GET_APPLICATION_ACCESS_LOGS_STMT = "SELECT * FROM ApplicationAccessLog WHERE UserId = ?";
 
+    private PreparedStatement addApplicationAccessLogPs;
     private PreparedStatement getApplicationAccessLogsPs;
 
     public ApplicationAccessLogDBManager(Connection conn) throws SQLException {
-        this.getApplicationAccessLogsPs = conn.prepareStatement(GET_APPLICATION_ACCESS_LOGS_QUERY);
+        this.addApplicationAccessLogPs = conn.prepareStatement(ADD_APPLICATION_ACCESS_LOG_STMT);
+        this.getApplicationAccessLogsPs = conn.prepareStatement(GET_APPLICATION_ACCESS_LOGS_STMT);
+    }
+
+    public void addApplicationAccessLog(int userId, ApplicationAccessLog applicationAccessLog) throws SQLException {
+        addApplicationAccessLogPs.setInt(1, userId);
+        addApplicationAccessLogPs.setInt(2, applicationAccessLog.getApplicationAction().toInt());
+        addApplicationAccessLogPs.setDate(3, new java.sql.Date(applicationAccessLog.getDateTime().getTime()));
+
+        addApplicationAccessLogPs.executeUpdate();
     }
 
     public List<ApplicationAccessLog> getApplicationAccessLogs(int userId) throws SQLException {
@@ -28,7 +39,7 @@ public class ApplicationAccessLogDBManager {
         List<ApplicationAccessLog> applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
         while (rs.next()) {
             applicationAccessLogs.add(new ApplicationAccessLog(
-                ApplicationAction.values()[rs.getInt("ApplicationAction")],
+                ApplicationAction.fromInt(rs.getInt("ApplicationAction")),
                 new Date(rs.getTimestamp("DateTime").getTime())
             ));
         }

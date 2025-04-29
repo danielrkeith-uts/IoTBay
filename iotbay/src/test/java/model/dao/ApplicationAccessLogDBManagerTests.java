@@ -1,6 +1,9 @@
 package model.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -21,26 +24,52 @@ public class ApplicationAccessLogDBManagerTests {
         new GregorianCalendar(2025, 3, 26, 12, 5, 0).getTime()
     );
 
-    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
+    // Not in database
+    private static final ApplicationAccessLog log3 = new ApplicationAccessLog(
+        ApplicationAction.ADD_TO_CART,
+        new GregorianCalendar(2026, 1, 2, 3, 4, 5).getTime()
+    );
+
+    private final Connection conn;
+    private final ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     public ApplicationAccessLogDBManagerTests() throws ClassNotFoundException, SQLException {
-        this.applicationAccessLogDBManager = new ApplicationAccessLogDBManager(new DBConnector().openConnection());
+        this.conn = new DBConnector().openConnection();
+        conn.setAutoCommit(false);
+        this.applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
     }
 
     @Test
     public void testGetApplicationAccessLogs() {
-        List<ApplicationAccessLog> applicationAccessLogs;
+        List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2);
+        List<ApplicationAccessLog> resultLogs;
         try {
-            applicationAccessLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+            resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
         } catch (SQLException e) {
             Assert.fail();
             return;
         }
 
-        ApplicationAccessLog log1Result = applicationAccessLogs.get(0);
-        ApplicationAccessLog log2Result = applicationAccessLogs.get(1);
+        Assert.assertEquals(expectedLogs, resultLogs);
+    }
 
-        Assert.assertEquals(log1, log1Result);
-        Assert.assertEquals(log2, log2Result);
+    @Test
+    public void testAddApplicationAccessLog() {
+        try {
+            applicationAccessLogDBManager.addApplicationAccessLog(0, log3);
+
+            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2, log3);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+
+            Assert.assertEquals(expectedLogs, resultLogs);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
     }
 }
