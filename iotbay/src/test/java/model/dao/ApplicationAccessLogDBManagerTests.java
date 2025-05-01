@@ -40,6 +40,26 @@ public class ApplicationAccessLogDBManagerTests {
     }
 
     @Test
+    public void testAddApplicationAccessLog() {
+        try {
+            applicationAccessLogDBManager.addApplicationAccessLog(0, log3);
+
+            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2, log3);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+
+            Assert.assertEquals(expectedLogs, resultLogs);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
     public void testGetApplicationAccessLogs() {
         List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2);
         List<ApplicationAccessLog> resultLogs;
@@ -54,11 +74,11 @@ public class ApplicationAccessLogDBManagerTests {
     }
 
     @Test
-    public void testAddApplicationAccessLog() {
+    public void testDeleteApplicationAccessLog() {
         try {
-            applicationAccessLogDBManager.addApplicationAccessLog(0, log3);
+            applicationAccessLogDBManager.deleteApplicationAccessLog(0);
 
-            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2, log3);
+            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log2);
             List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
 
             Assert.assertEquals(expectedLogs, resultLogs);

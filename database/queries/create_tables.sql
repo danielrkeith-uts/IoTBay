@@ -98,5 +98,3 @@ CREATE TABLE ApplicationAccessLog (
     DateTime DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId)
 );
-
-

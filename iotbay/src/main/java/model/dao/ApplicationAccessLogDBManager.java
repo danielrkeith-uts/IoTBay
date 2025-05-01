@@ -12,15 +12,18 @@ import model.ApplicationAccessLog;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLogDBManager {
-    private static final String ADD_APPLICATION_ACCESS_LOG_STMT = "INSERT INTO ApplicationAccessLog (UserId, ApplicationAction, DateTime) VALUES (?, ?, ?)";
-    private static final String GET_APPLICATION_ACCESS_LOGS_STMT = "SELECT * FROM ApplicationAccessLog WHERE UserId = ?";
+    private static final String ADD_APPLICATION_ACCESS_LOG_STMT = "INSERT INTO ApplicationAccessLog (UserId, ApplicationAction, DateTime) VALUES (?, ?, ?);";
+    private static final String GET_APPLICATION_ACCESS_LOGS_STMT = "SELECT * FROM ApplicationAccessLog WHERE UserId = ?;";
+    private static final String DELETE_APPLCIATION_ACCESS_LOG_STMT = "DELETE FROM ApplicationAccessLog WHERE AppAccLogId = ?;";
 
     private PreparedStatement addApplicationAccessLogPs;
     private PreparedStatement getApplicationAccessLogsPs;
+    private PreparedStatement deleteApplicationAccessLogPs;
 
     public ApplicationAccessLogDBManager(Connection conn) throws SQLException {
         this.addApplicationAccessLogPs = conn.prepareStatement(ADD_APPLICATION_ACCESS_LOG_STMT);
         this.getApplicationAccessLogsPs = conn.prepareStatement(GET_APPLICATION_ACCESS_LOGS_STMT);
+        this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLCIATION_ACCESS_LOG_STMT);
     }
 
     public void addApplicationAccessLog(int userId, ApplicationAccessLog applicationAccessLog) throws SQLException {
@@ -45,5 +48,11 @@ public class ApplicationAccessLogDBManager {
         }
 
         return applicationAccessLogs;
+    }
+
+    public void deleteApplicationAccessLog(int appAccLogId) throws SQLException {
+        deleteApplicationAccessLogPs.setInt(1, appAccLogId);
+
+        deleteApplicationAccessLogPs.executeUpdate();
     }
 }
