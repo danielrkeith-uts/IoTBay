@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -70,6 +71,26 @@ public class ApplicationAccessLogDBManagerTests {
         }
 
         Assert.assertEquals(expectedLogs, resultLogs);
+    }
+
+    @Test
+    public void testAnonymiseApplicationAccessLog() {
+        try {
+            applicationAccessLogDBManager.anonymiseApplicationAccessLogs(0);
+
+            List<ApplicationAccessLog> expectedLogs = new LinkedList<ApplicationAccessLog>();
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+
+            Assert.assertEquals(expectedLogs, resultLogs);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
     }
 
     @Test

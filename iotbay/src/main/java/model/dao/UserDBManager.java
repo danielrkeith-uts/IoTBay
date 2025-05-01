@@ -32,6 +32,8 @@ public class UserDBManager {
     private final PreparedStatement updateStaffPs;
     private final PreparedStatement deleteUserPs;
 
+    private final ApplicationAccessLogDBManager applicationAccessLogDBManager;
+
     public UserDBManager(Connection conn) throws SQLException {
         this.addUserPs = conn.prepareStatement(ADD_USER_STMT);
         this.addCustomerPs = conn.prepareStatement(ADD_CUSTOMER_STMT);
@@ -43,6 +45,8 @@ public class UserDBManager {
         this.updateUserPs = conn.prepareStatement(UPDATE_USER_STMT);
         this.updateStaffPs = conn.prepareStatement(UPDATE_STAFF_STMT);
         this.deleteUserPs = conn.prepareStatement(DELETE_USER_STMT);
+
+        this.applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
     }
 
     public void addCustomer(Customer customer) throws SQLException {
@@ -96,6 +100,8 @@ public class UserDBManager {
     }
 
     public void deleteUser(int userId) throws SQLException {
+        applicationAccessLogDBManager.anonymiseApplicationAccessLogs(userId);
+
         deleteUserPs.setInt(1, userId);
 
         deleteUserPs.executeUpdate();

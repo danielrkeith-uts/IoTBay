@@ -14,15 +14,18 @@ import model.Enums.ApplicationAction;
 public class ApplicationAccessLogDBManager {
     private static final String ADD_APPLICATION_ACCESS_LOG_STMT = "INSERT INTO ApplicationAccessLog (UserId, ApplicationAction, DateTime) VALUES (?, ?, ?);";
     private static final String GET_APPLICATION_ACCESS_LOGS_STMT = "SELECT * FROM ApplicationAccessLog WHERE UserId = ?;";
+    private static final String ANONYMISE_APPLICATION_ACCESS_LOGS_STMT = "UPDATE ApplicationAccessLog SET UserId = NULL WHERE UserId = ?;";
     private static final String DELETE_APPLCIATION_ACCESS_LOG_STMT = "DELETE FROM ApplicationAccessLog WHERE AppAccLogId = ?;";
 
-    private PreparedStatement addApplicationAccessLogPs;
-    private PreparedStatement getApplicationAccessLogsPs;
-    private PreparedStatement deleteApplicationAccessLogPs;
+    private final PreparedStatement addApplicationAccessLogPs;
+    private final PreparedStatement getApplicationAccessLogsPs;
+    private final PreparedStatement anonymiseApplicationAccessLogsPs;
+    private final PreparedStatement deleteApplicationAccessLogPs;
 
     public ApplicationAccessLogDBManager(Connection conn) throws SQLException {
         this.addApplicationAccessLogPs = conn.prepareStatement(ADD_APPLICATION_ACCESS_LOG_STMT);
         this.getApplicationAccessLogsPs = conn.prepareStatement(GET_APPLICATION_ACCESS_LOGS_STMT);
+        this.anonymiseApplicationAccessLogsPs = conn.prepareStatement(ANONYMISE_APPLICATION_ACCESS_LOGS_STMT);
         this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLCIATION_ACCESS_LOG_STMT);
     }
 
@@ -48,6 +51,12 @@ public class ApplicationAccessLogDBManager {
         }
 
         return applicationAccessLogs;
+    }
+
+    public void anonymiseApplicationAccessLogs(int userId) throws SQLException {
+        anonymiseApplicationAccessLogsPs.setInt(1, userId);
+
+        anonymiseApplicationAccessLogsPs.executeUpdate();
     }
 
     public void deleteApplicationAccessLog(int appAccLogId) throws SQLException {
