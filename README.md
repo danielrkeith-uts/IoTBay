@@ -21,4 +21,4 @@
 3. Start server
 4. Navigate to the `iotbay` directory (i.e., the folder containing `pom.xml`)
 5. Run `mvn clean compile package`
-6. Navigate to the relevant url (likely `localhost:8080/webapp`)
+6. Navigate to the relevant url (likely `localhost:8080/iotbay`)
