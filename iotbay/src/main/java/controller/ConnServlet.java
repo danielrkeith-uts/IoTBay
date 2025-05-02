@@ -1,5 +1,6 @@
 package controller;
 
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +14,7 @@ import java.util.logging.Logger;
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
 
+@WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
     private Logger logger;
 
