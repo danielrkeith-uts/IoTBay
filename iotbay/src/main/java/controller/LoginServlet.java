@@ -31,16 +31,25 @@ public class LoginServlet extends HttpServlet {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
 
-        // TODO - stub
-        User johnSmith = null;
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+
+        User user;
         try {
-            johnSmith = userDBManager.getUser(0);
+            user = userDBManager.getUser(email, password);
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not get user from DB");
+            return;
         }
 
-        session.setAttribute("user", johnSmith);
+        if (user == null) {
+            session.setAttribute("loginError", "Incorrect username and/or password");
+            request.getRequestDispatcher("login.jsp").include(request, response);
+            return;
+        }
 
+        session.removeAttribute("loginError");
+        session.setAttribute("user", user);
         request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
 }
