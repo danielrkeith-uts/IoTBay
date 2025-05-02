@@ -1,4 +1,5 @@
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <head>
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
@@ -17,7 +18,7 @@
         </div>
         <div class="content">
             <h2>Login</h2>
-            <form action="welcome.jsp" methods="post">
+            <form action="LoginServlet" method="post">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input name="email" class="form-control" />

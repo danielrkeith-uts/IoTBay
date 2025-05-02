@@ -10,14 +10,12 @@
         }
     %>
     <%
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
-        String password = request.getParameter("password");
-        String tos = request.getParameter("tos");
-        User user = new Customer(0, firstName, lastName, email, phone, password);
-        session.setAttribute("user", user);
+        User user = (User) session.getAttribute("user");
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String email = user.getEmail();
+        String phone = user.getPhone();
+        String password = user.getPassword();
     %>
     <head>
         <link rel="stylesheet" href="welcome.css" />
@@ -43,28 +41,15 @@
 
         <div class="container">
             <div class="welcomebox">
-                <% 
-                    if (tos != null && tos.equals("on")) {
-                %>
-                    <div class="check-icon text-center">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h2 class="animated-title">Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
-                    <p class="animated-paragraph">Your name is <%= valueOrUnknown(firstName) + " " + valueOrUnknown(lastName)%>.</p>
-                    <p class="animated-paragraph">Your email is <%= valueOrUnknown(email) %>.</p>
-                    <p class="animated-paragraph">Your phone number is <%= valueOrUnknown(phone) %>.</p>
-                    <p class="animated-paragraph">Your password is <%= valueOrUnknown(password) %>.</p>
-                    <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
-                <% 
-                    } else { 
-                %>
-                    <p>
-                    Sorry, you must agree to the Terms of Service. </br>
-                    Click <a href="register.jsp">here</a> to go back.</br>
-                    </p>
-                <% 
-                    }
-                %>
+                <div class="check-icon text-center">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 class="animated-title">Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
+                <p class="animated-paragraph">Your name is <%= valueOrUnknown(firstName) + " " + valueOrUnknown(lastName)%>.</p>
+                <p class="animated-paragraph">Your email is <%= valueOrUnknown(email) %>.</p>
+                <p class="animated-paragraph">Your phone number is <%= valueOrUnknown(phone) %>.</p>
+                <p class="animated-paragraph">Your password is <%= valueOrUnknown(password) %>.</p>
+                <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
             </div>
         </div>
 

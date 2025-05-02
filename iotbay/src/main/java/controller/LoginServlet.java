@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +24,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
@@ -39,5 +40,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         session.setAttribute("user", johnSmith);
+
+        request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
 }

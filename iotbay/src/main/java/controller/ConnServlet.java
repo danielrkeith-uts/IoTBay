@@ -37,6 +37,10 @@ public class ConnServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
 
+        if (session.getAttribute("connected") != null) {
+            return;
+        }
+
         // Instantiate all DBManagers
         try {
             conn = dbConnector.openConnection();
@@ -45,5 +49,6 @@ public class ConnServlet extends HttpServlet {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
         session.setAttribute("userDBManager", userDBManager);
+        session.setAttribute("connected", true);
     }
 }
