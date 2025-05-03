@@ -27,4 +27,8 @@ INSERT INTO Customer (UserId, CartId)
 VALUES (0, 999);
 
 INSERT INTO Staff (UserId, StaffCardId)
-Values (1, 1001);
+VALUES (1, 1001);
+
+INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
+VALUES (0, 0, 0, 1745632800000),
+(1, 0, 1, 1745633100000);

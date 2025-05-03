@@ -21,4 +21,18 @@ public class ApplicationAccessLog implements Serializable {
     public Date getDateTime() {
         return dateTime;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        ApplicationAccessLog applicationAccessLog = (ApplicationAccessLog) obj;
+
+        return this.applicationAction == applicationAccessLog.applicationAction && this.dateTime.equals(applicationAccessLog.dateTime);
+    }
 }

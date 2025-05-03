@@ -92,11 +92,9 @@ CREATE TABLE Card (
 );
 
 CREATE TABLE ApplicationAccessLog (
-    AppAccLogId INTEGER PRIMARY KEY,
+    AppAccLogId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER,
     ApplicationAction INTEGER NOT NULL,
     DateTime DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId)
 );
-
-
