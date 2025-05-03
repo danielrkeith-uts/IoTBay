@@ -51,4 +51,13 @@ public class ConnServlet extends HttpServlet {
         session.setAttribute("userDBManager", userDBManager);
         session.setAttribute("connected", true);
     }
+
+    @Override
+    public void destroy() {
+        try {
+            dbConnector.closeConnection();
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Could not close DB connection", e);
+        }
+    }
 }
