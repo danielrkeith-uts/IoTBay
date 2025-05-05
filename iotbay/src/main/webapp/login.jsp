@@ -28,13 +28,13 @@
                     <input name="email" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="password" c-ass="form-label">Password</label>
+                    <label for="password" class="form-label">Password</label>
                     <input name="password" type="password" class="form-control" />
                 </div>
                 <input type="checkbox" name="tos" checked hidden>
+                <p class="error"><%= (error == null ? "" : error) %></p>
                 <input type="submit" class="btn-green" />
             </form>
-            <p class="error"><%= (error == null ? "" : error) %></p>
             <p>Don't have an account? Register <a href="register.jsp">here</a></p>
         </div>
     </body>
