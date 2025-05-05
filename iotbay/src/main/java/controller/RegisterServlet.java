@@ -14,9 +14,13 @@ import jakarta.servlet.http.HttpSession;
 import model.Customer;
 import model.User;
 import model.dao.UserDBManager;
+import utils.Validator;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
+    public static final String PAGE = "register.jsp";
+    private static final String ERROR_ATTR = "registerError";
+
     private Logger logger;
 
     @Override
@@ -32,11 +36,29 @@ public class RegisterServlet extends HttpServlet {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
 
+        String email = request.getParameter("email");
+        if (!Validator.isEmail(email)) {
+            session.setAttribute(ERROR_ATTR, "Invalid email");
+            request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+
+        String password = request.getParameter("password");
+        if (!Validator.isSecurePassword(password)) {
+            session.setAttribute(ERROR_ATTR, "Password must include an uppercase & lowercase letter, number, special character, and be 8 characters long");
+            request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+
+        String phone = request.getParameter("phone");
+        if (!Validator.isPhoneNumber(phone)) {
+            session.setAttribute(ERROR_ATTR, "Invalid phone number");
+            request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
-        String password = request.getParameter("password");
 
         Customer newCustomer = new Customer(-1, firstName, lastName, email, phone, password);
 
