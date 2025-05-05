@@ -1,5 +1,6 @@
 <%@ page import="model.User"%>
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         User user = (User)session.getAttribute("user");
     %>
@@ -25,7 +26,7 @@
         </div>
         <div class="content">
             <h2>Register Here</h2>
-            <form action="welcome.jsp" methods="post">
+            <form action="RegisterServlet" method="post">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="text" name="email" class="form-control" />
@@ -45,10 +46,6 @@
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone Number</label>
                     <input type="text" name="phone" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <input type="checkbox" name="tos" class="form-check-input" />
-                    <label for="tos" class="form-check-label">Agree to TOS</label>
                 </div>
                 <input type="submit" class="btn-green">
             </form>
