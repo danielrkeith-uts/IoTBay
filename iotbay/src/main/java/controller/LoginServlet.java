@@ -16,6 +16,9 @@ import model.dao.UserDBManager;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
+    public static final String PAGE = "login.jsp";
+    private static final String ERROR_ATTR = "loginError";
+
     private Logger logger;
 
     @Override
@@ -34,6 +37,12 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        if (email.isEmpty() || password.isEmpty()) {
+            session.setAttribute(ERROR_ATTR, "Fill in all relevant fields");
+            request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+
         User user;
         try {
             user = userDBManager.getUser(email, password);
@@ -43,12 +52,12 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (user == null) {
-            session.setAttribute("loginError", "Incorrect username and/or password");
-            request.getRequestDispatcher("login.jsp").include(request, response);
+            session.setAttribute(ERROR_ATTR, "Incorrect username and/or password");
+            request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
 
-        session.removeAttribute("loginError");
+        session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
         request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
