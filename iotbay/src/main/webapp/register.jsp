@@ -2,7 +2,7 @@
 <html>
     <jsp:include page="/ConnServlet" flush="true"/>
     <%
-        User user = (User)session.getAttribute("user");
+        String error = (String) session.getAttribute("registerError");
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -17,11 +17,7 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <% if (user == null) { %>
-                    <a href="login.jsp">Login</a>
-                <% } else { %>
-                    <a href="logout.jsp">Logout</a>
-                <% } %>
+                <a href="login.jsp">Login</a>
             </navbar>
         </div>
         <div class="content">
@@ -47,6 +43,7 @@
                     <label for="phone" class="form-label">Phone Number</label>
                     <input type="text" name="phone" class="form-control" />
                 </div>
+                <p class="error"><%= (error == null ? "" : error) %></p>
                 <input type="submit" class="btn-green">
             </form>
         </div>

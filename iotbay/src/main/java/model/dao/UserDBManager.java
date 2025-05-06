@@ -17,6 +17,7 @@ public class UserDBManager {
     private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_B = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1;";
+    private static final String USER_EXISTS_STMT = "SELECT 1 FROM User WHERE Email = ?";
     private static final String UPDATE_USER_STMT = "UPDATE User SET FirstName = ?, LastName = ?, Email = ?, Phone = ?, Password = ? WHERE UserId = ?;";
     private static final String UPDATE_STAFF_STMT = "UPDATE Staff SET StaffCardId = ? WHERE UserId = ?;";
     private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
@@ -28,6 +29,7 @@ public class UserDBManager {
     private final PreparedStatement getCustomerPsB;
     private final PreparedStatement getStaffPsA;
     private final PreparedStatement getStaffPsB;
+    private final PreparedStatement userExistsPs;
     private final PreparedStatement updateUserPs;
     private final PreparedStatement updateStaffPs;
     private final PreparedStatement deleteUserPs;
@@ -42,6 +44,7 @@ public class UserDBManager {
         this.getCustomerPsB = conn.prepareStatement(GET_CUSTOMER_STMT_B);
         this.getStaffPsA = conn.prepareStatement(GET_STAFF_STMT_A);
         this.getStaffPsB = conn.prepareStatement(GET_STAFF_STMT_B);
+        this.userExistsPs = conn.prepareStatement(USER_EXISTS_STMT);
         this.updateUserPs = conn.prepareStatement(UPDATE_USER_STMT);
         this.updateStaffPs = conn.prepareStatement(UPDATE_STAFF_STMT);
         this.deleteUserPs = conn.prepareStatement(DELETE_USER_STMT);
@@ -84,6 +87,14 @@ public class UserDBManager {
         }
 
         return getStaff(userId);
+    }
+
+    public boolean userExists(String email) throws SQLException {
+        userExistsPs.setString(1, email);
+
+        ResultSet rs = userExistsPs.executeQuery();
+
+        return rs.getInt(1) == 1;
     }
 
     public void updateCustomer(Customer customer) throws SQLException {
