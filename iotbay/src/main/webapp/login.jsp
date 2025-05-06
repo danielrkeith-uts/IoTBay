@@ -2,6 +2,7 @@
     <jsp:include page="/ConnServlet" flush="true"/>
     <%
         String error = (String) session.getAttribute("loginError");
+        session.removeAttribute("loginError");
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
