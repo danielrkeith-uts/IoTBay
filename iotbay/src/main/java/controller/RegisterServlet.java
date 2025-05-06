@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Customer;
-import model.User;
 import model.dao.UserDBManager;
 import utils.Validator;
 
@@ -43,6 +42,20 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+        boolean emailInUse;
+        try {
+            emailInUse = userDBManager.userExists(email);
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not Users for in-use email in DB");
+            return;
+        }
+
+        if (emailInUse) {
+            session.setAttribute(ERROR_ATTR, "User already exists with that email");
+            request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+
         String password = request.getParameter("password");
         if (!Validator.isSecurePassword(password)) {
             session.setAttribute(ERROR_ATTR, "Password must include an uppercase & lowercase letter, number, special character, and be 8 characters long");
@@ -50,8 +63,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        String phone = request.getParameter("phone");
-        if (!Validator.isPhoneNumber(phone)) {
+        String phone = request.getParameter("phone").replaceAll("\\s+", "");
+        if (!phone.isEmpty() && !Validator.isPhoneNumber(phone)) {
             session.setAttribute(ERROR_ATTR, "Invalid phone number");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
@@ -60,26 +73,17 @@ public class RegisterServlet extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
 
-        Customer newCustomer = new Customer(-1, firstName, lastName, email, phone, password);
-
-        // TODO - error handling, and add verification that no other user exists with this email/password
-    
+        Customer customer = new Customer(-1, firstName, lastName, email, phone, password);
+        
         try {
-            userDBManager.addCustomer(newCustomer);
+            userDBManager.addCustomer(customer);
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not add user into DB");
             return;
         }
 
-        User user;
-        try {
-            user = userDBManager.getUser(email, password);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not retrieve registered user from DB");
-            return;
-        }
-
-        session.setAttribute("user", user);
+        session.setAttribute("user", customer);
+        session.removeAttribute(ERROR_ATTR);
         request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
 }
