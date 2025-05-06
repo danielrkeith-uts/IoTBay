@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+        <script src="register.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     </head>
@@ -44,8 +45,15 @@
                     <label for="phone" class="form-label">Phone Number (optional)</label>
                     <input type="text" name="phone" class="form-control" />
                 </div>
+                <div class="mb-3">
+                    <input id="staff-checkbox" type="checkbox" name="is-staff" class="form-check-input" onclick="handleStaffCheckbox()"/>
+                    <label for="is-staff" class="form-check-label">Register as staff</label>
+                </div>
+                <div id="staff-section" class="mb-3" style="display: none">
+                    <label for="admin-password" class="form-label">Admin password</label>
+                    <input type="password" name="admin-password" class="form-control" />
+                </div>
                 <p class="error"><%= (error == null ? "" : error) %></p>
-                <p>Not a customer? <a href="register.jsp">Register as staff</a> instead</p>
                 <input type="submit" class="btn-green">
             </form>
         </div>
