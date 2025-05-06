@@ -1,7 +1,5 @@
 <html>
-    <%
-        session.setAttribute("user", null);
-    %>
+    <jsp:include page="/LogoutServlet" flush="true"/>
     <head>
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="raisedbox.css" />
