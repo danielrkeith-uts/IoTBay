@@ -3,6 +3,7 @@
     <jsp:include page="/ConnServlet" flush="true"/>
     <%
         String error = (String) session.getAttribute("registerError");
+        session.removeAttribute("registerError");
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
