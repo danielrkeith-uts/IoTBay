@@ -23,7 +23,7 @@
             </navbar>
         </div>
         <div class="content">
-            <h2>Register as Customer</h2>
+            <h2>Register</h2>
             <form action="RegisterServlet" method="post">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -32,6 +32,7 @@
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" name="password" class="form-control" />
+                    <p class="fst-italic">Must be at least 8 characters long, and include an lowercase and uppercase letter, a number, and a special character</p>
                 </div>
                 <div class="mb-3">
                     <label for="firstName" class="form-label">First Name (optional)</label>
@@ -46,12 +47,18 @@
                     <input type="text" name="phone" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <input id="staff-checkbox" type="checkbox" name="is-staff" class="form-check-input" onclick="handleStaffCheckbox()"/>
+                    <input id="staff-checkbox" type="checkbox" name="isStaff" class="form-check-input" onclick="handleStaffCheckbox()"/>
                     <label for="is-staff" class="form-check-label">Register as staff</label>
                 </div>
-                <div id="staff-section" class="mb-3" style="display: none">
-                    <label for="admin-password" class="form-label">Admin password</label>
-                    <input type="password" name="admin-password" class="form-control" />
+                <div id="staff-section" style="display: none">
+                    <div class="mb-3">
+                        <label for="staffCardId" class="form-label">Staff Card ID</label>
+                        <input type="text" name="staffCardId" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="adminPassword" class="form-label">Admin password</label>
+                        <input type="password" name="adminPassword" class="form-control" />
+                    </div>
                 </div>
                 <p class="error"><%= (error == null ? "" : error) %></p>
                 <input type="submit" class="btn-green">
