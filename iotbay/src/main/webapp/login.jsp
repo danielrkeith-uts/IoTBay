@@ -33,9 +33,9 @@
                 </div>
                 <input type="checkbox" name="tos" checked hidden>
                 <p class="error"><%= (error == null ? "" : error) %></p>
+                <p>Don't have an account? Register <a href="register.jsp">here</a></p>
                 <input type="submit" class="btn-green" />
             </form>
-            <p>Don't have an account? Register <a href="register.jsp">here</a></p>
         </div>
     </body>
 </html>

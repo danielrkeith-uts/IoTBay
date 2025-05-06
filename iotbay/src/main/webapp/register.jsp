@@ -22,7 +22,7 @@
             </navbar>
         </div>
         <div class="content">
-            <h2>Register Here</h2>
+            <h2>Register as Customer</h2>
             <form action="RegisterServlet" method="post">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -33,18 +33,19 @@
                     <input type="password" name="password" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
+                    <label for="firstName" class="form-label">First Name (optional)</label>
                     <input type="text" name="firstName" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
+                    <label for="lastName" class="form-label">Last Name (optional)</label>
                     <input type="text" name="lastName" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="phone" class="form-label">Phone Number</label>
+                    <label for="phone" class="form-label">Phone Number (optional)</label>
                     <input type="text" name="phone" class="form-control" />
                 </div>
                 <p class="error"><%= (error == null ? "" : error) %></p>
+                <p>Not a customer? <a href="register.jsp">Register as staff</a> instead</p>
                 <input type="submit" class="btn-green">
             </form>
         </div>
