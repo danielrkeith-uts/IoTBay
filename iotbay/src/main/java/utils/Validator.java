@@ -40,8 +40,8 @@ public class Validator {
         return staffCardIdInt;
     }
 
-    private static boolean validate(String pattern, String input) {
-        return Pattern.compile(pattern).matcher(input).matches();
+    public static boolean isPhoneNumber(String input) {
+        return validate(PHONE_REGEX, input);
     }
 
     private static boolean isEmail(String input) {
@@ -57,7 +57,7 @@ public class Validator {
         return true;
     }
 
-    private static boolean isPhoneNumber(String input) {
-        return validate(PHONE_REGEX, input);
+    private static boolean validate(String pattern, String input) {
+        return Pattern.compile(pattern).matcher(input).matches();
     }
 }

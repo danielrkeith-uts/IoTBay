@@ -1,6 +1,13 @@
 <%@ page import="model.User"%>
 <html>
+    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%
+        String error = (String) session.getAttribute("accountError");
+        session.removeAttribute("accountError");
+
+        String success = (String) session.getAttribute("accountSuccess");
+        session.removeAttribute("accountSuccess");
+
         User user = (User)session.getAttribute("user");
     %>
     <head>
@@ -28,7 +35,7 @@
         </div>
         <div class="content">
             <h2>Account Details</h2>
-            <form action="" method="post">
+            <form action="AccountDetailsServlet" method="post">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="text" name="email" class="form-control" disabled value="<%= user.getEmail() %>" />
@@ -45,6 +52,8 @@
                     <label for="phone" class="form-label">Phone Number (optional)</label>
                     <input type="text" name="phone" class="form-control" value="<%= user.getPhone() %>" />
                 </div>
+                <p class="error"><%= (error == null ? "" : error) %></p>
+                <p class="success"><%= (success == null ? "" : success) %></p>
                 <input type="submit" class="btn-green" value="Save changes">
             </form>
         </div>

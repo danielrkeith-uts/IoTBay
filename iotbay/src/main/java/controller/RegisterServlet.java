@@ -49,61 +49,48 @@ public class RegisterServlet extends HttpServlet {
         String adminPassword = request.getParameter("adminPassword");
 
         User user;
-        if (isStaff) {
-            int staffCardId;
-            try {
+        try {
+            if (isStaff) {
+                int staffCardId;
                 staffCardId = Validator.validateStaffCardId(staffCardIdInput);
                 
                 if (!adminPassword.equals(ADMIN_PASSWORD)) {
                     throw new InvalidInputException("Incorrect admin password");
                 }
-            } catch (InvalidInputException e) {
-                session.setAttribute(ERROR_ATTR, e.getMessage());
-                request.getRequestDispatcher(PAGE).include(request, response);
+
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
+            } else {
+                user = new Customer(-1, firstName, lastName, email, phone, password);
+            }
+    
+            Validator.validateUser(user);
+    
+            boolean emailInUse;
+            try {
+                emailInUse = userDBManager.userExists(email);
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Could not Users for in-use email in DB");
                 return;
             }
-
-            user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
-        } else {
-            user = new Customer(-1, firstName, lastName, email, phone, password);
-        }
-
-        try {
-            Validator.validateUser(user);
+    
+            if (emailInUse) {
+                throw new InvalidInputException("User already exists with that email");
+            }
         } catch (InvalidInputException e) {
             session.setAttribute(ERROR_ATTR, e.getMessage());
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-
-        boolean emailInUse;
+        
         try {
-            emailInUse = userDBManager.userExists(email);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not Users for in-use email in DB");
-            return;
-        }
-
-        if (emailInUse) {
-            session.setAttribute(ERROR_ATTR, "User already exists with that email");
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-
-        if (isStaff) {
-            try {
-                userDBManager.addStaff((Staff) user);;
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Could not add staff into DB");
-                return;
-            }
-        } else {        
-            try {
+            if (isStaff) {
+                userDBManager.addStaff((Staff) user);
+            } else {        
                 userDBManager.addCustomer((Customer) user);
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Could not add customer into DB");
-                return;
             }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not add user into DB");
+            return;
         }
 
         session.setAttribute("user", user);
