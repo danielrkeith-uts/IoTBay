@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Customer;
+import model.Staff;
+import model.User;
 import model.dao.UserDBManager;
 import utils.Validator;
 
@@ -19,6 +21,7 @@ import utils.Validator;
 public class RegisterServlet extends HttpServlet {
     public static final String PAGE = "register.jsp";
     private static final String ERROR_ATTR = "registerError";
+    private static final String ADMIN_PASSWORD = "admin";
 
     private Logger logger;
 
@@ -73,16 +76,55 @@ public class RegisterServlet extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
 
-        Customer customer = new Customer(-1, firstName, lastName, email, phone, password);
+        boolean isStaff = request.getParameter("isStaff") != null;
+
+        User user;
+        if (isStaff) {
+            String staffCardIdInput = request.getParameter("staffCardId");
+            int staffCardId;
+            try {
+                if (staffCardIdInput.isEmpty()) {
+                    throw new NumberFormatException();
+                }
+
+                staffCardId = Integer.parseInt(staffCardIdInput);
+            } catch (NumberFormatException e) {
+                session.setAttribute(ERROR_ATTR, "Invalid Staff Card ID");
+                request.getRequestDispatcher(PAGE).include(request, response);
+                return;
+            }
+
+            String adminPassword = request.getParameter("adminPassword");
+            if (!adminPassword.equals(ADMIN_PASSWORD)) {
+                session.setAttribute(ERROR_ATTR, "Incorrect admin password");
+                request.getRequestDispatcher(PAGE).include(request, response);
+                return;
+            }
+
+            Staff staff = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
+
+            try {
+                userDBManager.addStaff(staff);;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Could not add staff into DB");
+                return;
+            }
+
+            user = staff;
+        } else {
+            Customer customer = new Customer(-1, firstName, lastName, email, phone, password);
         
-        try {
-            userDBManager.addCustomer(customer);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add user into DB");
-            return;
+            try {
+                userDBManager.addCustomer(customer);
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Could not add customer into DB");
+                return;
+            }
+
+            user = customer;
         }
 
-        session.setAttribute("user", customer);
+        session.setAttribute("user", user);
         session.removeAttribute(ERROR_ATTR);
         request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
