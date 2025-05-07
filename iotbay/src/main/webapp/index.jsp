@@ -21,6 +21,7 @@
                     <a href="login.jsp">Login</a>
                 <% } else { %>
                     <a href="logout.jsp">Logout</a>
+<a href="ViewAccountServlet">My Account</a>
                 <% } %>
             </navbar>
         </div>
