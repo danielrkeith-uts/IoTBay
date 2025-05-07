@@ -45,6 +45,7 @@
                 </div>
                 <h2 class="animated-title">Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
                 <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
+                <p>Click <a href="account.jsp">here</a> to view your account details.</p>
             </div>
         </div>
     </body>
