@@ -19,10 +19,7 @@ public class Validator {
             throw new InvalidInputException("Invalid password");
         }
 
-        String phone = user.getPhone();
-        if (!phone.isEmpty() && !isPhoneNumber(phone)) {
-            throw new InvalidInputException("Invalid phone number");
-        }
+        validatePhoneNumber(user.getPhone());
     }
 
     public static int validateStaffCardId(String staffCardId) throws InvalidInputException {
@@ -40,7 +37,13 @@ public class Validator {
         return staffCardIdInt;
     }
 
-    public static boolean isPhoneNumber(String input) {
+    public static void validatePhoneNumber(String phone) throws InvalidInputException {
+        if (!phone.isEmpty() && !isPhoneNumber(phone)) {
+            throw new InvalidInputException("Invalid phone number");
+        }
+    }
+
+    private static boolean isPhoneNumber(String input) {
         return validate(PHONE_REGEX, input);
     }
 

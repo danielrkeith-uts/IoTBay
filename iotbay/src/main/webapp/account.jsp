@@ -1,4 +1,4 @@
-<%@ page import="model.User"%>
+<%@ page import="model.User, model.Staff"%>
 <html>
     <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%
@@ -9,6 +9,8 @@
         session.removeAttribute("accountSuccess");
 
         User user = (User)session.getAttribute("user");
+
+        boolean isStaff = user instanceof Staff;
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -52,6 +54,12 @@
                     <label for="phone" class="form-label">Phone Number (optional)</label>
                     <input type="text" name="phone" class="form-control" value="<%= user.getPhone() %>" />
                 </div>
+                <% if (isStaff) { %>
+                    <div class="mb-3">
+                        <label for="staffCardId" class="form-label">Staff Card ID</label>
+                        <input type="text" name="staffCardId" class="form-control" value="<%= ((Staff) user).getStaffCardId() %>" />
+                    </div>
+                <% } %>
                 <p class="error"><%= (error == null ? "" : error) %></p>
                 <p class="success"><%= (success == null ? "" : success) %></p>
                 <input type="submit" class="btn-green" value="Save changes">

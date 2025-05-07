@@ -39,24 +39,30 @@ public class AccountDetailsServlet extends HttpServlet {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
 
+        User user = (User) session.getAttribute("user");
+
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String phone = request.getParameter("phone");
+        String staffCardIdInput = request.getParameter("staffCardId");
 
         try {
-            if (!phone.isEmpty() && !Validator.isPhoneNumber(phone)) {
-                throw new InvalidInputException("Invalid phone number");
+            Validator.validatePhoneNumber(phone);
+
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPhone(phone);
+
+            if (user instanceof Staff) {
+                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+                
+                ((Staff) user).setStaffCardId(staffCardId);
             }
         } catch (InvalidInputException e) {
             session.setAttribute(ERROR_ATTR, e.getMessage());
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-
-        User user = (User) session.getAttribute("user");
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setPhone(phone);
 
         try {
             if (user instanceof Customer) {
