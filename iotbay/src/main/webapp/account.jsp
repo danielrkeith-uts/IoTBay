@@ -27,7 +27,26 @@
             </navbar>
         </div>
         <div class="content">
-            My Account
+            <h2>Account Details</h2>
+            <form action="" method="post">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" name="email" class="form-control" disabled value="<%= user.getEmail() %>" />
+                </div>
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name (optional)</label>
+                    <input type="text" name="firstName" class="form-control" value="<%= user.getFirstName() %>" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name (optional)</label>
+                    <input type="text" name="lastName" class="form-control" value="<%= user.getLastName() %>" />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number (optional)</label>
+                    <input type="text" name="phone" class="form-control" value="<%= user.getPhone() %>" />
+                </div>
+                <input type="submit" class="btn-green" value="Save changes">
+            </form>
         </div>
     </body>
 </html>
