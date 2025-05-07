@@ -74,4 +74,52 @@ public class OrderDBManager {
     public void deleteOrder(int OrderId) throws SQLException{       
         st.executeUpdate("DELETE FROM `Order` WHERE OrderId = '" + OrderId); 
     }
+
+    public List<Order> getOrdersByCustomerId(int userId) throws SQLException {
+        String query = "SELECT * FROM `Order` WHERE UserId = " + userId;
+        ResultSet rs = st.executeQuery(query);
+    
+        List<Order> orders = new ArrayList<>();
+    
+        while (rs.next()) {
+            int orderId = rs.getInt("OrderId");
+            int productListId = rs.getInt("ProductListId");
+            int paymentId = rs.getInt("PaymentId");
+            int deliveryId = rs.getInt("DeliveryId");
+            Timestamp timestamp = rs.getTimestamp("DatePlaced");
+            Date datePlaced = new Date(timestamp.getTime());
+    
+            // Step 1: Get all entries from ProductListEntry
+            String entryQuery = "SELECT * FROM ProductListEntry WHERE ProductListId = " + productListId;
+            ResultSet entryRs = st.executeQuery(entryQuery);
+    
+            List<ProductListEntry> productList = new ArrayList<>();
+            ProductDBManager productDBManager = new ProductDBManager(conn);
+    
+            while (entryRs.next()) {
+                int productId = entryRs.getInt("ProductId");
+                int quantity = entryRs.getInt("Quantity");
+    
+                Product product = productDBManager.getProduct(productId);
+                ProductListEntry entry = new ProductListEntry(product, quantity);
+                productList.add(entry);
+            }
+    
+            // Step 2: Payment & Delivery
+            PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
+            Payment payment = paymentDBManager.getPayment(paymentId);
+    
+            DeliveryDBManager deliveryDBManager = new DeliveryDBManager(conn);
+            Delivery delivery = deliveryDBManager.getDelivery(deliveryId);
+    
+            // Step 3: Construct order
+            Order order = new Order(productList, payment, datePlaced);
+            order.setDelivery(delivery);
+            orders.add(order);
+        }
+    
+        return orders;
+    }
+    
 }
+

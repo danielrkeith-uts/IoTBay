@@ -21,7 +21,11 @@
                     <a href="login.jsp">Login</a>
                 <% } else { %>
                     <a href="logout.jsp">Logout</a>
-<a href="ViewAccountServlet">My Account</a>
+                     <div class="user-actions">
+                    <a href="ViewAccountServlet" title="My Account">
+                        <i class="fas fa-user-circle"></i>
+                    </a>                
+                    </div>
                 <% } %>
             </navbar>
         </div>
