@@ -15,6 +15,7 @@ import model.Customer;
 import model.Staff;
 import model.User;
 import model.dao.UserDBManager;
+import model.exceptions.InvalidInputException;
 import utils.Validator;
 
 @WebServlet("/RegisterServlet")
@@ -39,8 +40,38 @@ public class RegisterServlet extends HttpServlet {
         }
 
         String email = request.getParameter("email");
-        if (!Validator.isEmail(email)) {
-            session.setAttribute(ERROR_ATTR, "Invalid email");
+        String password = request.getParameter("password");
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String phone = request.getParameter("phone");
+        Boolean isStaff = request.getParameter("isStaff") != null;
+        String staffCardIdInput = request.getParameter("staffCardId");
+        String adminPassword = request.getParameter("adminPassword");
+
+        User user;
+        if (isStaff) {
+            int staffCardId;
+            try {
+                staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+                
+                if (!adminPassword.equals(ADMIN_PASSWORD)) {
+                    throw new InvalidInputException("Incorrect admin password");
+                }
+            } catch (InvalidInputException e) {
+                session.setAttribute(ERROR_ATTR, e.getMessage());
+                request.getRequestDispatcher(PAGE).include(request, response);
+                return;
+            }
+
+            user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
+        } else {
+            user = new Customer(-1, firstName, lastName, email, phone, password);
+        }
+
+        try {
+            Validator.validateUser(user);
+        } catch (InvalidInputException e) {
+            session.setAttribute(ERROR_ATTR, e.getMessage());
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
@@ -59,69 +90,20 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        String password = request.getParameter("password");
-        if (!Validator.isSecurePassword(password)) {
-            session.setAttribute(ERROR_ATTR, "Password must include an uppercase & lowercase letter, number, special character, and be 8 characters long");
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-
-        String phone = request.getParameter("phone").replaceAll("\\s+", "");
-        if (!phone.isEmpty() && !Validator.isPhoneNumber(phone)) {
-            session.setAttribute(ERROR_ATTR, "Invalid phone number");
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-
-        boolean isStaff = request.getParameter("isStaff") != null;
-
-        User user;
         if (isStaff) {
-            String staffCardIdInput = request.getParameter("staffCardId");
-            int staffCardId;
             try {
-                if (staffCardIdInput.isEmpty()) {
-                    throw new NumberFormatException();
-                }
-
-                staffCardId = Integer.parseInt(staffCardIdInput);
-            } catch (NumberFormatException e) {
-                session.setAttribute(ERROR_ATTR, "Invalid Staff Card ID");
-                request.getRequestDispatcher(PAGE).include(request, response);
-                return;
-            }
-
-            String adminPassword = request.getParameter("adminPassword");
-            if (!adminPassword.equals(ADMIN_PASSWORD)) {
-                session.setAttribute(ERROR_ATTR, "Incorrect admin password");
-                request.getRequestDispatcher(PAGE).include(request, response);
-                return;
-            }
-
-            Staff staff = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
-
-            try {
-                userDBManager.addStaff(staff);;
+                userDBManager.addStaff((Staff) user);;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Could not add staff into DB");
                 return;
             }
-
-            user = staff;
-        } else {
-            Customer customer = new Customer(-1, firstName, lastName, email, phone, password);
-        
+        } else {        
             try {
-                userDBManager.addCustomer(customer);
+                userDBManager.addCustomer((Customer) user);
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Could not add customer into DB");
                 return;
             }
-
-            user = customer;
         }
 
         session.setAttribute("user", user);
