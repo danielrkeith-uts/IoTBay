@@ -72,6 +72,7 @@ public class AccountDetailsServlet extends HttpServlet {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not update user");
+            return;
         }
 
         session.removeAttribute(ERROR_ATTR);

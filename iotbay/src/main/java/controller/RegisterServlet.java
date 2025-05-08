@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,9 +12,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.ApplicationAccessLog;
 import model.Customer;
 import model.Staff;
 import model.User;
+import model.Enums.ApplicationAction;
+import model.dao.ApplicationAccessLogDBManager;
 import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
@@ -34,9 +38,15 @@ public class RegisterServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
+
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
             throw new ServletException("UserDBManager retrieved from session is null");
+        }
+
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        if (applicationAccessLogDBManager == null) {
+            throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
         String email = request.getParameter("email");
@@ -90,6 +100,15 @@ public class RegisterServlet extends HttpServlet {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not add user into DB");
+            return;
+        }
+
+        ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
+
+        try {
+            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not add REGISTER log");
             return;
         }
 
