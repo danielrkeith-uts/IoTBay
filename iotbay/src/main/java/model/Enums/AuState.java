@@ -1,10 +1,12 @@
 package model.Enums;
 
 public enum AuState {
-    NSW,
-    VIC,
-    QLD,
-    WA,
-    SA,
-    TAS,
+    NSW,  // New South Wales
+    VIC,  // Victoria
+    QLD,  // Queensland
+    WA,   // Western Australia
+    SA,   // South Australia
+    TAS,  // Tasmania
+    ACT,  // Australian Capital Territory
+    NT    // Northern Territory
 }
