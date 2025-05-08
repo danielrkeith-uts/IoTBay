@@ -25,6 +25,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+                            <li><a class="dropdown-item" href="customer_data.jsp">Customer Data</a></li> <!-- Added this line -->
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                         </ul>
                     </div>
@@ -54,26 +55,22 @@
                 <div class="features">
                     <div class="feature">
                         <h3>Quality Products</h3>
-                                    <i class="fas fa-check-circle"></i>
-
+                        <i class="fas fa-check-circle"></i>
                         <p>We only offer the best IoT devices from trusted brands.</p>
                     </div>
                     <div class="feature">
                         <h3>Fast Shipping</h3>
-                                    <i class="fas fa-shipping-fast"></i>
-
+                        <i class="fas fa-shipping-fast"></i>
                         <p>Get your orders delivered quickly and efficiently.</p>
                     </div>
                     <div class="feature">
                         <h3>24/7 Support</h3>
-                                    <i class="fas fa-headset"></i>
-
+                        <i class="fas fa-headset"></i>
                         <p>Our customer support team is available around the clock to assist you.</p>
                     </div>
                     <div class="feature">
                         <h3>Secure Payments</h3>
-                                    <i class="fas fa-lock"></i>
-
+                        <i class="fas fa-lock"></i>
                         <p>Leading class security to keep your information safe and transaction protected.</p>
                     </div>
                 </div>

@@ -7,7 +7,12 @@ import model.exceptions.InvalidInputException;
 
 public class Validator {
     private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-    private static final String[] PASSWORD_REGEXES = {"^.*[a-z].*$", "^.*[A-Z].*$", "^.*[0-9].*$", "^.*[^a-zA-Z0-9].*"};
+    private static final String[] PASSWORD_REGEXES = {
+        "^.*[a-z].*$",       // at least one lowercase letter
+        "^.*[A-Z].*$",       // at least one uppercase letter
+        "^.*[0-9].*$",       // at least one digit
+        "^.*[^a-zA-Z0-9].*"  // at least one special character
+    };
     private static final String PHONE_REGEX = "^\\+?[0-9]{3,17}$";
 
     public static void validateUser(User user) throws InvalidInputException {
@@ -43,21 +48,23 @@ public class Validator {
         }
     }
 
-    private static boolean isPhoneNumber(String input) {
+    // ✅ Made public
+    public static boolean isPhoneNumber(String input) {
         return validate(PHONE_REGEX, input);
     }
 
-    private static boolean isEmail(String input) {
-        return validate(EMAIL_REGEX, input);
-    }
-
-    private static boolean isSecurePassword(String input) {
+    // ✅ Made public
+    public static boolean isSecurePassword(String input) {
         for (String regex : PASSWORD_REGEXES) {
             if (!validate(regex, input)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static boolean isEmail(String input) {
+        return validate(EMAIL_REGEX, input);
     }
 
     private static boolean validate(String pattern, String input) {
