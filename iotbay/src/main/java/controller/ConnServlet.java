@@ -39,22 +39,22 @@ public class ConnServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
 
-        if (session.getAttribute("connected") != null) {
-            return;
-        }
-
         // Instantiate all DBManagers
         try {
             conn = dbConnector.openConnection();
-            userDBManager = new UserDBManager(conn);
-            applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
+
+            if (session.getAttribute("userDBManager") == null) {
+                userDBManager = new UserDBManager(conn);
+                session.setAttribute("userDBManager", userDBManager);
+            }
+
+            if (session.getAttribute("applicationAccessLogDBManager") == null) {
+                applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
+                session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
-
-        session.setAttribute("userDBManager", userDBManager);
-        session.setAttribute("applicationAccessLog", applicationAccessLogDBManager);
-        session.setAttribute("connected", true);
     }
 
     @Override
