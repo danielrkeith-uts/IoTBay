@@ -80,8 +80,8 @@ public abstract class User implements Serializable {
         return applicationAccessLogs;
     }
 
-    public void addApplicationAccessLog(ApplicationAccessLog aal) {
-        applicationAccessLogs.add(aal);
+    public void setApplicationAccessLogs(List<ApplicationAccessLog> applicationAccessLogs) {
+        this.applicationAccessLogs = applicationAccessLogs;
     }
 
     @Override

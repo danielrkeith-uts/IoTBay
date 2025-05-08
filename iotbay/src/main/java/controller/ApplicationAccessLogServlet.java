@@ -1,7 +1,7 @@
 package controller;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,11 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
 import model.User;
-import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
 
-@WebServlet("/LogoutServlet")
-public class LogoutServlet extends HttpServlet {
+@WebServlet("/ApplicationAccessLogServlet")
+public class ApplicationAccessLogServlet extends HttpServlet {
     private Logger logger;
 
     @Override
@@ -28,23 +27,21 @@ public class LogoutServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         HttpSession session = request.getSession();
-
-        User user = (User) session.getAttribute("user");
-        
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
-        ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.LOGOUT, new Date());
+        User user = (User) session.getAttribute("user");
 
+        List<ApplicationAccessLog> logs;
         try {
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
+            logs = applicationAccessLogDBManager.getApplicationAccessLogs(user.getUserId());
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add LOGOUT log");
+            logger.log(Level.SEVERE, "Could not retrieve application access logs");
             return;
         }
 
-        session.removeAttribute("user");
+        user.setApplicationAccessLogs(logs);
     }
 }

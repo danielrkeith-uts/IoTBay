@@ -15,7 +15,7 @@
 
 ## Running project locally
 1. Create new apache-tomcat server
-2. Add deployment from the `iotbay/target/iotbay` directory
+2. Add deployment from the `iotbay/target/iotbay` directory *(You may need to do step 4-5 first to create the folder, and then redo the steps once the server starts)*
    - Type is exploded
    - Don't edit optional deployment parameters
 3. Start server

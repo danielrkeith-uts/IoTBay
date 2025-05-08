@@ -20,11 +20,13 @@
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
-                    <a href="logout.jsp">Logout</a>
-                     <div class="user-actions">
-                    <a href="ViewAccountServlet" title="My Account">
-                        <i class="fas fa-user-circle"></i>
-                    </a>                
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                            <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+                            <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                        </ul>
                     </div>
                 <% } %>
             </navbar>

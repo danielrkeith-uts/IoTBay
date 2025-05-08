@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +12,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.ApplicationAccessLog;
 import model.User;
+import model.Enums.ApplicationAction;
+import model.dao.ApplicationAccessLogDBManager;
 import model.dao.UserDBManager;
 
 @WebServlet("/LoginServlet")
@@ -29,9 +33,15 @@ public class LoginServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
+
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
             throw new ServletException("UserDBManager retrieved from session is null");
+        }
+
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        if (applicationAccessLogDBManager == null) {
+            throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
         String email = request.getParameter("email");
@@ -54,6 +64,15 @@ public class LoginServlet extends HttpServlet {
         if (user == null) {
             session.setAttribute(ERROR_ATTR, "Incorrect username and/or password");
             request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+
+        ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
+
+        try {
+            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not add LOGIN log");
             return;
         }
 
