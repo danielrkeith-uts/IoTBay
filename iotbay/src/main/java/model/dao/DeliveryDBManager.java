@@ -75,9 +75,6 @@ public class DeliveryDBManager {
                         orders.add(order); 
                     }
                     Delivery delivery = new Delivery(DeliveryId, orders, source, destination, Courier, CourierDeliveryId);
-                    for (Order o : orders) {
-                        o.setDelivery(delivery);
-                    }
                     return delivery;
                 }
                 return null;
