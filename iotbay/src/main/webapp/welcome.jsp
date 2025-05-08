@@ -1,5 +1,6 @@
 <%@ page import="model.User, model.Customer"%>
 <html>
+    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%!
         public boolean isNullOrEmpty(String str) {
             return str == null || str.isEmpty();
@@ -26,7 +27,14 @@
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
-                    <a href="logout.jsp">Logout</a>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                            <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
+                            <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                        </ul>
+                    </div>
                 <% } %>
             </navbar>
         </div>
@@ -37,6 +45,7 @@
                 </div>
                 <h2 class="animated-title">Welcome<%= (isNullOrEmpty(firstName) ? "" : ", " + firstName)  %>!</h2>
                 <p>Click <a href="index.jsp">here</a> to proceed to the main page.</p>
+                <p>Click <a href="account.jsp">here</a> to view your account details.</p>
             </div>
         </div>
     </body>
