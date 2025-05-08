@@ -17,6 +17,7 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp" class="active">Products</a>
+                <a href="shipping.jsp">Shipping</a>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
