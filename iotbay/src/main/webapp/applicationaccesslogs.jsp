@@ -1,6 +1,7 @@
 <%@ page import="model.User"%>
 <html>
     <jsp:include page="/RequiresUserServlet" flush="true"/>
+    <jsp:include page="/ApplicationAccessLogServlet" flush="true"/>
     <%
         User user = (User)session.getAttribute("user");
     %>
@@ -28,7 +29,7 @@
             </navbar>
         </div>
         <div class="content">
-            Application Access Logs
+            <h2>Application Access Logs</h2>
         </div>
     </body>
 </html>
