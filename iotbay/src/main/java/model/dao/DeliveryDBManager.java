@@ -60,6 +60,7 @@ public class DeliveryDBManager {
                     List<Order> orders = new ArrayList<>();
                     
                     while (orderRs.next()) {
+                        int OrderId = orderRs.getInt("OrderId");
                         int ProductListId = orderRs.getInt("ProductListId");
                         int PaymentId = orderRs.getInt("PaymentId");
                         Date DatePlaced = orderRs.getDate("DatePlaced");
@@ -70,7 +71,7 @@ public class DeliveryDBManager {
                         PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
                         Payment payment = paymentDBManager.getPayment(PaymentId);
 
-                        Order order = new Order(productList, payment, DatePlaced);
+                        Order order = new Order(OrderId, productList, payment, DatePlaced);
                         orders.add(order); 
                     }
                     Delivery delivery = new Delivery(DeliveryId, orders, source, destination, Courier, CourierDeliveryId);

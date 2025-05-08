@@ -51,7 +51,7 @@ CREATE TABLE `Order` (
     DeliveryId INTEGER,
     DatePlaced DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId),
-    FOREIGN KEY (ProductListId) REFERENCES ProductListEntry(ProductListId),
+    
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
     FOREIGN KEY (DeliveryId) REFERENCES Delivery(DeliveryId)
 );
