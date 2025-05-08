@@ -30,4 +30,20 @@ public class ProductListEntry implements Serializable {
     public double totalCost() {
         return product.getCost() * quantity;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        ProductListEntry productListEntry = (ProductListEntry) obj;
+
+        return this.product.equals(productListEntry.product)
+            && this.quantity == productListEntry.quantity;
+    }
+    
 }
