@@ -26,7 +26,7 @@
         </div>
         <div class="content">
             <h2>Delete account</h2>
-            <form action="" method="post">
+            <form action="DeleteAccountServlet" method="post">
                 <p>Are you sure you want to delete your account?</p>
                 <p class="fst-italic">(This action cannot be undone)</p>
                 <input type="submit" class="btn btn-danger" value="Delete account" />

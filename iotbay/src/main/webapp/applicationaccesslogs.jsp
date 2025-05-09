@@ -1,6 +1,5 @@
 <%@ page import="java.util.List, model.User, model.ApplicationAccessLog"%>
 <html>
-    <jsp:include page="/ConnServlet" flush="true"/>
     <jsp:include page="/RequiresUserServlet" flush="true"/>
     <jsp:include page="/ApplicationAccessLogServlet" flush="true"/>
     <%
