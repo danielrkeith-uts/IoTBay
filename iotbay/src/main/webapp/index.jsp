@@ -27,6 +27,7 @@
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                             <li><a class="dropdown-item" href="customer_data.jsp">Customer Data</a></li> <!-- Added this line -->
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>
                     </div>
                 <% } %>

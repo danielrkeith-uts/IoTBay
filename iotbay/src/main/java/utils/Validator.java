@@ -43,7 +43,7 @@ public class Validator {
     }
 
     public static void validatePhoneNumber(String phone) throws InvalidInputException {
-        if (!phone.isEmpty() && !isPhoneNumber(phone)) {
+        if (phone != null && !phone.isEmpty() && !isPhoneNumber(phone)) {
             throw new InvalidInputException("Invalid phone number");
         }
     }
