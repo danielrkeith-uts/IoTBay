@@ -31,6 +31,7 @@
                         <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                         <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                         <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                     </ul>
                 </div>
             </navbar>
