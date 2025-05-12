@@ -22,3 +22,7 @@
 4. Navigate to the `iotbay` directory (i.e., the folder containing `pom.xml`)
 5. Run `mvn clean compile package`
 6. Navigate to the relevant url (likely `localhost:8080/iotbay`)
+
+## Notes on pre-supplied data and navigating the web application
+- The register page is navigated to using a link located on the login page.
+- The admin password is `admin`. This is used when registering as staff.
