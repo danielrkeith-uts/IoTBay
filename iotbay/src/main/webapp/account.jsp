@@ -61,6 +61,7 @@
                         <input type="text" name="staffCardId" class="form-control" value="<%= ((Staff) user).getStaffCardId() %>" />
                     </div>
                 <% } %>
+                <p>Password: <a href="changepassword.jsp">Change password</a></p>
                 <p class="error"><%= (error == null ? "" : error) %></p>
                 <p class="success"><%= (success == null ? "" : success) %></p>
                 <input type="submit" class="btn-green" value="Save changes">
