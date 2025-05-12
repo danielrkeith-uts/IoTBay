@@ -1,5 +1,9 @@
 <html>
     <jsp:include page="/RequiresUserServlet" flush="true"/>
+    <%
+        String error = (String) session.getAttribute("changePasswordError");
+        session.removeAttribute("changePasswordError");
+    %>
     <head>
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
@@ -28,17 +32,19 @@
             <h2>Change password</h2>
             <form action="ChangePasswordServlet" method="post">
                 <div class="mb-3">
-                    <label for="password" class="form-label">Old Password</label>
-                    <input type="password" name="password" class="form-control" />
+                    <label for="old-password" class="form-label">Old Password</label>
+                    <input type="password" name="old-password" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">New Password</label>
-                    <input type="password" name="password" class="form-control" />
+                    <label for="new-password" class="form-label">New Password</label>
+                    <input type="password" name="new-password" class="form-control" />
+                    <p class="fst-italic">Must be at least 8 characters long, and include an lowercase and uppercase letter, a number, and a special character</p>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">Confirm New Password</label>
-                    <input type="password" name="password" class="form-control" />
+                    <label for="new-password-confirmation" class="form-label">Confirm New Password</label>
+                    <input type="password" name="new-password-confirmation" class="form-control" />
                 </div>
+                <p class="error"><%= (error == null ? "" : error) %></p>
                 <input type="submit" class="btn-green" value="Change Password">
             </form>
         </div>
