@@ -26,3 +26,10 @@
 ## Notes on pre-supplied data and navigating the web application
 - The register page is navigated to using a link located on the login page.
 - The admin password is `admin`. This is used when registering as staff.
+- Two users can be logged in by default:
+  - John Smith (Customer)
+    - Email: `john.smith@gmail.com`
+    - Password: `johnsPassword`
+  - Gregory Stafferson (Staff)
+    - Email: `gregory.stafferson@iotbay.com`
+    - Password: `!@#$%^&*()`
