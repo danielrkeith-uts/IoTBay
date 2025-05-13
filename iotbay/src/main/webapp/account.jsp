@@ -3,6 +3,7 @@
     <%
         if (session.getAttribute("user") == null) {
             response.sendRedirect("index.jsp");
+            return;
         }
 
         String error = (String) session.getAttribute("accountError");
