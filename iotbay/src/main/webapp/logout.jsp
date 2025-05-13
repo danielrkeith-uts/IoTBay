@@ -14,6 +14,7 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
+                <a href="shipping.jsp">Shipping</a>
                 <a href="login.jsp">Login</a>
             </navbar>
         </div>

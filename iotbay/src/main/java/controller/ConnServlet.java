@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import model.dao.ApplicationAccessLogDBManager;
 import model.dao.DBConnector;
+import model.dao.DeliveryDBManager;
 import model.dao.UserDBManager;
 
 @WebServlet("/ConnServlet")
@@ -23,6 +24,7 @@ public class ConnServlet extends HttpServlet {
     private Connection conn;
     private UserDBManager userDBManager;
     private ApplicationAccessLogDBManager applicationAccessLogDBManager;
+    private DeliveryDBManager deliveryDBManager;
 
     @Override
     public void init() {
@@ -52,6 +54,12 @@ public class ConnServlet extends HttpServlet {
                 applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
                 session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
             }
+
+            if (session.getAttribute("deliveryDBManager") == null) {
+                deliveryDBManager = new DeliveryDBManager(conn);
+                session.setAttribute("deliveryDBManager", deliveryDBManager);
+            }
+
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
