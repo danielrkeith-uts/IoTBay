@@ -1,7 +1,10 @@
 <%@ page import="model.User, model.Staff"%>
 <html>
-    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%
+        if (session.getAttribute("user") == null) {
+            response.sendRedirect("index.jsp");
+        }
+
         String error = (String) session.getAttribute("accountError");
         session.removeAttribute("accountError");
 

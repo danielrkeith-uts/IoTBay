@@ -1,6 +1,9 @@
 <html>
-    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%
+        if (session.getAttribute("user") == null) {
+            response.sendRedirect("index.jsp");
+        }
+
         String error = (String) session.getAttribute("changePasswordError");
         session.removeAttribute("changePasswordError");
     %>
