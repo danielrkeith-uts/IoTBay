@@ -28,14 +28,8 @@
         <navbar>
             <a href="index.jsp">Home</a>
             <a href="products.jsp">Products</a>
-            <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
-                    <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                    <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
-                </ul>
-            </div>
+                                  <jsp:include page="drop-down.jsp" />
+
         </navbar>
     </div>
 

@@ -16,15 +16,15 @@ public class UserDBManager {
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
     private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId) VALUES (?);";
     private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?);";
-    private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
-    private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
-    private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
-    private static final String GET_STAFF_STMT_B = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? LIMIT 1;";
+    private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? AND User.Active = 1 LIMIT 1;";
+    private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? AND User.Active = 1 LIMIT 1;";
+    private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? AND User.Active = 1 LIMIT 1;";
+    private static final String GET_STAFF_STMT_B = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE User.UserId = ? AND User.Active = 1 LIMIT 1;";
     private static final String USER_EXISTS_STMT = "SELECT 1 FROM User WHERE Email = ?";
     private static final String UPDATE_USER_STMT = "UPDATE User SET FirstName = ?, LastName = ?, Email = ?, Phone = ?, Password = ? WHERE UserId = ?;";
     private static final String UPDATE_STAFF_STMT = "UPDATE Staff SET StaffCardId = ? WHERE UserId = ?;";
-    private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
-    private static final String GET_ALL_CUSTOMERS_STMT = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId";
+    private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?";
+    private static final String GET_ALL_CUSTOMERS_STMT = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.Active = 1";
 
     private final PreparedStatement addUserPs;
     private final PreparedStatement addCustomerPs;
@@ -44,7 +44,7 @@ public class UserDBManager {
     private Connection connection;
 
     public UserDBManager(Connection conn) throws SQLException {
-        this.connection = conn;  // Store the connection
+        this.connection = conn;  
         this.addUserPs = conn.prepareStatement(ADD_USER_STMT);
         this.addCustomerPs = conn.prepareStatement(ADD_CUSTOMER_STMT);
         this.addStaffPs = conn.prepareStatement(ADD_STAFF_STMT);
@@ -112,10 +112,15 @@ public class UserDBManager {
         deleteUserPs.setInt(1, userId);
         deleteUserPs.executeUpdate();
     }
-
+    
     public List<Customer> getAllCustomers() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            System.out.println("Connection is not valid");
+            throw new SQLException("Database connection is not valid.");
+        }
+    
+        List<Customer> customers = new ArrayList<>();
         try (ResultSet rs = getAllCustomersPs.executeQuery()) {
-            List<Customer> customers = new ArrayList<>();
             while (rs.next()) {
                 Customer customer = new Customer(
                     rs.getInt("UserId"),
@@ -127,9 +132,15 @@ public class UserDBManager {
                 );
                 customers.add(customer);
             }
-            return customers;
+            System.out.println("Debug: Customers found = " + customers.size());
+        } catch (SQLException e) {
+            System.err.println("Debug: SQL error - " + e.getMessage());
         }
+    
+        return customers;
     }
+    
+    
 
     private int addUser(User user) throws SQLException {
         addUserPs.setString(1, user.getFirstName());
@@ -211,4 +222,18 @@ public class UserDBManager {
         updateUserPs.setInt(6, user.getUserId());
         updateUserPs.executeUpdate();
     }
+
+    public Customer getCustomerById(int userId) throws SQLException {
+        return getCustomer(userId);
+    }
+
+    public void deactivateUser(int userId) throws SQLException {
+        String sql = "UPDATE User SET Active = 0 WHERE UserId = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    
 }

@@ -1,54 +1,60 @@
 package controller;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Customer;
 import model.dao.UserDBManager;
 
-@WebServlet("/CustomerDataServlet")
 public class CustomerDataServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    private UserDBManager userDBManager;
+
+    // Initialize logger
+    private static final Logger logger = Logger.getLogger(CustomerDataServlet.class.getName());
 
     @Override
-    public void init() throws ServletException {
-        // Initialize the UserDBManager with the database connection
-        try {
-            userDBManager = new UserDBManager(getDatabaseConnection());
-        } catch (SQLException e) {
-            throw new ServletException("Unable to establish database connection.", e);
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Retrieve the UserDBManager from the session
+        HttpSession session = request.getSession();
+        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+        
+        // Log the state of UserDBManager
+        if (userDBManager == null) {
+            logger.log(Level.SEVERE, "UserDBManager is null in session.");
+        } else {
+            logger.log(Level.INFO, "UserDBManager found in session.");
         }
-    }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // If the UserDBManager doesn't exist in the session, throw an exception
+        if (userDBManager == null) {
+            logger.log(Level.SEVERE, "UserDBManager retrieved from session is null");
+            throw new ServletException("UserDBManager not found in session.");
+        }
+
+        // Get customer data from the UserDBManager
+        List<Customer> customers;
         try {
-            List<Customer> customers = userDBManager.getAllCustomers();
-            request.setAttribute("customers", customers);
-            request.getRequestDispatcher("customerData.jsp").forward(request, response);
+            customers = userDBManager.getAllCustomers();
+            logger.log(Level.INFO, "Number of customers fetched: " + customers.size());
         } catch (SQLException e) {
-            // Handle the error
+            // Log the error if there's an issue fetching the customer data
+            logger.log(Level.SEVERE, "Could not retrieve customer data", e);
             request.setAttribute("error", "Could not fetch customer data.");
             request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
         }
-    }
 
-    private Connection getDatabaseConnection() throws SQLException {
-        // Provide your database connection details here
-        String url = "jdbc:mysql://localhost:3306/your_database_name"; // Update with your database URL
-        String username = "your_database_username";  // Update with your database username
-        String password = "your_database_password";  // Update with your database password
+        // Set the customers as a request attribute to be accessed in the JSP
+        request.setAttribute("customers", customers);
 
-        // Establish the connection and return it
-        return DriverManager.getConnection(url, username, password);
+        // Forward the request to the customerData.jsp page
+        request.getRequestDispatcher("customerData.jsp").forward(request, response);
     }
 }

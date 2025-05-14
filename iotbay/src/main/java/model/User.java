@@ -12,16 +12,25 @@ public abstract class User implements Serializable {
     private String phone;
     private String password;
     private List<ApplicationAccessLog> applicationAccessLogs;
+    private String role;  
 
-    public User(int userId, String firstName, String lastName, String email, String phone, String password) {
+    public User(int userId, String firstName, String lastName, String email, String phone, String password, String role) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.password = password;
-
+        this.role = role;
         this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public int getUserId() {

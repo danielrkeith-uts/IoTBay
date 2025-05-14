@@ -1,5 +1,5 @@
-<%@ page import="model.Customer" %>
 <%@ page import="java.util.List" %>
+<%@ page import="model.Customer" %>
 <html>
 <head>
     <title>Customer Data</title>
@@ -8,34 +8,46 @@
 <body>
     <h1>Registered Customers</h1>
 
-    <c:if test="${not empty error}">
-        <p class="error">${error}</p>
-    </c:if>
+    <%
+        List<Customer> customers = (List<Customer>) request.getAttribute("customers");
+        String error = (String) request.getAttribute("error");
+    %>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <c:forEach var="customer" items="${customers}">
+    <%-- Debug: Output customer list --%>
+    <p>Debug: Customer list = <%= customers != null ? customers.toString() : "null" %></p>
+    <p>Debug: Customer size = <%= (customers != null ? customers.size() : "null") %></p>
+
+    <% if (error != null && !error.isEmpty()) { %>
+        <p class="error"><%= error %></p>
+    <% } else if (customers == null || customers.isEmpty()) { %>
+        <p>No customers found.</p>
+    <% } else { %>
+        <table border="1">
+            <thead>
                 <tr>
-                    <td>${customer.firstName}</td>
-                    <td>${customer.lastName}</td>
-                    <td>${customer.email}</td>
-                    <td>${customer.phone}</td>
-                    <td>
-                        <a href="editCustomer.jsp?id=${customer.userId}">Edit</a>
-                        <a href="deactivateCustomer.jsp?id=${customer.userId}">Deactivate</a>
-                    </td>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
                 </tr>
-            </c:forEach>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <% for (Customer customer : customers) { %>
+                    <tr>
+                        <td><%= customer.getFirstName() %></td>
+                        <td><%= customer.getLastName() %></td>
+                        <td><%= customer.getEmail() %></td>
+                        <td><%= customer.getPhone() %></td>
+                        <td>
+                            <a href="editCustomer.jsp?id=<%= customer.getUserId() %>">Edit</a>
+                            <a href="deactivateCustomer.jsp?id=<%= customer.getUserId() %>">Deactivate</a>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    <% } %>
 </body>
 </html>
+l
