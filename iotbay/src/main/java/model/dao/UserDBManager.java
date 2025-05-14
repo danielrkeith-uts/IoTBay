@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Customer;
 import model.Staff;
@@ -21,6 +23,8 @@ public class UserDBManager {
     private static final String UPDATE_USER_STMT = "UPDATE User SET FirstName = ?, LastName = ?, Email = ?, Phone = ?, Password = ? WHERE UserId = ?;";
     private static final String UPDATE_STAFF_STMT = "UPDATE Staff SET StaffCardId = ? WHERE UserId = ?;";
     private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
+    private static final String GET_ALL_CUSTOMERS_STMT = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId;";
+
 
     private final PreparedStatement addUserPs;
     private final PreparedStatement addCustomerPs;
@@ -96,6 +100,32 @@ public class UserDBManager {
 
         return rs.getInt(1) == 1;
     }
+
+    public List<Customer> getAllCustomers() throws SQLException {
+    List<Customer> customers = new ArrayList<>();
+    Connection conn = addUserPs.getConnection(); 
+
+    try (PreparedStatement stmt = conn.prepareStatement(GET_ALL_CUSTOMERS_STMT)) {
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Customer customer = new Customer(
+                rs.getInt("UserId"),
+                rs.getString("FirstName"),
+                rs.getString("LastName"),
+                rs.getString("Email"),
+                rs.getString("Phone"),
+                rs.getString("Password")
+            );
+            customers.add(customer);
+        }
+    } catch (SQLException e) {
+        throw new SQLException("Error retrieving customers", e);
+    }
+
+    return customers;
+}
+
 
     public void updateCustomer(Customer customer) throws SQLException {
         updateUser(customer);
