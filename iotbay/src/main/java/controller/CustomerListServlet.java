@@ -20,33 +20,48 @@ public class CustomerListServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(CustomerListServlet.class.getName());
 
     @Override
-protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
-    HttpSession session = request.getSession();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, java.io.IOException {
+        HttpSession session = request.getSession();
 
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        logger.severe("User object is missing in session.");
-        response.sendRedirect("login.jsp");  
-        return;
+        // Retrieve UserDBManager from session
+        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+
+        // Check if UserDBManager is null
+        if (userDBManager == null) {
+            logger.log(Level.SEVERE, "UserDBManager not found in session.");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "UserDBManager not found in session.");
+            return;
+        }
+
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            logger.log(Level.SEVERE, "User not found in session.");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "User not found in session.");
+            return;
+        }
+
+        List<Customer> allCustomers = null;
+        try {
+            // Fetch the list of customers from the database
+            allCustomers = userDBManager.getAllCustomers();
+
+            // Debug: log the number of customers fetched
+            logger.log(Level.INFO, "Number of customers fetched: " + (allCustomers != null ? allCustomers.size() : 0));
+
+            // Check if no customers were found
+            if (allCustomers == null || allCustomers.isEmpty()) {
+                logger.log(Level.INFO, "No customers found in the database.");
+            }
+
+            // Add the list of customers to the request attributes so they can be accessed in the JSP
+            request.setAttribute("customers", allCustomers);
+
+            // Forward the request to a JSP page for displaying the customer list
+            request.getRequestDispatcher("/customerlist.jsp").forward(request, response);
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Failed to retrieve customers from the database", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to retrieve customers from the database");
+        }
     }
-
-    UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-    if (userDBManager == null) {
-        logger.severe("UserDBManager is missing in session.");
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "UserDBManager not found in session.");
-        return;
-    }
-
-    logger.info("User object found in session: " + user);
-
-    List<Customer> customers;
-    try {
-        customers = userDBManager.getAllCustomers();
-        request.setAttribute("customers", customers);
-        request.getRequestDispatcher("/customerlist.jsp").forward(request, response);
-    } catch (SQLException e) {
-        logger.log(Level.SEVERE, "Failed to retrieve customers", e);
-        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to retrieve customers from the database");
-    }
-}
 }

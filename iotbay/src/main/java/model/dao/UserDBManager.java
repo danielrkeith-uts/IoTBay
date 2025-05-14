@@ -23,8 +23,6 @@ public class UserDBManager {
     private static final String UPDATE_USER_STMT = "UPDATE User SET FirstName = ?, LastName = ?, Email = ?, Phone = ?, Password = ? WHERE UserId = ?;";
     private static final String UPDATE_STAFF_STMT = "UPDATE Staff SET StaffCardId = ? WHERE UserId = ?;";
     private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
-    private static final String GET_ALL_CUSTOMERS_STMT = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId;";
-
 
     private final PreparedStatement addUserPs;
     private final PreparedStatement addCustomerPs;
@@ -102,30 +100,49 @@ public class UserDBManager {
     }
 
     public List<Customer> getAllCustomers() throws SQLException {
-    List<Customer> customers = new ArrayList<>();
-    Connection conn = addUserPs.getConnection(); 
-
-    try (PreparedStatement stmt = conn.prepareStatement(GET_ALL_CUSTOMERS_STMT)) {
-        ResultSet rs = stmt.executeQuery();
-
-        while (rs.next()) {
-            Customer customer = new Customer(
-                rs.getInt("UserId"),
-                rs.getString("FirstName"),
-                rs.getString("LastName"),
-                rs.getString("Email"),
-                rs.getString("Phone"),
-                rs.getString("Password")
-            );
-            customers.add(customer);
+        List<Customer> allCustomers = new ArrayList<>();
+        String query = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone " +
+                       "FROM User U " +
+                       "JOIN Customer C ON U.UserId = C.UserId";
+        
+        try (Connection conn = this.addUserPs.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            // Debug: Check if data is retrieved from the database
+            if (!rs.next()) {
+                System.out.println("No customers found!"); // No records returned from the query
+            } else {
+                // Loop through the ResultSet and create Customer objects
+                do {
+                    // Debug log for the result set row
+                    System.out.println("UserId: " + rs.getInt("UserId") +
+                                       ", FirstName: " + rs.getString("FirstName") +
+                                       ", LastName: " + rs.getString("LastName") +
+                                       ", Email: " + rs.getString("Email") +
+                                       ", Phone: " + rs.getString("Phone"));
+                    
+                    // Create Customer object from ResultSet data
+                    Customer customer = new Customer(
+                        rs.getInt("UserId"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        ""  // Placeholder for password, if you don't need it
+                    );
+                    allCustomers.add(customer);
+                } while (rs.next());
+            }
+            
+            // Debug log to confirm customers were added to the list
+            System.out.println("Total customers fetched: " + allCustomers.size());
         }
-    } catch (SQLException e) {
-        throw new SQLException("Error retrieving customers", e);
+        
+        return allCustomers;
     }
-
-    return customers;
-}
-
+    
+    
 
     public void updateCustomer(Customer customer) throws SQLException {
         updateUser(customer);
