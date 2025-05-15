@@ -1,6 +1,12 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<p>Customers size: ${fn:length(customers)}</p>
+<%-- <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %> --%>
+<%@ page import="java.util.List, java.util.ArrayList, model.Customer"%>
+<jsp:include page="/ConnServlet" flush="true"/>
+<jsp:include page="/CustomerListServlet" flush="true"/>
+<%
+    List<Customer> customers = (ArrayList<Customer>) request.getAttribute("customers");
+%>
+<%-- <p>Customers size: ${fn:length(customers)}</p> --%>
 
 <h1>Registered Customers</h1>
 
@@ -15,18 +21,18 @@
         </tr>
     </thead>
     <tbody>
-<c:forEach var="customer" items="${customers}">
+<% for (Customer customer : customers) { %>
             <tr>
-                <td>${customer.firstName}</td>
-                <td>${customer.lastName}</td>
-                <td>${customer.email}</td>
-                <td>${cstomer.phone}</td>
+                <td><%= customer.getFirstName() %></td>
+                <td><%= customer.getLastName() %></td>
+                <td><%= customer.getEmail() %></td>
+                <td><%= customer.getPhone() %></td>
                 <td>
                     <%-- <a href="editCustomer.jsp?id=${allCustomer.userId}">Edit</a> |
                     <a href="deactivateCustomer?id=${allCustomer.userId}">Deactivate</a> |
                     <a href="viewAccessLogs?id=${custoallCustomermer.userId}">View Logs</a> --%>
                 </td>
             </tr>
-        </c:forEach>
-    </tbody>
+<% } %>
+</tbody>
 </table>
