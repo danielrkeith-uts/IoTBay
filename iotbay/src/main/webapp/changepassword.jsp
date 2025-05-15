@@ -4,6 +4,9 @@
             response.sendRedirect("index.jsp");
             return;
         }
+
+        String error = (String) session.getAttribute("changePasswordError");
+        session.removeAttribute("changePasswordError");
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -18,7 +21,6 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="shipping.jsp">Shipping</a>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">
@@ -31,11 +33,23 @@
             </navbar>
         </div>
         <div class="content">
-            <h2>Delete account</h2>
-            <form action="DeleteAccountServlet" method="post">
-                <p>Are you sure you want to delete your account?</p>
-                <p class="fst-italic">(This action cannot be undone)</p>
-                <input type="submit" class="btn btn-danger" value="Delete account" />
+            <h2>Change password</h2>
+            <form action="ChangePasswordServlet" method="post">
+                <div class="mb-3">
+                    <label for="old-password" class="form-label">Old Password</label>
+                    <input type="password" name="old-password" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="new-password" class="form-label">New Password</label>
+                    <input type="password" name="new-password" class="form-control" />
+                    <p class="fst-italic">Must be at least 8 characters long, and include an lowercase and uppercase letter, a number, and a special character</p>
+                </div>
+                <div class="mb-3">
+                    <label for="new-password-confirmation" class="form-label">Confirm New Password</label>
+                    <input type="password" name="new-password-confirmation" class="form-control" />
+                </div>
+                <p class="error"><%= (error == null ? "" : error) %></p>
+                <input type="submit" class="btn-green" value="Change Password">
             </form>
         </div>
     </body>
