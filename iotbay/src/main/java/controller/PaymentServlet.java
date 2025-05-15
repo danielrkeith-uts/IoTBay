@@ -1,5 +1,6 @@
 package controller;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.YearMonth;
+import java.util.List;
 import java.time.LocalDate;
 
 @WebServlet("/PaymentServlet")
@@ -48,5 +50,44 @@ public class PaymentServlet extends HttpServlet {
                     date
                 );
 
-                // Add payment to DB
                 dbManager.addPayment(payment);
+                response.sendRedirect("payment_history.jsp");
+
+            } else if ("update".equals(action)) {
+                int paymentId = Integer.parseInt(request.getParameter("paymentId"));
+                double newAmount = Double.parseDouble(request.getParameter("newAmount"));
+                
+                // Assuming the update method in dbManager can update payment details
+                dbManager.updatePayment(paymentId, newAmount);
+                response.sendRedirect("payment_history.jsp");
+
+            } else if ("delete".equals(action)) {
+                int paymentId = Integer.parseInt(request.getParameter("paymentId"));
+                
+                dbManager.deletePayment(paymentId);
+                response.sendRedirect("payment_history.jsp");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing payment.");
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/yourDB", "username", "password")) {
+            PaymentDBManager dbManager = new PaymentDBManager(conn);
+        
+            int userId = 1; // Replace with session-based user ID later
+            List<Payment> payments = dbManager.getAllPaymentsForUser(userId);
+
+            request.setAttribute("payments", payments);
+            request.getRequestDispatcher("payment_history.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading payments.");
+    }
+}
+
+}
