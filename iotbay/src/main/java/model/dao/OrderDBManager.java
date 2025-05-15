@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class OrderDBManager {
-    
     private Statement st;
     private Connection conn;
+    private static final String UPDATE_ORDER_STMT = "UPDATE `Order` SET UserId = ?, ProductListId = ?, PaymentId = ?, DatePlaced = ? WHERE OrderId = ?;";
+    private final PreparedStatement updateOrderPs;
         
-    public OrderDBManager(Connection conn) throws SQLException {       
+    public OrderDBManager(Connection conn) throws SQLException {    
         this.conn = conn;
-        st = conn.createStatement();   
+        st = conn.createStatement(); 
+        this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
     //Find an order by OrderId in the database   
@@ -22,9 +24,9 @@ public class OrderDBManager {
         ResultSet rs = st.executeQuery(query); 
 
         if (rs.next()) {
+            int orderId = rs.getInt("OrderID");
             int ProductListId = rs.getInt("ProductListId");
             int PaymentId = rs.getInt("PaymentId");
-            int DeliveryId = rs.getInt("DeliveryId");
             Timestamp timestamp = rs.getTimestamp("DatePlaced");
             Date DatePlaced = new Date(timestamp.getTime());
             
@@ -49,12 +51,7 @@ public class OrderDBManager {
             PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
-            //Step 4: Create Delivery instance to get DeliveryId for setDelivery()
-            DeliveryDBManager deliveryDBManager = new DeliveryDBManager(conn);
-            Delivery Delivery = deliveryDBManager.getDelivery(DeliveryId);
-
-            Order order = new Order(ProductList, Payment, DatePlaced);
-            order.setDelivery(Delivery);
+            Order order = new Order(orderId, ProductList, Payment, DatePlaced);
             return order;
         } 
         return null;
@@ -62,16 +59,29 @@ public class OrderDBManager {
 
     //Add an order into the database   
     public void addOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("INSERT INTO `Order` VALUES ('" + OrderId + "', '" + UserId + "', '" + ProductListId + "', '" + PaymentId + "', " + DeliveryId + "', " + DatePlaced + ")");   
+        st.executeUpdate("INSERT INTO `Order` VALUES ('" + OrderId + "', '" + UserId + "', '" + ProductListId + "', '" + PaymentId + "', " + DatePlaced + ")");   
     }
 
     //update an order's details in the database   
-    public void updateOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
+    /*public void updateOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
         st.executeUpdate("UPDATE `Order` SET UserId = '" + UserId + "', ProductListId = '" + ProductListId + "', PaymentId = '" + PaymentId + "', DeliveryId = '" + DeliveryId + "', DatePlaced = '" + DatePlaced + "' WHERE OrderId = '" + OrderId);    
-    }       
+    } */
+    
+    public void updateOrder(Order order) throws SQLException {
+        String query = "SELECT UserId, ProductListId, PaymentId, DatePlaced, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
+        ResultSet rs = st.executeQuery(query); 
+
+        updateOrderPs.setInt(1, rs.getInt("UserId"));
+        updateOrderPs.setInt(2, rs.getInt("ProductListId"));
+        updateOrderPs.setInt(3, rs.getInt("PaymentId"));
+        updateOrderPs.setTimestamp(4, new Timestamp(order.getDatePlaced().getTime()));
+        updateOrderPs.setInt(5, rs.getInt("OrderId"));
+
+        updateOrderPs.executeUpdate();
+    } 
 
     //delete an order from the database   
     public void deleteOrder(int OrderId) throws SQLException{       
-        st.executeUpdate("DELETE FROM `Order` WHERE OrderId = '" + OrderId); 
+        st.executeUpdate("DELETE FROM `Order` WHERE OrderId = '" + OrderId + "'"); 
     }
 }
