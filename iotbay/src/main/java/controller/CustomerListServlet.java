@@ -50,7 +50,6 @@ public class CustomerListServlet extends HttpServlet {
             }
 
             request.setAttribute("customers", allCustomers);
-            request.getRequestDispatcher("/customerlist.jsp").forward(request, response);
 
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE, "Database driver not found", e);

@@ -1,7 +1,6 @@
 package model.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -136,9 +135,6 @@ public class UserDBManager {
         return customers;
     }
     
-    
-    
-
     public void updateCustomer(Customer customer) throws SQLException {
         updateUser(customer);
     }
@@ -180,7 +176,7 @@ public class UserDBManager {
         return userId;
     }
 
-    private Customer getCustomer(String email, String password) throws SQLException {
+    public Customer getCustomer(String email, String password) throws SQLException {
         getCustomerPsA.setString(1, email);
         getCustomerPsA.setString(2, password);
 
@@ -189,7 +185,7 @@ public class UserDBManager {
         return toCustomer(rs);
     }
 
-    private Customer getCustomer(int userId) throws SQLException {
+    public Customer getCustomer(int userId) throws SQLException {
         getCustomerPsB.setInt(1, userId);
 
         ResultSet rs = getCustomerPsB.executeQuery();
@@ -197,7 +193,8 @@ public class UserDBManager {
         return toCustomer(rs);
     }
 
-    private Customer toCustomer(ResultSet rs) throws SQLException {
+ 
+    public Customer toCustomer(ResultSet rs) throws SQLException {
         if (!rs.next()) {
             return null;
         }
