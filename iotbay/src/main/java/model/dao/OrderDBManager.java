@@ -58,15 +58,11 @@ public class OrderDBManager {
     }
 
     //Add an order into the database   
-    public void addOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
+    public void addOrder(int OrderId, int UserId, int ProductListId, int PaymentId, Date DatePlaced) throws SQLException {       
         st.executeUpdate("INSERT INTO `Order` VALUES ('" + OrderId + "', '" + UserId + "', '" + ProductListId + "', '" + PaymentId + "', " + DatePlaced + ")");   
     }
 
     //update an order's details in the database   
-    /*public void updateOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("UPDATE `Order` SET UserId = '" + UserId + "', ProductListId = '" + ProductListId + "', PaymentId = '" + PaymentId + "', DeliveryId = '" + DeliveryId + "', DatePlaced = '" + DatePlaced + "' WHERE OrderId = '" + OrderId);    
-    } */
-    
     public void updateOrder(Order order) throws SQLException {
         String query = "SELECT UserId, ProductListId, PaymentId, DatePlaced, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
         ResultSet rs = st.executeQuery(query); 

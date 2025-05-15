@@ -25,7 +25,7 @@ public class OrderDBManagerTests {
     }
 
     static List<ProductListEntry> productList = new ArrayList<>();
-    static Payment payment = new Payment(0, null, null);
+    static Payment payment = new Payment(0, 0, null, null);
 
     private static Order order = new Order(1, productList, payment, datePlaced);
     OrderDBManager orderDBManager;
@@ -85,6 +85,32 @@ public class OrderDBManagerTests {
             orderDBManager.updateOrder(newOrder);
             Order newOrderResult = (Order) orderDBManager.getOrder(newOrder.getOrderId());
             Assert.assertEquals(newOrderResult.getDatePlaced(), newDate);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
+    public void testAddOrder() {
+        try {
+            int OrderId = 999;
+            int UserId = 1;
+            int ProductListId = 1;
+            int PaymentId = 1;
+            Date DatePlaced = new Date();
+            
+            orderDBManager.addOrder(OrderId, UserId, ProductListId, PaymentId, new java.sql.Date(DatePlaced.getTime()));
+            
+            Order order = orderDBManager.getOrder(OrderId);
+            Assert.assertNotNull(order);
+            Assert.assertEquals(OrderId, order.getOrderId());
+
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } finally {

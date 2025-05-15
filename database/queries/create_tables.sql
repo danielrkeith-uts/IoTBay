@@ -48,20 +48,20 @@ CREATE TABLE `Order` (
     UserId INTEGER,
     ProductListId INTEGER,
     PaymentId INTEGER,
-    DeliveryId INTEGER,
     DatePlaced DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId),
     
-    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
-    FOREIGN KEY (DeliveryId) REFERENCES Delivery(DeliveryId)
+    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId)
 );
 
 CREATE TABLE Delivery (
     DeliveryId INTEGER PRIMARY KEY,
+    OrderId INTEGER NOT NULL,
     SourceAddressId INTEGER,
     DestinationAddressId INTEGER,
     Courier VARCHAR(30) NOT NULL,
     CourierDeliveryId INTEGER NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId),
     FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId),
     FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
 );
