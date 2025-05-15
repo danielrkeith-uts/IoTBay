@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import model.dao.ApplicationAccessLogDBManager;
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
 
@@ -21,6 +22,7 @@ public class ConnServlet extends HttpServlet {
     private DBConnector dbConnector;
     private Connection conn;
     private UserDBManager userDBManager;
+    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     @Override
     public void init() {
@@ -37,19 +39,22 @@ public class ConnServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
 
-        if (session.getAttribute("connected") != null) {
-            return;
-        }
-
         // Instantiate all DBManagers
         try {
             conn = dbConnector.openConnection();
-            userDBManager = new UserDBManager(conn);
+
+            if (session.getAttribute("userDBManager") == null) {
+                userDBManager = new UserDBManager(conn);
+                session.setAttribute("userDBManager", userDBManager);
+            }
+
+            if (session.getAttribute("applicationAccessLogDBManager") == null) {
+                applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
+                session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
-        session.setAttribute("userDBManager", userDBManager);
-        session.setAttribute("connected", true);
     }
 
     @Override
