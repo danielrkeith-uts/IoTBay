@@ -1,6 +1,7 @@
 package model.dao;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -99,48 +100,42 @@ public class UserDBManager {
         return rs.getInt(1) == 1;
     }
 
-    public List<Customer> getAllCustomers() throws SQLException {
-        List<Customer> allCustomers = new ArrayList<>();
+    public List<Customer> getAllCustomers() throws SQLException, ClassNotFoundException {
+        List<Customer> customers = new ArrayList<>();
         String query = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone " +
                        "FROM User U " +
                        "JOIN Customer C ON U.UserId = C.UserId";
-        
-        try (Connection conn = this.addUserPs.getConnection(); 
+    
+        try (Connection conn = new DBConnector().openConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
-            
-            // Debug: Check if data is retrieved from the database
-            if (!rs.next()) {
-                System.out.println("No customers found!"); // No records returned from the query
-            } else {
-                // Loop through the ResultSet and create Customer objects
-                do {
-                    // Debug log for the result set row
-                    System.out.println("UserId: " + rs.getInt("UserId") +
-                                       ", FirstName: " + rs.getString("FirstName") +
-                                       ", LastName: " + rs.getString("LastName") +
-                                       ", Email: " + rs.getString("Email") +
-                                       ", Phone: " + rs.getString("Phone"));
-                    
-                    // Create Customer object from ResultSet data
-                    Customer customer = new Customer(
-                        rs.getInt("UserId"),
-                        rs.getString("FirstName"),
-                        rs.getString("LastName"),
-                        rs.getString("Email"),
-                        rs.getString("Phone"),
-                        ""  // Placeholder for password, if you don't need it
-                    );
-                    allCustomers.add(customer);
-                } while (rs.next());
+    
+            System.out.println("Executing SQL: " + query);
+    
+            while (rs.next()) {
+                System.out.println("UserId: " + rs.getInt("UserId") +
+                                   ", FirstName: " + rs.getString("FirstName") +
+                                   ", LastName: " + rs.getString("LastName") +
+                                   ", Email: " + rs.getString("Email") +
+                                   ", Phone: " + rs.getString("Phone"));
+    
+                Customer customer = new Customer(
+                    rs.getInt("UserId"),
+                    rs.getString("FirstName"),
+                    rs.getString("LastName"),
+                    rs.getString("Email"),
+                    rs.getString("Phone"),
+                    ""
+                );
+                customers.add(customer);
             }
-            
-            // Debug log to confirm customers were added to the list
-            System.out.println("Total customers fetched: " + allCustomers.size());
+    
+            System.out.println("Total customers fetched: " + customers.size());
         }
-        
-        return allCustomers;
+    
+        return customers;
     }
+    
     
     
 
