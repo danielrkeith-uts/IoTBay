@@ -1,8 +1,12 @@
 <%@ page import="java.util.List, model.User, model.ApplicationAccessLog"%>
 <html>
-    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <jsp:include page="/ApplicationAccessLogServlet" flush="true"/>
     <%
+        if (session.getAttribute("user") == null) {
+            response.sendRedirect("index.jsp");
+            return;
+        }
+
         User user = (User)session.getAttribute("user");
 
         List<ApplicationAccessLog> logs = user.getApplicationAccessLogs();

@@ -1,12 +1,16 @@
 <%@ page import="model.User, model.Customer"%>
 <html>
-    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%!
         public boolean isNullOrEmpty(String str) {
             return str == null || str.isEmpty();
         }
     %>
     <%
+        if (session.getAttribute("user") == null) {
+            response.sendRedirect("index.jsp");
+            return;
+        }
+
         User user = (User) session.getAttribute("user");
         String firstName = user.getFirstName();
     %>
