@@ -15,10 +15,21 @@
 
 ## Running project locally
 1. Create new apache-tomcat server
-2. Add deployment from the `iotbay/target/iotbay` directory
+2. Add deployment from the `iotbay/target/iotbay` directory *(You may need to do step 4-5 first to create the folder, and then redo the steps once the server starts)*
    - Type is exploded
    - Don't edit optional deployment parameters
 3. Start server
 4. Navigate to the `iotbay` directory (i.e., the folder containing `pom.xml`)
 5. Run `mvn clean compile package`
 6. Navigate to the relevant url (likely `localhost:8080/iotbay`)
+
+## Notes on pre-supplied data and navigating the web application
+- The register page is navigated to using a link located on the login page.
+- The admin password is `admin`. This is used when registering as staff.
+- Two users can be logged in by default. *(Please don't change the account details of these customers, as this can cause tests to fail)*
+  - John Smith (Customer)
+    - Email: `john.smith@gmail.com`
+    - Password: `johnsPassword`
+  - Gregory Stafferson (Staff)
+    - Email: `gregory.stafferson@iotbay.com`
+    - Password: `!@#$%^&*()`

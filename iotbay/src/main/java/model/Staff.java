@@ -12,6 +12,10 @@ public class Staff extends User {
         return staffCardId;
     }
 
+    public void setStaffCardId(int staffCardId) {
+        this.staffCardId = staffCardId;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
