@@ -28,8 +28,8 @@ public class ProductListEntryDBManager {
         return new ProductListEntry(Product, Quantity); 
     }
 
-    public List<ProductListEntry> getProductList(int ProductListId) throws SQLException {
-        String query = "SELECT * FROM ProductListEntry WHERE CartId = '" + ProductListId + "'"; 
+    public List<ProductListEntry> getProductList(int CartId) throws SQLException {
+        String query = "SELECT * FROM ProductListEntry WHERE CartId = '" + CartId + "'"; 
         ResultSet rs = st.executeQuery(query);      
 
         List<ProductListEntry> productList = new ArrayList<>();

@@ -18,13 +18,12 @@ public class DeliveryDBManagerTests {
         try {
             delivery = deliveryDBManager.getDelivery(1);
         } catch (SQLException e) {
-            Assert.fail();
+            Assert.fail(e.getMessage());
             return;
         }
 
         Assert.assertNotNull(delivery);
         
-
         Address source = delivery.getSource();
         Address destination = delivery.getDestination();
 

@@ -48,7 +48,6 @@ CREATE TABLE `Order` (
     PaymentId INTEGER,
     DatePlaced DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId),
-    
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId)
 );
 
@@ -59,7 +58,7 @@ CREATE TABLE Delivery (
     DestinationAddressId INTEGER,
     Courier VARCHAR(30) NOT NULL,
     CourierDeliveryId INTEGER NOT NULL,
-    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId),
+    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
     FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId),
     FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
 );

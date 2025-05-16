@@ -101,11 +101,11 @@ public class OrderDBManagerTests {
         try {
             int OrderId = 999;
             int UserId = 1;
-            int ProductListId = 1;
+            int CartId = 1;
             int PaymentId = 1;
             Date DatePlaced = new Date();
             
-            orderDBManager.addOrder(OrderId, UserId, ProductListId, PaymentId, new java.sql.Date(DatePlaced.getTime()));
+            orderDBManager.addOrder(OrderId, UserId, CartId, PaymentId, new java.sql.Date(DatePlaced.getTime()));
             
             Order order = orderDBManager.getOrder(OrderId);
             Assert.assertNotNull(order);

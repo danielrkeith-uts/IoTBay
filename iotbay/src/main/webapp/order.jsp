@@ -6,8 +6,21 @@
 <%@ page import="model.Cart"%>
 
 <html>
+   <jsp:include page="/ConnServlet" flush="true"/>
     <%
-        User user = (User)session.getAttribute("user");
+        // Retrieve session attributes
+        String error = (String) session.getAttribute("orderError");
+        session.removeAttribute("orderError"); // Only remove when needed
+
+        User user = (User) session.getAttribute("user");
+
+        // Ensure cart exists in session
+        Cart cart = (Cart) session.getAttribute("cart");
+        if (cart == null) {
+            cart = new Cart();
+            session.setAttribute("cart", cart);
+        }
+
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -35,27 +48,36 @@
                 </a>
             </navbar>
             <%
+                System.out.println("productName: " + request.getParameter("productName"));
+                System.out.println("price: " + request.getParameter("price"));
+                System.out.println("quantity: " + request.getParameter("quantity"));
                 //from the products.jsp Add to Cart buttons
+
                 String productName = request.getParameter("productName");
                 String price = request.getParameter("price");
-                String amount = request.getParameter("quantity");
+                String quantity = request.getParameter("quantity");
+
+                if (productName == null || price == null || quantity == null || 
+                    price.isEmpty() || quantity.isEmpty()) {
+                    throw new IllegalArgumentException("Invalid productName, price, or quantity");
+                }
+
+                double cost = 0;
+                int amount = 0;
                 
-                double cost = Double.parseDouble(price);
-                int quantity = Integer.parseInt(amount);
-
-                Cart cart = (Cart) session.getAttribute("cart");
-
-                    if (cart == null) {
-                        cart = new Cart();
-                        session.setAttribute("cart", cart);
-                    }
+                try {
+                    cost = Double.parseDouble(price);
+                    amount = Integer.parseInt(quantity);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid price or quantity format", e);
+                }
 
                 List<ProductListEntry> cartItems = cart.getProductList();
                 boolean productExists = false;
 
-                for (ProductListEntry entry : cartItems) {
-                    if (entry.getProduct().getName().equals(productName)) {
-                        entry.setQuantity(entry.getQuantity() + quantity);
+                for (ProductListEntry item : cartItems) {
+                    if (item.getProduct().getName().equals(productName)) {
+                        item.setQuantity(item.getQuantity() + amount);
                         productExists = true;
                         break;
                     }
