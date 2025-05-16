@@ -44,7 +44,7 @@ CREATE TABLE Cart (
 CREATE TABLE `Order` (
     OrderId INTEGER PRIMARY KEY,
     UserId INTEGER,
-    ProductListId INTEGER,
+    CartId INTEGER,
     PaymentId INTEGER,
     DatePlaced DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId),

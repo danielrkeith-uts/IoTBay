@@ -16,7 +16,7 @@ VALUES(1, 1, 23.45, 1);
 INSERT INTO Card(CardId, Name, Number, Expiry, CVC)
 VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123');
 
-INSERT INTO `Order`(OrderId, UserId, ProductListId, PaymentId, DatePlaced)
+INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced)
 VALUES (1, 0, 1, 1, '2025-04-25 00:00:00');
 
 INSERT INTO User (UserId, FirstName, LastName, Email, Phone, Password)
@@ -33,8 +33,8 @@ INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTi
 VALUES (0, 0, 0, 1745632800000),
 (1, 0, 1, 1745633100000);
 
-INSERT INTO ProductListEntry(ProductListId, ProductId, Quantity)
+INSERT INTO ProductListEntry(CartId, ProductId, Quantity)
 VALUES (1, 0, 1);
 
-INSERT INTO Cart (CartId, ProductListId, LastUpdated)
-VALUES (1, 1, '2026-08-31 00:00:00.000');
+INSERT INTO Cart (CartId, LastUpdated)
+VALUES (1, '2026-08-31 00:00:00.000');

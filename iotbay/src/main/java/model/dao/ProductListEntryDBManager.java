@@ -15,13 +15,13 @@ public class ProductListEntryDBManager {
         st = conn.createStatement();
     }
 
-    public ProductListEntry getProductListEntry(int ProductId, int ProductListId) throws SQLException {
+    public ProductListEntry getProductListEntry(int ProductId, int CartId) throws SQLException {
 
         //create a product instance first
         ProductDBManager productDBManager = new ProductDBManager(conn);
         Product Product = productDBManager.getProduct(ProductId);
 
-        String query = "SELECT * FROM ProductListEntry WHERE ProductListId = '" + ProductListId + "'"; 
+        String query = "SELECT * FROM ProductListEntry WHERE CartId = " + CartId; 
         ResultSet rs = st.executeQuery(query);      
         int Quantity = rs.getInt("Quantity");
 
@@ -29,7 +29,7 @@ public class ProductListEntryDBManager {
     }
 
     public List<ProductListEntry> getProductList(int ProductListId) throws SQLException {
-        String query = "SELECT * FROM ProductListEntry WHERE ProductListId = '" + ProductListId + "'"; 
+        String query = "SELECT * FROM ProductListEntry WHERE CartId = '" + ProductListId + "'"; 
         ResultSet rs = st.executeQuery(query);      
 
         List<ProductListEntry> productList = new ArrayList<>();
