@@ -76,6 +76,11 @@
     color: red;
 }
 
+.bi-cart {
+    font-size: 20px;
+    margin-left: 10px;
+}
+
 .success {
     color: green;
 }
