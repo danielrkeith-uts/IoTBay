@@ -29,18 +29,16 @@ CREATE TABLE Product (
 );
 
 CREATE TABLE ProductListEntry (
-    ProductListId INTEGER,
+    CartId INTEGER,
     ProductId INTEGER,
     Quantity INTEGER NOT NULL,
-    PRIMARY KEY (ProductListId, ProductId),
+    PRIMARY KEY (CartId, ProductId),
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId)
 );
 
 CREATE TABLE Cart (
     CartId INTEGER PRIMARY KEY,
-    ProductListId INTEGER,
-    LastUpdated DATETIME,
-    FOREIGN KEY (ProductListId) REFERENCES ProductListEntry(ProductListId)
+    LastUpdated DATETIME
 );
 
 CREATE TABLE `Order` (
