@@ -60,11 +60,11 @@
                 <p><strong>Status:</strong> <%= isDeactivated ? "Deactivated" : "Active" %></p>
             </div>
             <div class="actions">
-                <button 
-                    onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'" 
-                    <%= isStaff ? "disabled class='btn btn-secondary'" : "" %>>
-                    Edit
-                </button>
+               <button 
+    onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'" 
+    <%= (isAdmin || isStaff) ? "" : "disabled class='btn btn-secondary'" %>>
+    Edit
+</button>
 
                 <button 
                     <%= isDeactivated 
