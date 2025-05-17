@@ -62,7 +62,9 @@
                 </div>
             <% } %>
         </div>
+        
     </div>
+<a href="addcustomer.jsp">Add New Customer</a>
 
 </body>
 
