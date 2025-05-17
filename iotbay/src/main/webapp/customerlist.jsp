@@ -15,13 +15,12 @@
     <title>Registered Customers</title>
 
     <link rel="stylesheet" href="main.css"  />
-     <link rel="stylesheet" href="customer-table.css"  />
+    <link rel="stylesheet" href="customer-table.css"  />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-    
 </head>
 
 <body>
@@ -47,16 +46,25 @@
         
         <div class="customer-grid">
             <% for (Customer customer : customers) { %>
-                <div class="customer-card">
+                <div class="customer-card <%= customer.isDeactivated() ? "deactivated" : "" %>">
                     <div class="content-wrapper">
                         <p><strong>First Name:</strong> <%= customer.getFirstName() %></p>
                         <p><strong>Last Name:</strong> <%= customer.getLastName() %></p>
                         <p><strong>Email:</strong> <%= customer.getEmail() %></p>
                         <p><strong>Phone:</strong> <%= customer.getPhone() %></p>
+                        <p><strong>Status:</strong> 
+                            <%= customer.isDeactivated() ? "Deactivated" : "Active" %>
+                        </p>
                     </div>
                     <div class="actions">
-<button onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'">Edit</button>
-                        <button onclick="window.location.href='deactivateCustomer?id=<%= customer.getUserId() %>'">Deactivate</button>
+                        <button onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'">Edit</button>
+                        
+                        <% if (customer.isDeactivated()) { %>
+                            <button onclick="window.location.href='reactivateCustomer?id=<%= customer.getUserId() %>'">Reactivate</button>
+                        <% } else { %>
+                            <button onclick="window.location.href='deactivateCustomer?id=<%= customer.getUserId() %>'">Deactivate</button>
+                        <% } %>
+
                         <button onclick="window.location.href='viewAccessLogs?id=<%= customer.getUserId() %>'">View Logs</button>
                     </div>
                 </div>
@@ -64,7 +72,7 @@
         </div>
         
     </div>
-<a href="addcustomer.jsp">Add New Customer</a>
+    <a href="addcustomer.jsp">Add New Customer</a>
 
 </body>
 

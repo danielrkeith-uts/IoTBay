@@ -11,6 +11,7 @@ public abstract class User implements Serializable {
     private String email;
     private String phone;
     private String password;
+    private boolean deactivated;  
     private List<ApplicationAccessLog> applicationAccessLogs;
 
     public User(int userId, String firstName, String lastName, String email, String phone, String password) {
@@ -20,8 +21,17 @@ public abstract class User implements Serializable {
         this.email = email;
         this.phone = phone;
         this.password = password;
+        this.deactivated = false; 
 
         this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
+    }
+
+    public boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
     }
 
     public int getUserId() {
@@ -100,6 +110,7 @@ public abstract class User implements Serializable {
             && this.lastName.equals(user.lastName)
             && this.email.equals(user.email)
             && this.phone.equals(user.phone)
-            && this.password.equals(user.password);
+            && this.password.equals(user.password)
+            && this.deactivated == user.deactivated;  
     }
 }

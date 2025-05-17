@@ -51,10 +51,6 @@ public class CustomerListServlet extends HttpServlet {
 
             request.setAttribute("customers", allCustomers);
 
-        } catch (ClassNotFoundException e) {
-            logger.log(Level.SEVERE, "Database driver not found", e);
-            request.setAttribute("errorMessage", "Database driver not found.");
-            request.getRequestDispatcher("/errorPage.jsp").forward(request, response);
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Failed to retrieve customers from the database", e);
             request.setAttribute("errorMessage", "Database error occurred while fetching customers.");
