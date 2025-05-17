@@ -43,7 +43,6 @@ public class UserDBManager {
     public UserDBManager(Connection conn) throws SQLException {
         this.conn = conn;
 
-        // Optional: set SQLite busy timeout
         conn.createStatement().execute("PRAGMA busy_timeout = 5000");
 
         this.addUserPs = conn.prepareStatement(ADD_USER_STMT, Statement.RETURN_GENERATED_KEYS);

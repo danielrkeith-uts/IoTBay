@@ -3,7 +3,7 @@ package model;
 public class Staff extends User {
     private int staffCardId;
     public Staff(int userId, String firstName, String lastName, String email, String phone, String password, int staffCardId) {
-        super(userId, firstName, lastName, email, phone, password);
+        super(userId, firstName, lastName, email, phone, password, Role.STAFF);
 
         this.staffCardId = staffCardId;
     }

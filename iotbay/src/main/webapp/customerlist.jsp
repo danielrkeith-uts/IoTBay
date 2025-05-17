@@ -1,9 +1,12 @@
-<%@ page import="java.util.List, java.util.ArrayList, model.Customer" %>
+<%@ page import="java.util.List, java.util.ArrayList, model.Customer, model.User" %>
 <jsp:include page="/ConnServlet" flush="true"/>
 <jsp:include page="/CustomerListServlet" flush="true"/>
 
 <%
     List<Customer> customers = (ArrayList<Customer>) request.getAttribute("customers");
+    User loggedInUser = (User) session.getAttribute("user");
+    boolean isAdmin = loggedInUser != null && loggedInUser.getRole() == User.Role.ADMIN; 
+    boolean isStaff = loggedInUser != null && loggedInUser.getRole() == User.Role.STAFF; 
 %>
 
 <!DOCTYPE html>
@@ -59,21 +62,21 @@
             <div class="actions">
                 <button 
                     onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'" 
-                    <%= isDeactivated ? "disabled class='btn btn-secondary'" : "" %>>
+                    <%= isStaff ? "disabled class='btn btn-secondary'" : "" %>>
                     Edit
                 </button>
 
                 <button 
                     <%= isDeactivated 
                         ? "disabled class='btn btn-secondary'" 
-                        : "onclick=\"window.location.href='deactivateCustomer?id=" + customer.getUserId() + "'\"" %>>
-                    <%= isDeactivated ? "Deactivated" : "Deactivate" %>
+                        : (isAdmin || isStaff ? "onclick=\"window.location.href='deactivateCustomer?id=" + customer.getUserId() + "'\"" : "disabled class='btn btn-secondary'") %>>
+                    <%= isDeactivated ? "Deactivated" : (isAdmin || isStaff ? "Deactivate" : "No Permission") %>
                 </button>
 
-                <button 
-                    onclick="window.location.href='viewAccessLogs?id=<%= customer.getUserId() %>'" 
-                    <%= isDeactivated ? "disabled class='btn btn-secondary'" : "" %>>
-                    View Logs
+               <button 
+                    onclick="window.location.href='/iotbay/ApplicationAccessLogServlet?customer_id=<%= customer.getUserId() %>'" 
+                     <%= isDeactivated ? "disabled class='btn btn-secondary'" : (isStaff ? "" : "disabled class='btn btn-secondary'") %>>
+                      View Logs
                 </button>
             </div>
         </div>

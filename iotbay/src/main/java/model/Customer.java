@@ -8,7 +8,7 @@ public class Customer extends User {
     private List<Order> orders;
 
     public Customer(int userId, String firstName, String lastName, String email, String phone, String password) {
-        super(userId, firstName, lastName, email, phone, password);
+        super(userId, firstName, lastName, email, phone, password, Role.CUSTOMER);
 
         cart = new Cart();
         orders = new LinkedList<Order>();
