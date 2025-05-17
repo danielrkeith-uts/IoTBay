@@ -116,20 +116,3 @@ h1, h2 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-@media (max-width: 768px) {
-    .customer-section {
-        padding: 20px;
-    }
-
-    .customer-grid {
-        gap: 15px; 
-    }
-
-    .customer-card {
-        padding: 15px;
-    }
-
-    .customer-card button {
-        padding: 10px 20px; 
-    }
-}

@@ -4,8 +4,8 @@
         User user = (User)session.getAttribute("user");
     %>
     <head>
-        <link rel="stylesheet" href="main.css" />
-        <link rel="stylesheet" href="products.css" />
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/products.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -26,6 +26,7 @@
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                            <li><a class="dropdown-item" href="customerlist.jsp">Customers</a></li>
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>
                     </div>

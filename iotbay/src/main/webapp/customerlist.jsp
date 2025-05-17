@@ -17,8 +17,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registered Customers</title>
 
-    <link rel="stylesheet" href="main.css"  />
-    <link rel="stylesheet" href="customer-table.css"  />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/customerlist.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
@@ -60,11 +60,11 @@
                 <p><strong>Status:</strong> <%= isDeactivated ? "Deactivated" : "Active" %></p>
             </div>
             <div class="actions">
-               <button 
-    onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'" 
-    <%= (isAdmin || isStaff) ? "" : "disabled class='btn btn-secondary'" %>>
-    Edit
-</button>
+                <button 
+                    onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'" 
+                    <%= (isAdmin || isStaff) && !isDeactivated ? "" : "disabled class='btn btn-secondary'" %>>
+                    Edit
+                </button>
 
                 <button 
                     <%= isDeactivated 
@@ -73,17 +73,21 @@
                     <%= isDeactivated ? "Deactivated" : (isAdmin || isStaff ? "Deactivate" : "No Permission") %>
                 </button>
 
-               <button 
+                <button 
                     onclick="window.location.href='/iotbay/ApplicationAccessLogServlet?customer_id=<%= customer.getUserId() %>'" 
-                     <%= isDeactivated ? "disabled class='btn btn-secondary'" : (isStaff ? "" : "disabled class='btn btn-secondary'") %>>
-                      View Logs
+                    <%= isDeactivated ? "disabled class='btn btn-secondary'" : (isStaff ? "" : "disabled class='btn btn-secondary'") %>>
+                    View Logs
                 </button>
             </div>
         </div>
     <% } %>
 </div>
 
-            <a href="addcustomer.jsp">Add New Customer</a>
+<div class="text-center mt-4">
+    <button class="btn-green" onclick="window.location.href='addcustomer.jsp'">
+        <i class="fas fa-user-plus"></i> Add New Customer
+    </button>
+</div>
 
     </div>
 
