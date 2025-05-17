@@ -55,7 +55,7 @@ public class CartDBManagerTests {
         try {
             Timestamp timestamp = new Timestamp(cart.getLastUpdated().getTime());
             java.sql.Date sqlDate = new java.sql.Date(timestamp.getTime());
-            cartDBManager.addCart(2, sqlDate);
+            cartDBManager.addCart(sqlDate);
         } catch (SQLException e) {
             e.printStackTrace();
             Assert.fail("SQLException thrown: " + e.getMessage());

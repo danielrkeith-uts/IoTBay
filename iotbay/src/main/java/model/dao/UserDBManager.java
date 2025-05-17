@@ -147,7 +147,7 @@ public class UserDBManager {
         return toCustomer(rs);
     }
 
-    private Customer getCustomer(int userId) throws SQLException {
+    public Customer getCustomer(int userId) throws SQLException {
         getCustomerPsB.setInt(1, userId);
 
         ResultSet rs = getCustomerPsB.executeQuery();

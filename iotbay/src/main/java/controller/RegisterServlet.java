@@ -13,11 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
+import model.Cart;
 import model.Customer;
 import model.Staff;
 import model.User;
 import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
+import model.dao.CartDBManager;
 import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
@@ -42,6 +44,11 @@ public class RegisterServlet extends HttpServlet {
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
             throw new ServletException("UserDBManager retrieved from session is null");
+        }
+
+        CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+        if (cartDBManager == null) {
+            throw new ServletException("CartDBManager retrieved from session is null");
         }
 
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
@@ -97,6 +104,19 @@ public class RegisterServlet extends HttpServlet {
                 userDBManager.addStaff((Staff) user);
             } else {        
                 userDBManager.addCustomer((Customer) user);
+
+                Customer customer = userDBManager.getCustomer(user.getUserId());
+                int userId = customer.getUserId();
+                user.setUserId(userId); 
+
+                // Create a cart in the DB and store it in session
+                java.sql.Date now = new java.sql.Date(new Date().getTime());
+                int cartId = cartDBManager.addCart(now);
+
+                Cart cart = new Cart();
+                cart.setCartId(cartId); 
+                cart.setLastUpdated(new Date());
+                session.setAttribute("cart", cart);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not add user into DB");

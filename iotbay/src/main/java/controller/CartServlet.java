@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,6 +13,14 @@ import model.*;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
+
+    private Logger logger;
+
+    @Override
+    public void init() {
+        logger = Logger.getLogger(CartServlet.class.getName());
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Cart cart = (Cart) session.getAttribute("cart");
@@ -31,7 +41,7 @@ public class CartServlet extends HttpServlet {
         session.setAttribute("productName", productName);
         session.setAttribute("price", price);
         session.setAttribute("quantity", quantity);
-        response.sendRedirect("cart.jsp"); // Redirect to display updated cart
+        response.sendRedirect("cart.jsp");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

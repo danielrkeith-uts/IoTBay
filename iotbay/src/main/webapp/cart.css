@@ -1,5 +1,6 @@
 body.cart-page h2,
-body.cart-page p {
+body.cart-page p,
+body.cart-page label {
     padding-left: 10px;
 }
 
@@ -12,30 +13,29 @@ body.cart-page p {
     margin: auto;
 }
 
-.cart-card .btn-green {
-    display: inline-block;
+.cart-card .btn-green,
+.cart-card form button.btn-green {
+    display: inline-flex;
+    align-items: center; 
+    justify-content: center;
     background-color: #588157;
-    color: white !important; /* ensure it overrides Bootstrap link color */
+    color: white !important;
     text-align: center;
     text-decoration: none !important;
-    border: 2px solid transparent;
+    border: none;
     padding: 12px 25px;
     font-size: 12px;
     text-transform: uppercase;
     width: 200px;
+    height: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     margin-top: 15px;
-
-    /* make anchor behave more like button */
-    line-height: normal;
-    vertical-align: middle;
-    text-align: center;
-    border-radius: 4px; /* optional */
+    border-radius: 4px;
+    line-height: 1; 
 }
 
-/* Add consistent hover/focus styles for both types */
 .cart-card .btn-green:hover,
 .cart-card .btn-green:focus {
     background-color: #3a5a40;

@@ -38,8 +38,18 @@ public class CartDBManager {
     }
 
     //Add a cart to the database   
-    public void addCart(int CartId, Date LastUpdated) throws SQLException {       
-        st.executeUpdate("INSERT INTO Cart VALUES (" + CartId + ", " + LastUpdated + ")");   
+    public int addCart(Date LastUpdated) throws SQLException {       
+        String query = "INSERT INTO Cart (LastUpdated) VALUES (?)";
+        PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+        ps.setDate(1, LastUpdated);
+        ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1); // generated cartId
+        } else {
+            throw new SQLException("Cart ID not generated.");
+        }
     }
 
     //update a cart's LastUpdated in the database   

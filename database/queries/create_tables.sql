@@ -37,7 +37,7 @@ CREATE TABLE ProductListEntry (
 );
 
 CREATE TABLE Cart (
-    CartId INTEGER PRIMARY KEY,
+    CartId INTEGER AUTO_INCREMENT PRIMARY KEY,
     LastUpdated DATETIME
 );
 
