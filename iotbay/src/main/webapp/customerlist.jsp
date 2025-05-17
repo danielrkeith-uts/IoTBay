@@ -45,34 +45,44 @@
         <h1>Registered Customers</h1>
         
         <div class="customer-grid">
-            <% for (Customer customer : customers) { %>
-                <div class="customer-card <%= customer.isDeactivated() ? "deactivated" : "" %>">
-                    <div class="content-wrapper">
-                        <p><strong>First Name:</strong> <%= customer.getFirstName() %></p>
-                        <p><strong>Last Name:</strong> <%= customer.getLastName() %></p>
-                        <p><strong>Email:</strong> <%= customer.getEmail() %></p>
-                        <p><strong>Phone:</strong> <%= customer.getPhone() %></p>
-                        <p><strong>Status:</strong> 
-                            <%= customer.isDeactivated() ? "Deactivated" : "Active" %>
-                        </p>
-                    </div>
-                    <div class="actions">
-                        <button onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'">Edit</button>
-                        
-                        <% if (customer.isDeactivated()) { %>
-                            <button onclick="window.location.href='reactivateCustomer?id=<%= customer.getUserId() %>'">Reactivate</button>
-                        <% } else { %>
-                            <button onclick="window.location.href='deactivateCustomer?id=<%= customer.getUserId() %>'">Deactivate</button>
-                        <% } %>
+    <% for (Customer customer : customers) { 
+        boolean isDeactivated = customer.isDeactivated();
+    %>
+        <div class="customer-card <%= isDeactivated ? "deactivated" : "" %>">
+            <div class="content-wrapper">
+                <p><strong>First Name:</strong> <%= customer.getFirstName() %></p>
+                <p><strong>Last Name:</strong> <%= customer.getLastName() %></p>
+                <p><strong>Email:</strong> <%= customer.getEmail() %></p>
+                <p><strong>Phone:</strong> <%= customer.getPhone() %></p>
+                <p><strong>Status:</strong> <%= isDeactivated ? "Deactivated" : "Active" %></p>
+            </div>
+            <div class="actions">
+                <button 
+                    onclick="window.location.href='LoadEditCustomerServlet?id=<%= customer.getUserId() %>'" 
+                    <%= isDeactivated ? "disabled class='btn btn-secondary'" : "" %>>
+                    Edit
+                </button>
 
-                        <button onclick="window.location.href='viewAccessLogs?id=<%= customer.getUserId() %>'">View Logs</button>
-                    </div>
-                </div>
-            <% } %>
+                <button 
+                    <%= isDeactivated 
+                        ? "disabled class='btn btn-secondary'" 
+                        : "onclick=\"window.location.href='deactivateCustomer?id=" + customer.getUserId() + "'\"" %>>
+                    <%= isDeactivated ? "Deactivated" : "Deactivate" %>
+                </button>
+
+                <button 
+                    onclick="window.location.href='viewAccessLogs?id=<%= customer.getUserId() %>'" 
+                    <%= isDeactivated ? "disabled class='btn btn-secondary'" : "" %>>
+                    View Logs
+                </button>
+            </div>
         </div>
-        
+    <% } %>
+</div>
+
+            <a href="addcustomer.jsp">Add New Customer</a>
+
     </div>
-    <a href="addcustomer.jsp">Add New Customer</a>
 
 </body>
 

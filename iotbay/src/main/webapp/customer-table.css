@@ -60,21 +60,23 @@
     margin-top: 20px;
     display: flex;
     justify-content: flex-start;
-    gap: 15px; 
+    gap: 10px;
+    flex-wrap: nowrap; 
+    overflow-x: auto;  
 }
 
 .customer-card button {
     background-color: #5e8c4e; 
     color: white;
     border: none;
-    padding: 12px 30px; 
-    font-size: 14px; 
+    padding: 8px 16px;
+    font-size: 11px;  
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 15px;
-    border-radius: 8px;
+    margin-top: 10px; 
+    border-radius: 6px; 
 }
 
 .customer-card button:hover {
