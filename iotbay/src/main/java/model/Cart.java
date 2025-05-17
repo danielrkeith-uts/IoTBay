@@ -33,7 +33,14 @@ public class Cart implements Serializable {
     }
 
     public void addProduct(Product product) {
-        productList.add(new ProductListEntry(product));
+        for (ProductListEntry item : productList) {
+            if (item.getProduct().getName().equals(product.getName())) {
+                item.setQuantity(item.getQuantity() + 1); // or quantity passed separately
+                return;
+            }
+        }
+        // If product not found, add new entry
+        productList.add(new ProductListEntry(product, 1));
         lastUpdated = new Date();
     }
 

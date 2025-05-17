@@ -48,45 +48,13 @@
                 </a>
             </navbar>
             <%
+
+                //debugging statements
                 System.out.println("productName: " + request.getParameter("productName"));
                 System.out.println("price: " + request.getParameter("price"));
                 System.out.println("quantity: " + request.getParameter("quantity"));
-                //from the products.jsp Add to Cart buttons
-
-                String productName = request.getParameter("productName");
-                String price = request.getParameter("price");
-                String quantity = request.getParameter("quantity");
-
-                if (productName == null || price == null || quantity == null || 
-                    price.isEmpty() || quantity.isEmpty()) {
-                    throw new IllegalArgumentException("Invalid productName, price, or quantity");
-                }
-
-                double cost = 0;
-                int amount = 0;
-                
-                try {
-                    cost = Double.parseDouble(price);
-                    amount = Integer.parseInt(quantity);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid price or quantity format", e);
-                }
-
+        
                 List<ProductListEntry> cartItems = cart.getProductList();
-                boolean productExists = false;
-
-                for (ProductListEntry item : cartItems) {
-                    if (item.getProduct().getName().equals(productName)) {
-                        item.setQuantity(item.getQuantity() + amount);
-                        productExists = true;
-                        break;
-                    }
-                }
-
-                if (!productExists) {
-                    Product product = new Product(productName, "", cost, 0);
-                    cart.addProduct(product);
-                }
 
             %>
         </div>

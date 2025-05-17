@@ -19,6 +19,8 @@ public class CartServlet extends HttpServlet {
             session.setAttribute("cart", cart);
         }
 
+        User user = (User) session.getAttribute("user");
+
         String productName = request.getParameter("productName");
         double price = Double.parseDouble(request.getParameter("price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
