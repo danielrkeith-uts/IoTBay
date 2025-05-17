@@ -40,10 +40,10 @@ public class ApplicationAccessLogDBManager {
         this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLICATION_ACCESS_LOG_STMT);
     }
 
-    public void addApplicationAccessLog(int userId, ApplicationAccessLog applicationAccessLog) throws SQLException {
+    public void addApplicationAccessLog(int userId, ApplicationAccessLog log3) throws SQLException {
         addApplicationAccessLogPs.setInt(1, userId);
-        addApplicationAccessLogPs.setInt(2, applicationAccessLog.getApplicationAction().toInt());
-        addApplicationAccessLogPs.setDate(3, new java.sql.Date(applicationAccessLog.getDateTime().getTime()));
+        addApplicationAccessLogPs.setInt(2, log3.getApplicationAction().toInt());
+        addApplicationAccessLogPs.setDate(3, new java.sql.Date(log3.getDateTime().getTime()));
 
         addApplicationAccessLogPs.executeUpdate();
     }

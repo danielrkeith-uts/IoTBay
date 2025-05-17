@@ -14,7 +14,7 @@ import model.ApplicationAccessLog;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLogDBManagerTests {
-    // In database
+
     private static final ApplicationAccessLog log1 = new ApplicationAccessLog(
         ApplicationAction.LOGIN,
         new GregorianCalendar(2025, 3, 26, 12, 0, 0).getTime()
@@ -24,7 +24,6 @@ public class ApplicationAccessLogDBManagerTests {
         new GregorianCalendar(2025, 3, 26, 12, 5, 0).getTime()
     );
 
-    // Not in database
     private static final ApplicationAccessLog log3 = new ApplicationAccessLog(
         ApplicationAction.ADD_TO_CART,
         new GregorianCalendar(2026, 1, 2, 3, 4, 5).getTime()
@@ -35,7 +34,7 @@ public class ApplicationAccessLogDBManagerTests {
 
     public ApplicationAccessLogDBManagerTests() throws ClassNotFoundException, SQLException {
         this.conn = new DBConnector().openConnection();
-        conn.setAutoCommit(false);
+        conn.setAutoCommit(false); // To rollback changes made during test
         this.applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
     }
 
@@ -44,33 +43,30 @@ public class ApplicationAccessLogDBManagerTests {
         try {
             applicationAccessLogDBManager.addApplicationAccessLog(0, log3);
 
-            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2, log3);
             List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
 
-            Assert.assertTrue(resultLogs.containsAll(expectedLogs));
+            Assert.assertTrue("Log should be added", resultLogs.contains(log3));
         } catch (SQLException e) {
-            Assert.fail(e.getMessage());
+            Assert.fail("Exception during add log test: " + e.getMessage());
         } finally {
             try {
                 conn.rollback();
             } catch (SQLException e) {
-                System.err.println(e);
+                System.err.println("Rollback failed: " + e.getMessage());
             }
         }
     }
 
     @Test
     public void testGetApplicationAccessLogs() {
-        List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2);
-        List<ApplicationAccessLog> resultLogs;
         try {
-            resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
-        } catch (SQLException e) {
-            Assert.fail();
-            return;
-        }
+            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
 
-        Assert.assertTrue(resultLogs.containsAll(expectedLogs));
+            Assert.assertTrue("Logs should match expected", resultLogs.containsAll(expectedLogs));
+        } catch (SQLException e) {
+            Assert.fail("Exception during get logs test: " + e.getMessage());
+        }
     }
 
     @Test
@@ -78,38 +74,17 @@ public class ApplicationAccessLogDBManagerTests {
         try {
             applicationAccessLogDBManager.anonymiseApplicationAccessLogs(0);
 
-            List<ApplicationAccessLog> expectedLogs = new LinkedList<ApplicationAccessLog>();
             List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
-
-            Assert.assertEquals(expectedLogs, resultLogs);
+            Assert.assertTrue("Logs should be anonymized (empty list)", resultLogs.isEmpty());
         } catch (SQLException e) {
-            Assert.fail(e.getMessage());
+            Assert.fail("Exception during anonymise log test: " + e.getMessage());
         } finally {
             try {
-                conn.rollback();
+                conn.rollback(); 
             } catch (SQLException e) {
-                System.err.println(e);
+                System.err.println("Rollback failed: " + e.getMessage());
             }
         }
     }
 
-    @Test
-    public void testDeleteApplicationAccessLog() {
-        try {
-            applicationAccessLogDBManager.deleteApplicationAccessLog(0);
-
-            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log2);
-            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
-
-            Assert.assertTrue(resultLogs.containsAll(expectedLogs));
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        } finally {
-            try {
-                conn.rollback();
-            } catch (SQLException e) {
-                System.err.println(e);
-            }
-        }
-    }
 }

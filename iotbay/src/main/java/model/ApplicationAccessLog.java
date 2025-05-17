@@ -56,4 +56,14 @@ public class ApplicationAccessLog implements Serializable {
         ApplicationAccessLog other = (ApplicationAccessLog) obj;
         return applicationAction == other.applicationAction && dateTime.equals(other.dateTime);
     }
+
+    @Override
+    public String toString() {
+        return "ApplicationAccessLog{" +
+                "logId=" + logId +
+                ", userId=" + userId +
+                ", applicationAction=" + applicationAction +
+                ", dateTime=" + dateTime +
+                '}';
+    }
 }

@@ -1,12 +1,10 @@
 <%@ page import="java.util.List, model.ApplicationAccessLog, model.User, model.User.Role" %>
 <%
-    // Fetch the logs from the request
     List<ApplicationAccessLog> logs = (List<ApplicationAccessLog>) request.getAttribute("accessLogs");
     model.User user = (model.User) session.getAttribute("user");
 
-    // Debugging output for user role
     String userRole = (user != null) ? user.getRole().name() : "No user in session";
-    out.println("User Role: " + userRole); // Debugging output to check role
+    out.println("User Role: " + userRole); 
 %>
 
 <html>
@@ -21,7 +19,7 @@
             <tr>
                 <th>Date and Time</th>
                 <th>Action</th>
-                <% if (user != null && user.getRole().name().equals("ADMIN")) { %>
+                <% if (user != null && (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("STAFF"))) { %>
                     <th>Actions</th>
                 <% } %>
             </tr>
@@ -31,15 +29,19 @@
                 <tr>
                     <td><%= log.getDateTime() %></td>
                     <td><%= log.getApplicationAction().name() %></td>
-                    <%-- <% if (user != null && user.getRole().name().equals("ADMIN")) { %> --%>
+                    <% if (user != null && (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("STAFF"))) { %>
                         <td>
-                            <!-- Link to edit the access log -->
-                            <a href="EditAccessLogServlet?logId=<%= log.getLogId() %>">Edit</a>
+                          
                         </td>
                     <% } %>
                 </tr>
-            <%-- <% } %> --%>
+            <% } %>
         </tbody>
     </table>
+
+    <% if (user != null && (user.getRole().name().equals("ADMIN") || user.getRole().name().equals("STAFF"))) { %>
+        <br>
+        <a href="addaccesslogform.jsp">Add New Access Log</a>
+    <% } %>
 </body>
 </html>
