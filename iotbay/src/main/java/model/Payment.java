@@ -5,14 +5,20 @@ import java.io.Serializable;
 import model.Enums.PaymentStatus;
 
 public class Payment implements Serializable {
+    private int paymentId;
     private double amount;
     private Card card;
     private PaymentStatus paymentStatus;
 
-    public Payment(double amount, Card card, PaymentStatus paymentStatus) {
+    public Payment(int paymentId, double amount, Card card, PaymentStatus paymentStatus) {
+        this.paymentId = paymentId;
         this.amount = amount;
         this.card = card;
         this.paymentStatus = paymentStatus;
+    }
+
+    public double getPaymentId() {
+        return paymentId;
     }
 
     public double getAmount() {

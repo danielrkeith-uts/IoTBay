@@ -22,6 +22,7 @@ public class DeliveryDBManager {
         ResultSet rs = st.executeQuery(query); 
 
         if (rs.next()) {
+            int OrderId = rs.getInt("OrderId");
             int SourceAddressId = rs.getInt("SourceAddressId");
             int DestinationAddressId = rs.getInt("DestinationAddressId");
             String Courier = rs.getString("Courier");
@@ -53,20 +54,19 @@ public class DeliveryDBManager {
                     String destPostcode = String.valueOf(destinationAddRs.getInt("Postcode"));
                     Address destination = new Address(DestinationAddressId, destStreetNumber, destStreet, destSuburb, destState, destPostcode);
 
-                    // create an order list 
-                    String orderQuery = "SELECT * FROM `Order` WHERE DeliveryId = '" + DeliveryId + "'"; 
+                    // create a product list via order
+                    String orderQuery = "SELECT * FROM `Order` WHERE OrderId = '" + OrderId + "'"; 
                     ResultSet orderRs = st.executeQuery(orderQuery); 
 
                     List<Order> orders = new ArrayList<>();
                     
                     while (orderRs.next()) {
-                        int OrderId = orderRs.getInt("OrderId");
-                        int ProductListId = orderRs.getInt("ProductListId");
+                        int CartId = orderRs.getInt("CartId");
                         int PaymentId = orderRs.getInt("PaymentId");
                         Date DatePlaced = orderRs.getDate("DatePlaced");
 
                         ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager(conn);
-                        List<ProductListEntry> productList = productListEntryDBManager.getProductList(ProductListId);
+                        List<ProductListEntry> productList = productListEntryDBManager.getProductList(CartId);
 
                         PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
                         Payment payment = paymentDBManager.getPayment(PaymentId);

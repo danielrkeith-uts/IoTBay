@@ -18,6 +18,7 @@ public class PaymentDBManager {
         ResultSet rs = st.executeQuery(query); 
 
         if (rs.next()) {
+            int paymentId = rs.getInt("PaymentId");
             int CardId = rs.getInt("CardId");
             double Amount = rs.getDouble("Amount");
             int statusIndex = rs.getInt("PaymentStatus");
@@ -34,7 +35,7 @@ public class PaymentDBManager {
                 String CVC = rs.getString("CVC");
                 Card Card = new Card(CardId, Name, Number, Expiry, CVC);
 
-                return new Payment(Amount, Card, paymentStatus);
+                return new Payment(paymentId, Amount, Card, paymentStatus);
             }
         }
         return null;

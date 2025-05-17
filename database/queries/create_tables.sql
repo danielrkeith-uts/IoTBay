@@ -29,39 +29,36 @@ CREATE TABLE Product (
 );
 
 CREATE TABLE ProductListEntry (
-    ProductListId INTEGER,
+    CartId INTEGER,
     ProductId INTEGER,
     Quantity INTEGER NOT NULL,
-    PRIMARY KEY (ProductListId, ProductId),
+    PRIMARY KEY (CartId, ProductId),
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId)
 );
 
 CREATE TABLE Cart (
-    CartId INTEGER PRIMARY KEY,
-    ProductListId INTEGER,
-    LastUpdated DATETIME,
-    FOREIGN KEY (ProductListId) REFERENCES ProductListEntry(ProductListId)
+    CartId INTEGER AUTO_INCREMENT PRIMARY KEY,
+    LastUpdated DATETIME
 );
 
 CREATE TABLE `Order` (
     OrderId INTEGER PRIMARY KEY,
     UserId INTEGER,
-    ProductListId INTEGER,
+    CartId INTEGER,
     PaymentId INTEGER,
-    DeliveryId INTEGER,
     DatePlaced DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId),
-    
-    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
-    FOREIGN KEY (DeliveryId) REFERENCES Delivery(DeliveryId)
+    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId)
 );
 
 CREATE TABLE Delivery (
     DeliveryId INTEGER PRIMARY KEY,
+    OrderId INTEGER NOT NULL,
     SourceAddressId INTEGER,
     DestinationAddressId INTEGER,
     Courier VARCHAR(30) NOT NULL,
     CourierDeliveryId INTEGER NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
     FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId),
     FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
 );
