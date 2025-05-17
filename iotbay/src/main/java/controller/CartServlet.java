@@ -31,12 +31,12 @@ public class CartServlet extends HttpServlet {
         session.setAttribute("productName", productName);
         session.setAttribute("price", price);
         session.setAttribute("quantity", quantity);
-        response.sendRedirect("order.jsp"); // Redirect to display updated cart
+        response.sendRedirect("cart.jsp"); // Redirect to display updated cart
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            request.getRequestDispatcher("order.jsp").forward(request, response);
+            request.getRequestDispatcher("cart.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing cart.");

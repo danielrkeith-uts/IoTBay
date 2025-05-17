@@ -31,7 +31,7 @@
                         </ul>
                     </div>
                 <% } %>
-                <a href="order.jsp">
+                <a href="cart.jsp">
                     <i class="bi bi-cart"></i>
                 </a>
             </navbar>

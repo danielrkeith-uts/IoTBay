@@ -9,8 +9,8 @@
    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         // Retrieve session attributes
-        String error = (String) session.getAttribute("orderError");
-        session.removeAttribute("orderError"); // Only remove when needed
+        String error = (String) session.getAttribute("cartError");
+        session.removeAttribute("cartError"); 
 
         User user = (User) session.getAttribute("user");
 
@@ -24,17 +24,16 @@
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
-        <link rel="stylesheet" href="index.css" />
-        <link rel="stylesheet" href="order.css" />
+        <link rel="stylesheet" href="cart.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     </head>
-    <body>
+    <body class="cart-page">
         <div class="banner">
-            <h1>Place and Order</h1>
+            <h1>Place an Order</h1>
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp" class="active">Products</a>
@@ -43,24 +42,20 @@
                 <% } else { %>
                     <a href="logout.jsp">Logout</a>
                 <% } %>
-                <a href="order.jsp">
+                <a href="cart.jsp">
                     <i class="bi bi-cart"></i>
                 </a>
             </navbar>
             <%
-
-                //debugging statements
-                System.out.println("productName: " + request.getParameter("productName"));
-                System.out.println("price: " + request.getParameter("price"));
-                System.out.println("quantity: " + request.getParameter("quantity"));
-        
                 List<ProductListEntry> cartItems = cart.getProductList();
-
             %>
         </div>
         <h2>Your Shopping Cart</h2>
         <% if (cartItems == null || cartItems.isEmpty()) { %>
             <p>Your cart is empty.</p>
+            <div class="cart-card">
+                <a href="products.jsp" class="btn-green">Return to Products</a>
+            </div>
         <% } else { %>
             <ul>
                 <% 
@@ -70,8 +65,12 @@
                 <%
                     }
                 %>
-                <p><strong>Total: $<%= cart.totalCost() %></strong></p>
             </ul>
+            <p><strong>Total: $<%= cart.totalCost() %></strong></p>
+            <div class="cart-card">
+                <a href="products.jsp" class="btn-green">Return to Products</a>
+                <a href="order.jsp" class="btn-green">Buy Now</a>
+            </div>
         <% } %>
     </body>
 </html>
