@@ -65,6 +65,6 @@ public class ApplicationAccessLogServlet extends HttpServlet {
         }
 
         request.setAttribute("accessLogs", logs);
-        request.getRequestDispatcher("/viewAccessLogs.jsp").forward(request, response);
+        request.getRequestDispatcher("/viewaccesslogs.jsp").forward(request, response);
     }
 }

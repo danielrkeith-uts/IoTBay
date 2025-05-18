@@ -14,25 +14,7 @@
     <body>
         <div class="banner">
             <h1>Internet of Things Store</h1>
-            <navbar>
-                <a href="index.jsp" class="active">Home</a>
-                <a href="products.jsp">Products</a>
-                <% if (user == null) { %>
-                    <a href="login.jsp">Login</a>
-                <% } else { %>
-                    <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
-                            <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                            <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
-                            <li><a class="dropdown-item" href="customerlist.jsp">Customers</a></li>
-                            <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
-
-                        </ul>
-                    </div>
-                <% } %>
-            </navbar>
+          <jsp:include page="navbar.jsp" />
         </div>
         <div class="content">
             <div class="welcome-section">
