@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, model.ApplicationAccessLog, model.User, model.User.Role" flush="true" %>
+<%@ page import="java.util.List, model.ApplicationAccessLog, model.User, model.User.Role" %>
 <%
     List<ApplicationAccessLog> logs = (List<ApplicationAccessLog>) request.getAttribute("accessLogs");
     model.User user = (model.User) session.getAttribute("user");
