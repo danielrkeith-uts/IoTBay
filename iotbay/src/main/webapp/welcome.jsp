@@ -8,7 +8,12 @@
     %>
     <%
         User user = (User) session.getAttribute("user");
-        String firstName = user.getFirstName();
+        boolean isStaff = false;
+    if (user != null && user instanceof model.Staff) {
+        isStaff = true;
+    }
+    String firstName = (user != null) ? user.getFirstName() : "";
+        //String firstName = user.getFirstName();
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -32,6 +37,9 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                             <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
+                            <% if (isStaff) { %>
+                            <li><a class="dropdown-item" href="adminInventory.jsp">Manage Inventory</a></li>
+                        <% } %>
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                         </ul>
                     </div>

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
+import model.dao.ProductDBManager;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -21,6 +22,7 @@ public class ConnServlet extends HttpServlet {
     private DBConnector dbConnector;
     private Connection conn;
     private UserDBManager userDBManager;
+    private ProductDBManager productDBManager;
 
     @Override
     public void init() {
@@ -41,15 +43,19 @@ public class ConnServlet extends HttpServlet {
             return;
         }
 
-        // Instantiate all DBManagers
         try {
             conn = dbConnector.openConnection();
+
             userDBManager = new UserDBManager(conn);
+            productDBManager = new ProductDBManager(conn);
+
+            session.setAttribute("userDBManager", userDBManager);
+            session.setAttribute("productDBManager", productDBManager);
+            session.setAttribute("connected", true);
+
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
-        session.setAttribute("userDBManager", userDBManager);
-        session.setAttribute("connected", true);
     }
 
     @Override

@@ -30,6 +30,9 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                         <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
+                        <% if (isStaff) { %>
+                            <li><a class="dropdown-item" href="adminInventory.jsp">Manage Inventory</a></li>
+                        <% } %>
                         <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                     </ul>
                 </div>

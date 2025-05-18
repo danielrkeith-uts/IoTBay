@@ -1,7 +1,8 @@
-<%@ page import="model.User"%>
+<%@ page import="model.User, model.Staff"%>
 <html>
     <%
-        User user = (User)session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
+        boolean isStaff = (user != null && user instanceof Staff);
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -25,6 +26,9 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                             <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
+                            <% if (isStaff) { %>
+                            <li><a class="dropdown-item" href="adminInventory.jsp">Manage Inventory</a></li>
+                        <% } %>
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                         </ul>
                     </div>
@@ -75,6 +79,8 @@
                                     <i class="fas fa-lock"></i>
 
                         <p>Leading class security to keep your information safe and transaction protected.</p>
+
+
                     </div>
                 </div>
             </section>
