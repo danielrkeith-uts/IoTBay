@@ -21,11 +21,12 @@ CREATE TABLE Customer (
 );
 
 CREATE TABLE Product (
-    ProductId INTEGER PRIMARY KEY,
+    ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
     Name VARCHAR(30) NOT NULL,
     Description VARCHAR(30),
     Cost DECIMAL(10, 2) NOT NULL,
-    Stock INTEGER NOT NULL
+    Stock INTEGER NOT NULL,
+    ImageUrl VARCHAR(500)
 );
 
 CREATE TABLE ProductListEntry (
