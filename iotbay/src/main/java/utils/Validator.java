@@ -38,9 +38,18 @@ public class Validator {
     }
 
     public static void validatePhoneNumber(String phone) throws InvalidInputException {
-        if (!phone.isEmpty() && !isPhoneNumber(phone)) {
+        if (phone != null && !phone.isEmpty() && !isPhoneNumber(phone)) {
             throw new InvalidInputException("Invalid phone number");
         }
+    }
+
+    public static boolean isSecurePassword(String input) {
+        for (String regex : PASSWORD_REGEXES) {
+            if (!validate(regex, input)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean isPhoneNumber(String input) {
@@ -49,15 +58,6 @@ public class Validator {
 
     private static boolean isEmail(String input) {
         return validate(EMAIL_REGEX, input);
-    }
-
-    private static boolean isSecurePassword(String input) {
-        for (String regex : PASSWORD_REGEXES) {
-            if (!validate(regex, input)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static boolean validate(String pattern, String input) {

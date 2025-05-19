@@ -2,7 +2,6 @@ package controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,17 +11,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.ApplicationAccessLog;
 import model.User;
-import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
 import model.dao.UserDBManager;
 
-@WebServlet("/LoginServlet")
-public class LoginServlet extends HttpServlet {
-    public static final String PAGE = "login.jsp";
-    private static final String ERROR_ATTR = "loginError";
-
+@WebServlet("/DeleteAccountServlet")
+public class DeleteAccountServlet extends HttpServlet {
     private Logger logger;
 
     @Override
@@ -44,40 +38,23 @@ public class LoginServlet extends HttpServlet {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-
-        if (email.isEmpty() || password.isEmpty()) {
-            session.setAttribute(ERROR_ATTR, "Fill in all relevant fields");
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-
-        User user;
-        try {
-            user = userDBManager.getUser(email, password);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not get user from DB");
-            return;
-        }
-
-        if (user == null) {
-            session.setAttribute(ERROR_ATTR, "Incorrect username and/or password");
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-
-        ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
+        User user = (User) session.getAttribute("user");
 
         try {
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
+            applicationAccessLogDBManager.anonymiseApplicationAccessLogs(user.getUserId());
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add LOGIN log");
+            logger.log(Level.SEVERE, "Could not anonymise application access logs");
             return;
         }
 
-        session.removeAttribute(ERROR_ATTR);
-        session.setAttribute("user", user);
-        request.getRequestDispatcher("welcome.jsp").include(request, response);
+        try {
+            userDBManager.deleteUser(user.getUserId());
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not delete user");
+            return;
+        }
+
+        session.removeAttribute("user");
+        request.getRequestDispatcher("index.jsp").include(request, response);
     }
 }

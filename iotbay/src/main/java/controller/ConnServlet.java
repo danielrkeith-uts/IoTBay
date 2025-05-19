@@ -6,11 +6,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import model.dao.ApplicationAccessLogDBManager;
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
 import model.dao.ProductDBManager;
@@ -23,6 +25,7 @@ public class ConnServlet extends HttpServlet {
     private Connection conn;
     private UserDBManager userDBManager;
     private ProductDBManager productDBManager;
+    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     @Override
     public void init() {
@@ -36,23 +39,28 @@ public class ConnServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)throws IOException {
         HttpSession session = request.getSession();
 
-        if (session.getAttribute("connected") != null) {
-            return;
-        }
-
+        // Instantiate all DBManagers
         try {
             conn = dbConnector.openConnection();
 
-            userDBManager = new UserDBManager(conn);
-            productDBManager = new ProductDBManager(conn);
+            if (session.getAttribute("userDBManager") == null) {
+                userDBManager = new UserDBManager(conn);
+                session.setAttribute("userDBManager", userDBManager);
+            }
 
-            session.setAttribute("userDBManager", userDBManager);
-            session.setAttribute("productDBManager", productDBManager);
-            session.setAttribute("connected", true);
+            if (session.getAttribute("productDBManager") == null) {
+                productDBManager = new ProductDBManager(conn);
+                session.setAttribute("productDBManager", productDBManager);
+            }
 
+            if (session.getAttribute("applicationAccessLogDBManager") == null) {
+                applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
+                session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
+            }
+            response.sendRedirect(request.getContextPath() + "/products.jsp");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }

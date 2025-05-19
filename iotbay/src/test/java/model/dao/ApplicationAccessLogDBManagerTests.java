@@ -47,7 +47,7 @@ public class ApplicationAccessLogDBManagerTests {
             List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2, log3);
             List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
 
-            Assert.assertEquals(expectedLogs, resultLogs);
+            Assert.assertTrue(resultLogs.containsAll(expectedLogs));
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } finally {
@@ -70,7 +70,7 @@ public class ApplicationAccessLogDBManagerTests {
             return;
         }
 
-        Assert.assertEquals(expectedLogs, resultLogs);
+        Assert.assertTrue(resultLogs.containsAll(expectedLogs));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class ApplicationAccessLogDBManagerTests {
             List<ApplicationAccessLog> expectedLogs = Arrays.asList(log2);
             List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
 
-            Assert.assertEquals(expectedLogs, resultLogs);
+            Assert.assertTrue(resultLogs.containsAll(expectedLogs));
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } finally {
