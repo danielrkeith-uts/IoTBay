@@ -64,7 +64,7 @@ public class ConnServlet extends HttpServlet {
 
             if (session.getAttribute("orderDBManager") == null) {
                 orderDBManager = new OrderDBManager(conn);
-                session.setAttribute("ordeDBManager", orderDBManager);
+                session.setAttribute("orderDBManager", orderDBManager);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);

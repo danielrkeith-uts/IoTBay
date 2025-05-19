@@ -34,9 +34,7 @@
                         <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                     </ul>
                 </div>
-                <a href="cart.jsp">
-                    <i class="bi bi-cart"></i>
-                </a>
+                <a href="cart.jsp" class="bi bi-cart"></a>
             </navbar>
         </div>
         <div class="content">

@@ -16,9 +16,7 @@
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
                 <a href="login.jsp">Login</a>
-                <a href="cart.jsp">
-                    <i class="bi bi-cart"></i>
-                </a>
+                <a href="cart.jsp" class="bi bi-cart"></a>
             </navbar>
         </div>
         <div class="content">
