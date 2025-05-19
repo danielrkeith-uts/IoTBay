@@ -20,6 +20,7 @@ import model.User;
 import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
 import model.dao.CartDBManager;
+import model.dao.OrderDBManager;
 import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
@@ -54,6 +55,11 @@ public class RegisterServlet extends HttpServlet {
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
+        }
+
+        OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
+        if (orderDBManager == null) {
+            throw new ServletException("OrderDBManager retrieved from session is null");
         }
 
         String email = request.getParameter("email");

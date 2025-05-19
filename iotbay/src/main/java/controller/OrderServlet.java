@@ -52,18 +52,12 @@ public class OrderServlet extends HttpServlet {
         }
 
         try {
-            Connection conn = (Connection) getServletContext().getAttribute("dbconn");
-            conn = dbConnector.openConnection();
-            if (conn == null) {
-                throw new SQLException("No database connection.");
-            }
-
-            CartDBManager dbManager = new CartDBManager(conn);
+            CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
             
             Date now = new Date();
             cart.setLastUpdated(now);
             
-            int cartId = dbManager.addCart(new java.sql.Date(now.getTime()));
+            int cartId = cartDBManager.addCart(new java.sql.Date(now.getTime()));
             cart.setCartId(cartId);
 
             session.setAttribute("cart", cart);

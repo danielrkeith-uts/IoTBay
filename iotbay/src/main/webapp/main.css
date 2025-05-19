@@ -35,7 +35,8 @@
     background-color: #9CAFAA; 
 }
 
-.banner navbar a.active {
+.banner navbar a.active,
+.banner navbar i.active {
     background-color: #EFBC9B; 
     color: #333
 }
