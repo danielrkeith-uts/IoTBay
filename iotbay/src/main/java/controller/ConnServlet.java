@@ -14,6 +14,8 @@ import java.util.logging.Logger;
 import model.dao.ApplicationAccessLogDBManager;
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
+import model.dao.CartDBManager;
+import model.dao.OrderDBManager;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -23,6 +25,8 @@ public class ConnServlet extends HttpServlet {
     private Connection conn;
     private UserDBManager userDBManager;
     private ApplicationAccessLogDBManager applicationAccessLogDBManager;
+    private CartDBManager cartDBManager;
+    private OrderDBManager orderDBManager;
 
     @Override
     public void init() {
@@ -51,6 +55,16 @@ public class ConnServlet extends HttpServlet {
             if (session.getAttribute("applicationAccessLogDBManager") == null) {
                 applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
                 session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
+            }
+
+            if (session.getAttribute("cartDBManager") == null) {
+                cartDBManager = new CartDBManager(conn);
+                session.setAttribute("cartDBManager", cartDBManager);
+            }
+
+            if (session.getAttribute("orderDBManager") == null) {
+                orderDBManager = new OrderDBManager(conn);
+                session.setAttribute("ordeDBManager", orderDBManager);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);

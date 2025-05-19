@@ -36,5 +36,5 @@ VALUES (0, 0, 0, 1745632800000),
 INSERT INTO ProductListEntry(CartId, ProductId, Quantity)
 VALUES (1, 0, 1);
 
-INSERT INTO Cart (CartId, LastUpdated)
-VALUES (1, '2026-08-31 00:00:00.000');
+INSERT INTO Cart (LastUpdated)
+VALUES ('2026-08-31 00:00:00.000');

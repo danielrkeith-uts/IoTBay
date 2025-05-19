@@ -21,7 +21,7 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(ConnServlet.class.getName());
+        logger = Logger.getLogger(OrderServlet.class.getName());
 
         try {
             dbConnector = new DBConnector();
@@ -67,7 +67,6 @@ public class OrderServlet extends HttpServlet {
             cart.setCartId(cartId);
 
             session.setAttribute("cart", cart);
-
             response.sendRedirect("order.jsp");
 
         } catch (SQLException e) {

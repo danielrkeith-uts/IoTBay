@@ -18,6 +18,10 @@ public class Customer extends User {
         return cart;
     }
 
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
     public void clearCart() {
         cart = new Cart();
     }

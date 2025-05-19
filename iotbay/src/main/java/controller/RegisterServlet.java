@@ -117,6 +117,7 @@ public class RegisterServlet extends HttpServlet {
                 cart.setCartId(cartId); 
                 cart.setLastUpdated(new Date());
                 session.setAttribute("cart", cart);
+                customer.setCart(cart);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not add user into DB");

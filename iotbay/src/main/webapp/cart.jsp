@@ -36,7 +36,7 @@
             <h1>Place an Order</h1>
             <navbar>
                 <a href="index.jsp">Home</a>
-                <a href="products.jsp" class="active">Products</a>
+                <a href="products.jsp">Products</a>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
@@ -50,7 +50,7 @@
                         </ul>
                     </div>
                 <% } %>
-                <a href="cart.jsp">
+                <a href="cart.jsp" class="active">
                     <i class="bi bi-cart"></i>
                 </a>
             </navbar>
