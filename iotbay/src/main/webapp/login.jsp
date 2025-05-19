@@ -1,9 +1,14 @@
 <html>
     <jsp:include page="/ConnServlet" flush="true"/>
-    <%
-        String error = (String) session.getAttribute("loginError");
-        session.removeAttribute("loginError");
-    %>
+   <%
+    String loginError = (String) session.getAttribute("loginError");
+    model.User deactivatedUser = (model.User) session.getAttribute("deactivatedUser");
+%>
+
+<% if (loginError != null) { %>
+    <div class="alert alert-danger"><%= loginError %></div>
+<% } %>
+
     <head>
         <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
@@ -32,7 +37,7 @@
                     <input name="password" type="password" class="form-control" />
                 </div>
                 <input type="checkbox" name="tos" checked hidden>
-                <p class="error"><%= (error == null ? "" : error) %></p>
+<p class="error"><%= (loginError == null ? "" : loginError) %></p>
                 <p>Don't have an account? Register <a href="register.jsp">here</a></p>
                 <input type="submit" class="btn-green" />
             </form>

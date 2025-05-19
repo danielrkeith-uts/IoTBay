@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -14,7 +13,7 @@ import model.ApplicationAccessLog;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLogDBManagerTests {
-
+    // In database 
     private static final ApplicationAccessLog log1 = new ApplicationAccessLog(
         ApplicationAction.LOGIN,
         new GregorianCalendar(2025, 3, 26, 12, 0, 0).getTime()
@@ -83,6 +82,26 @@ public class ApplicationAccessLogDBManagerTests {
                 conn.rollback(); 
             } catch (SQLException e) {
                 System.err.println("Rollback failed: " + e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void testDeleteApplicationAccessLog() {
+        try {
+            applicationAccessLogDBManager.deleteApplicationAccessLog(0);
+
+            List<ApplicationAccessLog> expectedLogs = Arrays.asList(log2);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+
+            Assert.assertTrue(resultLogs.containsAll(expectedLogs));
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
             }
         }
     }

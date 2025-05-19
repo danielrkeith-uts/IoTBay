@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
 import model.User;
+import model.User.Role;
 import model.dao.ApplicationAccessLogDBManager;
 
 @WebServlet("/ApplicationAccessLogServlet")
@@ -44,7 +45,7 @@ public class ApplicationAccessLogServlet extends HttpServlet {
         List<ApplicationAccessLog> logs = null;
 
         try {
-            if ("admin".equals(user.getRole())) {
+            if (Role.ADMIN.equals(user.getRole())) {
                 String customerIdParam = request.getParameter("customer_id");
                 
                 if (customerIdParam != null) {

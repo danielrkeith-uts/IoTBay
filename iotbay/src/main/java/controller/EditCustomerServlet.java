@@ -1,20 +1,25 @@
 package controller;
 
 import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import model.Customer;
 import model.dao.UserDBManager;
+import model.exceptions.InvalidInputException;
+import utils.Validator;
 
 @WebServlet("/EditCustomerServlet")
 public class EditCustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         HttpSession session = request.getSession();
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
 
@@ -29,10 +34,12 @@ public class EditCustomerServlet extends HttpServlet {
             String lastName = request.getParameter("lastName");
             String phone = request.getParameter("phone");
 
+            Validator.validatePhoneNumber(phone);
+
             Customer customer = userDBManager.getCustomer(userId); 
             if (customer != null) {
-                customer.setFirstName(firstName); 
-                customer.setLastName(lastName);
+                Validator.validateName(firstName, "First name");
+                Validator.validateName(lastName, "Last name");
                 customer.setPhone(phone);
 
                 userDBManager.updateCustomer(customer); 
@@ -45,11 +52,13 @@ public class EditCustomerServlet extends HttpServlet {
                 request.setAttribute("error", "Customer not found.");
             }
 
-            request.getRequestDispatcher("editcustomer.jsp").forward(request, response);
+        } catch (InvalidInputException e) {
+            request.setAttribute("error", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error updating customer.");
-            request.getRequestDispatcher("editcustomer.jsp").forward(request, response);
         }
+
+        request.getRequestDispatcher("editcustomer.jsp").forward(request, response);
     }
 }
