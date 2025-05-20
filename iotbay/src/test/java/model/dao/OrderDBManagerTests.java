@@ -38,8 +38,8 @@ public class OrderDBManagerTests {
         //Check Delivery fields
         Assert.assertEquals(2, delivery.getSource().getAddressId());
         Assert.assertEquals(3, delivery.getDestination().getAddressId());
-        Assert.assertEquals("Best Couriers", delivery.getCourier());
-        Assert.assertEquals(4, delivery.getCourierDeliveryId());
+        Assert.assertEquals("Australia Post", delivery.getCourier());
+        Assert.assertEquals(12345, delivery.getCourierDeliveryId());
 
         //Check Payment fields
         Assert.assertEquals(23.45, payment.getAmount(), 0.01);

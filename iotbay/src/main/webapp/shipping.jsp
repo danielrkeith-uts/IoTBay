@@ -56,6 +56,8 @@
 </div>
 <% } %>
 
+<!-- Redirect - similar to changepassword.jsp -->
+
 <!-- Basic Create/Update Shipment Form -->
 <div class="mb-4">
     <h3><%= selectedShipment == null ? "Create Shipment" : (viewOnly ? "View Shipment" : "Update Shipment") %></h3>

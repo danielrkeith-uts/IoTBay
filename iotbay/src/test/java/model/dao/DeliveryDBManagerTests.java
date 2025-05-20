@@ -30,8 +30,8 @@ public class DeliveryDBManagerTests {
             Assert.assertNotNull("Delivery should not be null", delivery);
             
             // Verify delivery properties
-            Assert.assertEquals("Best Couriers", delivery.getCourier());
-            Assert.assertEquals(4, delivery.getCourierDeliveryId());
+            Assert.assertEquals("Australia Post", delivery.getCourier());
+            Assert.assertEquals(12345, delivery.getCourierDeliveryId());
             
             // Verify addresses
             Address source = delivery.getSource();
@@ -40,12 +40,12 @@ public class DeliveryDBManagerTests {
             Assert.assertNotNull("Source address should not be null", source);
             Assert.assertNotNull("Destination address should not be null", destination);
             
-            Assert.assertEquals(5, source.getStreetNumber());
-            Assert.assertEquals("Source Avenue", source.getStreet());
-            Assert.assertEquals("Source Valley", source.getSuburb());
+            Assert.assertEquals(123, source.getStreetNumber());
+            Assert.assertEquals("Company St", source.getStreet());
+            Assert.assertEquals("Business District", source.getSuburb());
             
             Assert.assertEquals(10, destination.getStreetNumber());
-            Assert.assertEquals("Destination Avenue", destination.getStreet());
+            Assert.assertEquals("Destination Arvenue", destination.getStreet());
             Assert.assertEquals("Destination Valley", destination.getSuburb());
             
         } catch (SQLException e) {

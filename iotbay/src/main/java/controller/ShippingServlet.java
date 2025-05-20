@@ -47,22 +47,7 @@ public class ShippingServlet extends HttpServlet {
             throw new ServletException("DeliveryDBManager not initialized");
         }
         
-        String action = request.getParameter("action");
         String shipmentId = request.getParameter("shipmentId");
-        
-        if ("view".equals(action) || "edit".equals(action)) {
-            try {
-                int id = Integer.parseInt(shipmentId);
-                Delivery shipment = deliveryDBManager.getDelivery(id);
-                request.setAttribute("selectedShipment", shipment);
-                if ("view".equals(action)) {
-                    request.setAttribute("viewOnly", true);
-                }
-            } catch (Exception e) {
-                session.setAttribute(ERROR_ATTR, "Error loading shipment: " + e.getMessage());
-                logger.log(Level.SEVERE, "Error loading shipment", e);
-            }
-        }
         
         // Fetch all deliveries from the database
         try {
