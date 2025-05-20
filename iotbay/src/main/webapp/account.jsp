@@ -1,7 +1,11 @@
 <%@ page import="model.User, model.Staff"%>
 <html>
-    <jsp:include page="/RequiresUserServlet" flush="true"/>
     <%
+        if (session.getAttribute("user") == null) {
+            response.sendRedirect("index.jsp");
+            return;
+        }
+
         String error = (String) session.getAttribute("accountError");
         session.removeAttribute("accountError");
 
@@ -50,6 +54,7 @@
                         <input type="text" name="staffCardId" class="form-control" value="<%= ((Staff) user).getStaffCardId() %>" />
                     </div>
                 <% } %>
+                <p>Password: <a href="changepassword.jsp">Change password</a></p>
                 <p class="error"><%= (error == null ? "" : error) %></p>
                 <p class="success"><%= (success == null ? "" : success) %></p>
                 <input type="submit" class="btn-green" value="Save changes">

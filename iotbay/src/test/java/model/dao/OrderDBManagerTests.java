@@ -1,18 +1,40 @@
 package model.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 import model.*;
 import model.Enums.PaymentStatus;
 
 public class OrderDBManagerTests {
+    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static Date datePlaced;
+    static {
+        try {
+            datePlaced = sdf.parse("2025-04-25 00:00:00");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            datePlaced = new Date(); // Fallback option
+        }
+    }
+
+    static List<ProductListEntry> productList = new ArrayList<>();
+    static Payment payment = new Payment(0, null, null);
+
+    private static Order order = new Order(1, productList, payment, datePlaced);
     OrderDBManager orderDBManager;
+    private final Connection conn;
 
     public OrderDBManagerTests() throws ClassNotFoundException, SQLException {
-        orderDBManager = new OrderDBManager(new DBConnector().openConnection());
+        this.conn = new DBConnector().openConnection();
+        conn.setAutoCommit(false);
+        orderDBManager = new OrderDBManager(conn);
     }
 
     @Test
@@ -26,7 +48,6 @@ public class OrderDBManagerTests {
             return;
         }
 
-        Delivery delivery = order.getDelivery();
         Payment payment = order.getPayment();
         List<ProductListEntry> productlist = order.getProductList();
         
@@ -34,22 +55,61 @@ public class OrderDBManagerTests {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String formatted = sdf.format(order.getDatePlaced());
         Assert.assertEquals("2025-04-25", formatted);
-        
-        //Check Delivery fields
-        Assert.assertEquals(2, delivery.getSource().getAddressId());
-        Assert.assertEquals(3, delivery.getDestination().getAddressId());
-        Assert.assertEquals("Best Couriers", delivery.getCourier());
-        Assert.assertEquals(4, delivery.getCourierDeliveryId());
 
         //Check Payment fields
         Assert.assertEquals(23.45, payment.getAmount(), 0.01);
         Assert.assertEquals(1, payment.getCard().getCardId());
-         Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
+        Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
 
         // //Check ProductList fields
         for (int i = 0; i < productlist.size(); i++) {
-            Assert.assertEquals("John Smith", productlist.get(i).getProduct());
-            Assert.assertEquals("123456789", productlist.get(i).getQuantity());
+            Assert.assertEquals("Raspberry Pi", productlist.get(i).getProduct().getName());
+            Assert.assertEquals(1, productlist.get(i).getQuantity());
+        }
+    }
+
+    @Test
+    public void testUpdateOrder() {
+        Date newDate = new Date();
+        List<ProductListEntry> testPLE = new ArrayList<ProductListEntry>();
+        Product product = new Product("Raspberry Pi", "", 99.99, 3);
+        testPLE.add(new ProductListEntry(product,1));
+        Order newOrder = new Order(
+            order.getOrderId(),
+            testPLE,
+            order.getPayment(),
+            newDate
+        );
+
+        try {
+            orderDBManager.updateOrder(newOrder);
+            Order newOrderResult = (Order) orderDBManager.getOrder(newOrder.getOrderId());
+            Assert.assertEquals(newOrderResult.getDatePlaced(), newDate);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+
+    @Test
+    public void testDeleteOrder() {
+        try {
+            orderDBManager.deleteOrder(1);
+            Order deletedOrder = orderDBManager.getOrder(1);
+            Assert.assertNull(deletedOrder);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try {
+                conn.rollback(); 
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
         }
     }
 }

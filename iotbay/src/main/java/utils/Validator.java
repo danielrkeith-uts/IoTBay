@@ -43,21 +43,21 @@ public class Validator {
         }
     }
 
-    private static boolean isPhoneNumber(String input) {
-        return validate(PHONE_REGEX, input);
-    }
-
-    private static boolean isEmail(String input) {
-        return validate(EMAIL_REGEX, input);
-    }
-
-    private static boolean isSecurePassword(String input) {
+    public static boolean isSecurePassword(String input) {
         for (String regex : PASSWORD_REGEXES) {
             if (!validate(regex, input)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static boolean isPhoneNumber(String input) {
+        return validate(PHONE_REGEX, input);
+    }
+
+    private static boolean isEmail(String input) {
+        return validate(EMAIL_REGEX, input);
     }
 
     private static boolean validate(String pattern, String input) {
