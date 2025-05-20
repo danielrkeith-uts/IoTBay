@@ -18,6 +18,9 @@
             <navbar>
                 <a href="index.jsp" class="active">Home</a>
                 <a href="products.jsp">Products</a>
+                <% if (isStaff) { %>
+                            <a href="adminInventory.jsp">Manage Inventory</a>
+                        <% } %>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
@@ -26,9 +29,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                            <% if (isStaff) { %>
-                            <li><a class="dropdown-item" href="adminInventory.jsp">Manage Inventory</a></li>
-                        <% } %>
+            
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>

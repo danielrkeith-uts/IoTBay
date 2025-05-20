@@ -60,7 +60,7 @@ public class ConnServlet extends HttpServlet {
                 applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
                 session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
             }
-            response.sendRedirect(request.getContextPath() + "/products.jsp");
+            
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }

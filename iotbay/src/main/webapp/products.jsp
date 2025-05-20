@@ -1,6 +1,6 @@
-<%@ page import="model.Product, model.dao.ProductDBManager, java.util.List" %>
+<%@ page import="model.Product, model.dao.ProductDBManager, java.util.List, model.Staff" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<jsp:include page="/ConnServlet" flush="true"/>
 <%
     ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
     if (productManager == null) {
@@ -8,10 +8,11 @@
         return;
     }
     List<Product> products = productManager.getAllProducts();
+    
 %>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 <head>
     <meta charset="UTF-8" />
     <title>Products</title>
@@ -28,28 +29,27 @@
         <navbar>
             <a href="index.jsp">Home</a>
             <a href="products.jsp" class="active">Products</a>
+            
             <%
                 model.User user = (model.User) session.getAttribute("user");
+                boolean isStaff = (user != null && user instanceof Staff);
+                
+        
+
                 if (user == null) {
             %>
                 <a href="login.jsp">Login</a>
             <%
                 } else {
             %>
-            <%
-                boolean isStaff = false;
-                if (user instanceof model.Staff) {
-                    isStaff = true;
-                }
-            %>
+            <% if (isStaff) { %>
+                        <a href="adminInventory.jsp">Manage Inventory</a>
+                    <% } %>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                         <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                    <% if (isStaff) { %>
-                        <li><a class="dropdown-item" href="adminInventory.jsp">Manage Inventory</a></li>
-                    <% } %>
                     <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                     <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                     </ul>
@@ -69,7 +69,7 @@
                         <img src="<%= p.getImageUrl() != null && !p.getImageUrl().isEmpty() ? p.getImageUrl() : "images/default-product.png" %>" class="card-img-top" alt="<%= p.getName() %>" style="height: 200px; object-fit: contain;" />
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><%= p.getName() %></h5>
-                            <p class="card-text flex-grow-1"><%= p.getDescription() %></p>
+                            <p class="card-text flex-grow-1"><%= p.getDescription() == null ? "" : p.getDescription()%></p>
                             <p class="card-text fw-bold">$<%= String.format("%.2f", p.getCost()) %></p>
                             <button class="btn btn-primary mt-auto" type="button">Add to Cart</button>
                         </div>

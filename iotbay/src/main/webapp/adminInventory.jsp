@@ -50,12 +50,13 @@
        <navbar>
            <a href="index.jsp" class="active">Home</a>
            <a href="products.jsp">Products</a>
+           <a href="adminInventory.jsp">Manage Inventory</a>
            <div class="nav-item dropdown">
                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                <ul class="dropdown-menu">
                    <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                    <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
-                   <li><a class="dropdown-item" href="adminInventory.jsp">Manage Inventory</a></li>
+
                    <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                    <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                </ul>
@@ -73,7 +74,7 @@
                    <form action="<%=request.getContextPath()%>/ProductServlet" method="post">
                        <h5><input type="text" name="name" class="form-control mb-2" value="<%= p.getName() %>" required/></h5>
                        <label>Description:</label>
-                       <input type="text" name="description" class="form-control mb-2" value="<%= p.getDescription() %>" required/>
+                       <input type="text" name="description" class="form-control mb-2" value="<%= p.getDescription() %>" />
                        <label>Price:</label>
                        <input type="number" name="cost" class="form-control mb-2" value="<%= p.getCost() %>" step="0.01" required/>
                        <label>Stock:</label>
@@ -98,7 +99,7 @@
                <form action="<%=request.getContextPath()%>/ProductServlet" method="post">
                    <h5><input type="text" name="name" class="form-control mb-2" placeholder="Product Name" required/></h5>
                    <label>Description:</label>
-                   <input type="text" name="description" class="form-control mb-2" placeholder="Description" required/>
+                   <input type="text" name="description" class="form-control mb-2" placeholder="Description" />
                    <label>Price:</label>
                    <input type="number" name="cost" class="form-control mb-2" placeholder="Price" step="0.01" required/>
                    <label>Stock:</label>
