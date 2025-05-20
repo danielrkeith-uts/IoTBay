@@ -45,7 +45,7 @@
             <div class="mb-4">
                 <form action="shipments.jsp" method="get" class="row g-3">
                     <div class="col-auto">
-                        <input type="text" name="searchQuery" class="form-control" placeholder="Search by ID or date (YYYY-MM-DD)">
+                        <input type="text" name="searchQuery" class="form-control" placeholder="Search by ID">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn-green">Search</button>

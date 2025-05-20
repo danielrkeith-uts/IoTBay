@@ -4,6 +4,7 @@ import model.*;
 import model.Enums.AuState;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,20 +35,50 @@ public class ShipmentDBManager {
     }
 
     public Shipment addShipment(Order order, Address address, String method, java.util.Date shipmentDate) throws SQLException {
+        // STEP 1: Always insert the address first
+        PreparedStatement insertAddressPs = conn.prepareStatement(
+            "INSERT INTO Address (StreetNumber, Street, Suburb, State, Postcode) VALUES (?, ?, ?, ?, ?)",
+            Statement.RETURN_GENERATED_KEYS
+        );
+        
+        insertAddressPs.setString(1, String.valueOf(address.getStreetNumber()));
+        insertAddressPs.setString(2, address.getStreet());
+        insertAddressPs.setString(3, address.getSuburb());
+        insertAddressPs.setInt(4, address.getState().ordinal());
+        insertAddressPs.setString(5, address.getPostcode());
+        
+        insertAddressPs.executeUpdate();
+        ResultSet addressRs = insertAddressPs.getGeneratedKeys();
+        
+        if (!addressRs.next()) {
+            throw new SQLException("Failed to insert address");
+        }
+        
+        int addressId = addressRs.getInt(1);
+        
+        // STEP 2: Now insert the shipment with the new address ID
         addShipmentPs.setInt(1, order.getOrderId());
-        addShipmentPs.setInt(2, address.getAddressId());
+        addShipmentPs.setInt(2, addressId);
         addShipmentPs.setString(3, method);
-        addShipmentPs.setTimestamp(4, new Timestamp(shipmentDate.getTime()));
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = sdf.format(shipmentDate);
+        addShipmentPs.setString(4, formattedDate);
+        
         addShipmentPs.executeUpdate();
-        ResultSet rs = addShipmentPs.getGeneratedKeys();
-
-        if (!rs.next()) {
+        ResultSet shipmentRs = addShipmentPs.getGeneratedKeys();
+        
+        if (!shipmentRs.next()) {
             throw new SQLException("Failed to insert shipment");
         }
+        
+        int shipmentId = shipmentRs.getInt(1);
+        
+        // Create a new Address object with the generated ID
+        Address savedAddress = new Address(addressId, address.getStreetNumber(), address.getStreet(), 
+                                           address.getSuburb(), address.getState(), address.getPostcode());
+        
+        return new Shipment(shipmentId, order, savedAddress, method, shipmentDate);
 
-        int shipmentId = rs.getInt(1);
-        return new Shipment(shipmentId, order, address, method, shipmentDate);
     }
 
     public Shipment getShipment(int shipmentId) throws SQLException {
@@ -104,7 +135,9 @@ public class ShipmentDBManager {
     public void updateShipment(Shipment shipment) throws SQLException {
         updateShipmentPs.setInt(1, shipment.getAddress().getAddressId());
         updateShipmentPs.setString(2, shipment.getMethod());
-        updateShipmentPs.setTimestamp(3, new Timestamp(shipment.getShipmentDate().getTime()));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String formattedDate = sdf.format(shipment.getShipmentDate());
+        updateShipmentPs.setString(3, formattedDate);
         updateShipmentPs.setInt(4, shipment.getShipmentId());
 
         updateShipmentPs.executeUpdate();
@@ -114,7 +147,21 @@ public class ShipmentDBManager {
         deleteShipmentPs.setInt(1, shipmentId);
         deleteShipmentPs.executeUpdate();
     }
-
+    public void updateAddress(int addressId, int streetNumber, String street, String suburb, AuState state, String postcode) throws SQLException {
+        PreparedStatement updateAddressPs = conn.prepareStatement(
+            "UPDATE Address SET StreetNumber = ?, Street = ?, Suburb = ?, State = ?, Postcode = ? WHERE AddressId = ?"
+        );
+        
+        updateAddressPs.setString(1, String.valueOf(streetNumber));
+        updateAddressPs.setString(2, street);
+        updateAddressPs.setString(3, suburb);
+        updateAddressPs.setInt(4, state.ordinal());
+        updateAddressPs.setString(5, postcode);
+        updateAddressPs.setInt(6, addressId);
+        
+        updateAddressPs.executeUpdate();
+    }
+    
     private Shipment toShipment(ResultSet rs) throws SQLException {
         int shipmentId = rs.getInt("ShipmentId");
         int orderId = rs.getInt("OrderId");
