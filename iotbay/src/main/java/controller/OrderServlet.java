@@ -81,8 +81,7 @@ public class OrderServlet extends HttpServlet {
         try {
             request.getRequestDispatcher("order.jsp").forward(request, response);
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing order.");
+            logger.log(Level.SEVERE, "Error processing order", e);
         }
     }
 }

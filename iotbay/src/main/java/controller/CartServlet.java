@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
@@ -52,8 +53,7 @@ public class CartServlet extends HttpServlet {
         try {
             request.getRequestDispatcher("cart.jsp").forward(request, response);
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing cart.");
+            logger.log(Level.SEVERE, "Error processing the cart", e);
         }
     }
 }
