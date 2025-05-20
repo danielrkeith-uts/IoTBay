@@ -45,27 +45,27 @@ public class ApplicationAccessLogServlet extends HttpServlet {
         List<ApplicationAccessLog> logs = null;
 
         try {
-            if (Role.ADMIN.equals(user.getRole())) {
-                String customerIdParam = request.getParameter("customer_id");
-                
-                if (customerIdParam != null) {
-                    int customerId = Integer.parseInt(customerIdParam);
-                    logs = applicationAccessLogDBManager.getApplicationAccessLogs(customerId);
-                } else {
-                    response.sendRedirect("error.jsp"); 
-                    return;
-                }
-            } else {
+            String customerIdParam = request.getParameter("customer_id");
+        
+            if (Role.STAFF.equals(user.getRole()) && customerIdParam != null) {
+                int customerId = Integer.parseInt(customerIdParam);
+                logs = applicationAccessLogDBManager.getApplicationAccessLogs(customerId);
+            } 
+            else if (customerIdParam != null && !Role.STAFF.equals(user.getRole())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to view other users' logs.");
+                return;
+            } 
+            else {
                 logs = applicationAccessLogDBManager.getApplicationAccessLogs(user.getUserId());
             }
-
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not retrieve application access logs", e);
             response.sendRedirect("error.jsp");
             return;
         }
+        
 
         request.setAttribute("accessLogs", logs);
-        request.getRequestDispatcher("/viewaccesslogs.jsp").forward(request, response);
+        request.getRequestDispatcher("/applicationaccesslogs.jsp").forward(request, response);
     }
 }

@@ -25,6 +25,7 @@ public class LoginServlet extends HttpServlet {
 
     private Logger logger;
 
+    @Override
     public void init() {
         logger = Logger.getLogger(LoginServlet.class.getName());
     }

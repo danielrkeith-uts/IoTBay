@@ -54,13 +54,23 @@
                     Edit
                 </button>
 
-                <button 
-                    <%= isDeactivated 
-                        ? "disabled class='btn btn-secondary'" 
-                        : (isAdmin || isStaff ? "onclick=\"window.location.href='deactivateCustomer?id=" + customer.getUserId() + "'\"" : "disabled class='btn btn-secondary'") %>>
-                    <%= isDeactivated ? "Deactivated" : (isAdmin || isStaff ? "Deactivate" : "No Permission") %>
-                </button>
-
+                <% if (isDeactivated) { %>
+             <button 
+                  <%= (isAdmin || isStaff) 
+                      ? "onclick=\"window.location.href='reactivateCustomer?id=" + customer.getUserId() + "'\"" 
+                     : "disabled class='btn btn-secondary'" %> 
+                     class="btn btn-reactivate">
+                         Reactivate
+             </button>
+        <% } else { %>
+              <button 
+                      <%= (isAdmin || isStaff) 
+                     ? "onclick=\"window.location.href='deactivateCustomer?id=" + customer.getUserId() + "'\"" 
+                    : "disabled class='btn btn-secondary'" %> 
+                     class="btn btn-danger">
+                      Deactivate
+            </button>
+        <% } %>
                 <button 
                     onclick="window.location.href='/iotbay/ApplicationAccessLogServlet?customer_id=<%= customer.getUserId() %>'" 
                     <%= isDeactivated ? "disabled class='btn btn-secondary'" : (isStaff ? "" : "disabled class='btn btn-secondary'") %>>

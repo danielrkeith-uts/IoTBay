@@ -4,7 +4,8 @@ CREATE TABLE User (
     LastName VARCHAR(30),
     Email VARCHAR(50) NOT NULL,
     Phone VARCHAR(17),
-    Password VARCHAR(20)
+    Password VARCHAR(20),
+    Deactivated INTEGER DEFAULT 0
 );
 
 CREATE TABLE Staff (
@@ -92,7 +93,7 @@ CREATE TABLE Card (
 );
 
 CREATE TABLE ApplicationAccessLog (
-    AppAccLogId INTEGER PRIMARY KEY AUTOINCREMENT,
+    AccessLogId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER,
     ApplicationAction INTEGER NOT NULL,
     DateTime DATETIME NOT NULL,
