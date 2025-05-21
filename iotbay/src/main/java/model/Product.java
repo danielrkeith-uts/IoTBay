@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 
 public class Product implements Serializable {
+    private int productId;
     private String name;
     private String description;
     private double cost;
@@ -13,6 +14,10 @@ public class Product implements Serializable {
         this.description = description;
         this.cost = cost;
         this.stock = stock;
+    }
+
+    public int getProductId() {
+        return productId;
     }
 
     public String getName() {
