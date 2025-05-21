@@ -1,53 +1,343 @@
+-- Product
 INSERT INTO Product(ProductId, Name, Cost, Stock, ImageUrl)
-VALUES (0, 'Raspberry Pi', 99.99, 3, 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSksSIv20lOBy1zAyO0r-tDFlUFCiE-8pTyqFT0WbtlUfqwt2yT31aY2_xRoCbjdcSu_FPJgL2Y');
+VALUES 
+    (0, 'Raspberry Pi', 99.99, 3, 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSksSIv20lOBy1zAyO0r-tDFlUFCiE-8pTyqFT0WbtlUfqwt2yT31aY2_xRoCbjdcSu_FPJgL2Y'),
+    (1, 'Google Home Voice Controller', 149, 50, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (2, 'Amazon Echo Plus Voice Controller', 179, 30, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (3, 'August Smart Lock', 249, 20, 'https://mindmajix.com/iot-devices'),
+    (4, 'Nest Learning Thermostat', 329, 15, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (5, 'Philips Hue Smart Bulbs', 99, 100, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (6, 'Ring Doorbell', 199, 40, 'https://mindmajix.com/iot-devices'),
+    (7, 'WeMo Smart Plug', 49, 75, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (8, 'NETGEAR Orbi Mesh Wi-Fi System', 399, 25, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (9, 'Kuri Mobile Robot', 799, 10, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (10, 'Bitdefender BOX IoT Security Solution', 199, 35, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (11, 'Footbot Air Quality Monitor', 129, 45, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (12, 'Flow by Plume Labs Air Pollution Monitor', 179, 20, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (13, 'Logitech Harmony Universal Remote', 249, 30, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (14, 'Amazon Dash Button', 4.99, 200, 'https://mindmajix.com/iot-devices'),
+    (15, 'Mr Coffee Smart Coffeemaker', 129, 50, 'https://mindmajix.com/iot-devices'),
+    (16, 'SmartThings Hub', 99, 60, 'https://mindmajix.com/iot-devices'),
+    (17, 'TP-Link Kasa Smart Light Switch', 39, 80, 'https://mindmajix.com/iot-devices'),
+    (18, 'Ecobee Smart Thermostat', 249, 25, 'https://mindmajix.com/iot-devices'),
+    (19, 'Arlo Pro Security Camera', 299, 20, 'https://mindmajix.com/iot-devices'),
+    (20, 'Tile Mate Bluetooth Tracker', 29, 150, 'https://mindmajix.com/iot-devices');
 
+-- Delivery
 INSERT INTO Delivery(DeliveryId, OrderId, SourceAddressId, DestinationAddressId, Courier, CourierDeliveryId)
-VALUES (1, 1, 2, 3, 'Best Couriers', 4);
+VALUES 
+    (1, 1, 1, 1, 'Best Couriers', 1001), 
+    (2, 2, 2, 3, 'Swift Logistics', 1002),
+    (3, 3, 1, 4, 'QuickShip', 3456),
+    (4, 4, 3, 2, 'Express Freight', 7689),
+    (5, 5, 2, 5, 'Rapid Courier', 2341),
+    (6, 6, 5, 1, 'FlyBy Delivery', 9823),
+    (7, 7, 4, 3, 'ParcelWave', 5643),
+    (8, 8, 6, 5, 'EzyShip', 7561),
+    (9, 9, 3, 6, 'FastTrack', 8123),
+    (10, 10, 7, 4, 'OnTime Logistics', 9245),
+    (11, 11, 5, 7, 'GoCourier', 1356),
+    (12, 12, 8, 6, 'Lightning Express', 7534),
+    (13, 13, 4, 8, 'TurboShip', 4623),
+    (14, 14, 7, 9, 'AirFast Delivery', 8127),
+    (15, 15, 9, 5, 'SpeedyShip', 2468),
+    (16, 16, 6, 10, 'Direct Express', 3521),
+    (17, 17, 8, 9, 'UltraFast Couriers', 6790),
+    (18, 18, 10, 7, 'Zoom Logistics', 5832),
+    (19, 19, 9, 10, 'SkyHigh Shipping', 10097),
+    (20, 20, 10, 8, 'HyperX Couriers', 3345);
 
+-- Address
 INSERT INTO Address(AddressId, StreetNumber, Street, Suburb, State, Postcode)
-VALUES (2, '5', 'Source Avenue', 'Source Valley', 2, 321);
+VALUES (1, '5', 'Source Avenue', 'Source Valley', 2, 321),
+    (2, '10', 'Destination Avenue', 'Destination Valley', 3, 456),
+    (3, '42', 'Shipping Lane', 'Delivery Bay', 0, 2000),
+    (4, '123', 'Parcel Street', 'Package City', 1, 3000),
+    (5, '7', 'Post Road', 'Mail Town', 2, 4000),
+    (6, '15', 'Highland Way', 'Adelaide', 3, 5000),
+    (7, '33', 'Valley Lane', 'Hobart', 4, 7000),
+    (8, '50', 'Forest Road', 'Darwin', 5, 0800),
+    (9, '65', 'Royal Parade', 'Canberra', 1, 2600),
+    (10, '78', 'Pacific Highway', 'Newcastle', 3, 2300),
+    (11, '12', 'City Circle', 'Wollongong', 6, 2500),
+    (12, '95', 'Garden Avenue', 'Geelong', 7, 3220),
+    (13, '31', 'Bayview Drive', 'Cairns', 5, 4870),
+    (14, '5', 'Mountain Street', 'Alice Springs', 4, 0870),
+    (15, '20', 'Lakeside Crescent', 'Townsville', 1, 4810),
+    (16, '10', 'Harbour Drive', 'Sydney', 2, 2000),
+    (17, '25', 'Main Street', 'Melbourne', 3, 3000),
+    (18, '88', 'Coastal Avenue', 'Gold Coast', 4, 4217),
+    (19, '7', 'River Road', 'Brisbane', 5, 4000),
+    (20, '42', 'Sunset Boulevard', 'Perth', 6, 6000);
 
-INSERT INTO Address(AddressId, StreetNumber, Street, Suburb, State, Postcode)
-VALUES (3, '10', 'Destination Avenue', 'Destination Valley', 3, 456);
-
+-- Payment
 INSERT INTO Payment(PaymentId, CardId, Amount, PaymentStatus)
-VALUES(1, 1, 23.45, 1);
+VALUES
+    (1, 1, 23.45, 1)
+    (2, 2, 45.67, 1),
+    (3, 3, 89.99, 2),
+    (4, 4, 12.34, 1),
+    (5, 5, 150.00, 3),
+    (6, 6, 67.89, 1),
+    (7, 7, 33.25, 1),
+    (8, 8, 78.90, 2),
+    (9, 9, 99.99, 1),
+    (10, 10, 20.50, 1),
+    (11, 11, 110.75, 3),
+    (12, 12, 56.40, 1),
+    (13, 13, 143.99, 2),
+    (14, 14, 30.99, 1),
+    (15, 15, 71.20, 1),
+    (16, 16, 88.88, 2),
+    (17, 17, 200.00, 3),
+    (18, 18, 14.95, 1),
+    (19, 19, 120.50, 1),
+    (20, 20, 59.99, 1);
 
+-- Card
 INSERT INTO Card(CardId, Name, Number, Expiry, CVC)
-VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123');
+VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123'),
+    (2, 'Jane Doe', '987654321', '2027-01-15 00:00:00.000', '456'),
+    (3, 'Alice Johnson', '112233445', '2026-06-30 00:00:00.000', '789'),
+    (4, 'Bob Williams', '556677889', '2025-12-31 00:00:00.000', '234'),
+    (5, 'Charlie Brown', '334455667', '2028-03-20 00:00:00.000', '567'),
+    (6, 'Emily Davis', '998877665', '2029-11-10 00:00:00.000', '890'),
+    (7, 'Frank Miller', '223344556', '2025-09-25 00:00:00.000', '345'),
+    (8, 'Grace Lee', '667788990', '2027-07-14 00:00:00.000', '678'),
+    (9, 'Henry Clark', '445566778', '2026-05-05 00:00:00.000', '901'),
+    (10, 'Ivy Martinez', '778899001', '2028-10-18 00:00:00.000', '123'),
+    (11, 'Jack Wilson', '990011223', '2029-04-22 00:00:00.000', '456'),
+    (12, 'Karen Thompson', '556677889', '2027-02-28 00:00:00.000', '789'),
+    (13, 'Liam White', '334455667', '2026-08-08 00:00:00.000', '234'),
+    (14, 'Mia Harris', '998877665', '2025-11-30 00:00:00.000', '567'),
+    (15, 'Noah Green', '223344556', '2028-09-17 00:00:00.000', '890'),
+    (16, 'Olivia Baker', '667788990', '2029-06-12 00:00:00.000', '345'),
+    (17, 'Peter Hall', '445566778', '2027-12-04 00:00:00.000', '678'),
+    (18, 'Quinn Scott', '778899001', '2026-03-26 00:00:00.000', '901'),
+    (19, 'Ryan Adams', '990011223', '2028-07-21 00:00:00.000', '123'),
+    (20, 'Sophia Mitchell', '112233445', '2029-01-01 00:00:00.000', '456');
+
+
+-- Order
+INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus)
+VALUES (1, 1, 1, 1, '2025-04-25 00:00:00', 'PROCESSING');
 
 INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus)
-VALUES (1, 0, 1, 1, '2025-04-25 00:00:00', 'PROCESSING');
+VALUES
+    (1, 1, 1, 1, '2025-04-25 00:00:00', 'PROCESSING'),
+    (2, 1, 2, 2, '2025-04-26 00:00:00', 'PROCESSING'),
+    (3, 2, 3, 3, '2025-04-27 00:00:00', 'PLACED'),
+    (4, 2, 4, 4, '2025-04-28 00:00:00', 'COMPLETE'), 
+    (5, 3, 5, 5, '2025-04-29 00:00:00', 'CANCELLED'),
+    (6, 4, 6, 6, '2025-04-30 00:00:00', 'PROCESSING'),
+    (7, 4, 7, 7, '2025-05-01 00:00:00', 'COMPLETE'),
+    (8, 5, 8, 8, '2025-05-02 00:00:00', 'PLACED'),
+    (9, 5, 9, 9, '2025-05-03 00:00:00', 'PROCESSING'), 
+    (10, 6, 10, 10, '2025-05-04 00:00:00', 'CANCELLED'),
+    (11, 7, 11, 11, '2025-05-05 00:00:00', 'PROCESSING'),
+    (12, 8, 12, 12, '2025-05-06 00:00:00', 'PLACED'),
+    (13, 8, 13, 13, '2025-05-07 00:00:00', 'COMPLETE'),
+    (14, 9, 14, 14, '2025-05-08 00:00:00', 'PROCESSING'),
+    (15, 9, 15, 15, '2025-05-09 00:00:00', 'CANCELLED'),
+    (16, 10, 16, 16, '2025-05-10 00:00:00', 'PROCESSING'),
+    (17, 10, 17, 17, '2025-05-11 00:00:00', 'COMPLETE'), 
+    (18, 11, 18, 18, '2025-05-12 00:00:00', 'PLACED'),
+    (19, 12, 19, 19, '2025-05-13 00:00:00', 'PROCESSING'),
+    (20, 12, 20, 20, '2025-05-14 00:00:00', 'COMPLETE'); 
 
+-- User (40 users so there can be 20 staff and customers each)
 INSERT INTO User (UserId, FirstName, LastName, Email, Phone, Password)
-VALUES (0, 'John', 'Smith', 'john.smith@gmail.com', '+61412345678', 'johnsPassword'),
-(1, 'Gregory', 'Stafferson', 'gregory.stafferson@iotbay.com', '+61487654321', '!@#$%^&*()');
-
-INSERT INTO Customer (UserId, CartId)
-VALUES (0, 999);
-
-INSERT INTO Staff (UserId, StaffCardId)
-VALUES (1, 1001);
-
-INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
-VALUES (0, 0, 0, 1745632800000),
-(1, 0, 1, 1745633100000);
-
-INSERT INTO ProductListEntry(CartId, ProductId, Quantity)
-VALUES (1, 0, 1);
-
-INSERT INTO Cart (LastUpdated)
-VALUES ('2026-08-31 00:00:00.000');
--- Additional addresses for shipments
-INSERT INTO Address(AddressId, StreetNumber, Street, Suburb, State, Postcode)
 VALUES 
-    (10, '42', 'Shipping Lane', 'Delivery Bay', 0, 2000),
-    (11, '123', 'Parcel Street', 'Package City', 1, 3000),
-    (12, '7', 'Post Road', 'Mail Town', 2, 4000);
+    (1, 'John', 'Smith', 'john.smith@gmail.com', '+61412345678', 'johnsPassword'),
+    (2, 'Jane', 'Doe', 'jane.doe@example.com', '+61487654321', 'janeDoePass'),
+    (3, 'Alice', 'Johnson', 'alice.johnson@example.com', '+61498765432', 'aliceJohnsonPass'),
+    (4, 'Bob', 'Williams', 'bob.williams@example.com', '+61456789012', 'bobWilliamsPass'),
+    (5, 'Charlie', 'Brown', 'charlie.brown@example.com', '+61434567890', 'charlieBrownPass'),
+    (6, 'Emily', 'Davis', 'emily.davis@example.com', '+61490123456', 'emilyDavisPass'),
+    (7, 'Frank', 'Miller', 'frank.miller@example.com', '+61467890123', 'frankMillerPass'),
+    (8, 'Grace', 'Lee', 'grace.lee@example.com', '+61423456789', 'graceLeePass'),
+    (9, 'Henry', 'Clark', 'henry.clark@example.com', '+61487654321', 'henryClarkPass'),
+    (10, 'Ivy', 'Martinez', 'ivy.martinez@example.com', '+61412349876', 'ivyMartinezPass'),
+    (11, 'Jack', 'Wilson', 'jack.wilson@example.com', '+61456783421', 'jackWilsonPass'),
+    (12, 'Karen', 'Thompson', 'karen.thompson@example.com', '+61478901234', 'karenThompsonPass'),
+    (13, 'Liam', 'White', 'liam.white@example.com', '+61456789012', 'liamWhitePass'),
+    (14, 'Mia', 'Harris', 'mia.harris@example.com', '+61490123678', 'miaHarrisPass'),
+    (15, 'Noah', 'Green', 'noah.green@example.com', '+61434567890', 'noahGreenPass'),
+    (16, 'Olivia', 'Baker', 'olivia.baker@example.com', '+61467890123', 'oliviaBakerPass'),
+    (17, 'Peter', 'Hall', 'peter.hall@example.com', '+61423456789', 'peterHallPass'),
+    (18, 'Quinn', 'Scott', 'quinn.scott@example.com', '+61487654321', 'quinnScottPass'),
+    (19, 'Ryan', 'Adams', 'ryan.adams@example.com', '+61412345678', 'ryanAdamsPass'),
+    (20, 'Sophia', 'Mitchell', 'sophia.mitchell@example.com', '+61456789012', 'sophiaMitchellPass'),
+    (21, 'Aiden', 'Taylor', 'aiden.taylor@example.com', '+61412365478', 'aidenTayl0rPass'),
+    (22, 'Bella', 'Anderson', 'bella.anderson@example.com', '+61487654322', 'bellaAnders9nPass'),
+    (23, 'Caleb', 'Wright', 'caleb.wright@example.com', '+61456789013', 'calebWr1ghtPass'),
+    (24, 'Daisy', 'Walker', 'daisy.walker@example.com', '+61490123457', 'daisyW4lkerPass'),
+    (25, 'Ethan', 'Lopez', 'ethan.lopez@example.com', '+61467890124', 'ethanLop3zPass'),
+    (26, 'Fiona', 'Martin', 'fiona.martin@example.com', '+61423456780', 'fionaMart1nPass'),
+    (27, 'Gabriel', 'Garcia', 'gabriel.garcia@example.com', '+61487654323', 'gabrielGarc1aPass'),
+    (28, 'Hannah', 'Young', 'hannah.young@example.com', '+61412349877', 'hannahY0ungPass'),
+    (29, 'Isaac', 'Scott', 'isaac.scott@example.com', '+61456783422', 'isaacSc0ttPass'),
+    (30, 'Julia', 'Morris', 'julia.morris@example.com', '+61478901235', 'juliaM0rrisPass'),
+    (31, 'Kevin', 'Cook', 'kevin.cook@example.com', '+61456789014', 'kevinC00kPass'),
+    (32, 'Lily', 'Nelson', 'lily.nelson@example.com', '+61490123679', 'lilyNels0nPass'),
+    (33, 'Mason', 'Carter', 'mason.carter@example.com', '+61434567891', 'masonCart3rPass'),
+    (34, 'Natalie', 'Mitchell', 'natalie.mitchell@example.com', '+61467890125', 'natalieM1tchellPass'),
+    (35, 'Oscar', 'Perez', 'oscar.perez@example.com', '+61423456781', 'oscarPer3zPass'),
+    (36, 'Penelope', 'Hall', 'penelope.hall@example.com', '+61487654324', 'penelopeH4llPass'),
+    (37, 'Quentin', 'Roberts', 'quentin.roberts@example.com', '+61412345679', 'quentinR0bertsPass'),
+    (38, 'Rachel', 'Murphy', 'rachel.murphy@example.com', '+61456789015', 'rachelMurf7yPass'),
+    (39, 'Samuel', 'Reed', 'samuel.reed@example.com', '+61490123458', 'samuelRe3dPass'),
+    (40, 'Tara', 'Bailey', 'tara.bailey@example.com', '+61467890126', 'taraBa1leyPass');
 
--- Sample shipments
+-- Customer
+INSERT INTO Customer (UserId, CartId)
+VALUES 
+    (1, 1), 
+    (2, 2), 
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6),
+    (7, 7),
+    (8, 8),
+    (9, 9),
+    (10, 10),
+    (11, 11),
+    (12, 12),
+    (13, 13),
+    (14, 14),
+    (15, 15),
+    (16, 16),
+    (17, 17),
+    (18, 18),
+    (19, 19),
+    (20, 20);
+
+-- Staff
+INSERT INTO Staff (UserId, StaffCardId)
+VALUES 
+    (21, 1001),
+    (22, 1002),
+    (23, 1003),
+    (24, 1004),
+    (25, 1005),
+    (26, 1006),
+    (27, 1007),
+    (28, 1008),
+    (29, 1009),
+    (30, 1010),
+    (31, 1011),
+    (32, 1012),
+    (33, 1013),
+    (34, 1014),
+    (35, 1015),
+    (36, 1016),
+    (37, 1017),
+    (38, 1018),
+    (39, 1019),
+    (40, 1020);
+
+-- ApplicationAccessLog
+INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
+VALUES 
+    (1, 1, 1, 1745632800000),
+    (2, 1, 2, 1745633100000),
+    (3, 2, 1, 1745633400000),
+    (4, 2, 3, 1745633700000),
+    (5, 3, 1, 1745634000000),
+    (6, 3, 2, 1745634300000),
+    (7, 4, 4, 1745634600000),
+    (8, 4, 1, 1745634900000),
+    (9, 5, 2, 1745635200000),
+    (10, 6, 3, 1745635500000),
+    (11, 6, 1, 1745635800000),
+    (12, 7, 4, 1745636100000),
+    (13, 7, 2, 1745636400000),
+    (14, 8, 3, 1745636700000),
+    (15, 9, 1, 1745637000000),
+    (16, 10, 2, 1745637300000),
+    (17, 11, 4, 1745637600000),
+    (18, 12, 3, 1745637900000),
+    (19, 13, 2, 1745638200000),
+    (20, 14, 1, 1745638500000);
+
+-- ProductListEntry
+INSERT INTO ProductListEntry(CartId, ProductId, Quantity)
+VALUES 
+    (1, 1, 1),
+    (1, 5, 2), 
+    (2, 2, 1),
+    (2, 7, 3), 
+    (3, 3, 2),
+    (3, 10, 1),
+    (4, 4, 1),
+    (5, 5, 3),
+    (5, 8, 2),  
+    (6, 6, 1),
+    (7, 7, 2),
+    (8, 8, 1),
+    (8, 12, 3), 
+    (9, 9, 3),
+    (9, 14, 1), 
+    (10, 10, 2),
+    (10, 16, 1), 
+    (11, 11, 1),
+    (12, 12, 2),
+    (13, 13, 1),
+    (14, 14, 3),
+    (15, 15, 1),
+    (15, 18, 2), 
+    (16, 16, 2),
+    (17, 17, 1),
+    (18, 18, 3),
+    (19, 19, 1),
+    (20, 20, 2),
+    (20, 4, 1);  
+
+-- Cart
+INSERT INTO Cart (LastUpdated)
+VALUES 
+    ('2026-08-31 00:00:00.000'),
+    ('2026-08-30 00:00:00.000'),
+    ('2026-08-29 00:00:00.000'),
+    ('2026-08-28 00:00:00.000'),
+    ('2026-08-27 00:00:00.000'),
+    ('2026-08-26 00:00:00.000'),
+    ('2026-08-25 00:00:00.000'),
+    ('2026-08-24 00:00:00.000'),
+    ('2026-08-23 00:00:00.000'),
+    ('2026-08-22 00:00:00.000'),
+    ('2026-08-21 00:00:00.000'),
+    ('2026-08-20 00:00:00.000'),
+    ('2026-08-19 00:00:00.000'),
+    ('2026-08-18 00:00:00.000'),
+    ('2026-08-17 00:00:00.000'),
+    ('2026-08-16 00:00:00.000'),
+    ('2026-08-15 00:00:00.000'),
+    ('2026-08-14 00:00:00.000'),
+    ('2026-08-13 00:00:00.000'),
+    ('2026-08-12 00:00:00.000');
+
+-- Shipment
 INSERT INTO Shipment(ShipmentId, OrderId, AddressId, Method, ShipmentDate)
 VALUES 
-    (1, 1, 10, 'Standard', '2025-05-01 10:00:00'),
-    (2, 1, 11, 'Express', '2025-05-02 09:30:00'),
-    (3, 1, 12, 'Priority', '2025-05-03 08:15:00');
+    (1, 1, 3, 'Standard', '2025-05-01 10:00:00'),
+    (2, 1, 4, 'Express', '2025-05-02 09:30:00'),
+    (3, 1, 5, 'Priority', '2025-05-03 08:15:00'),
+    (4, 2, 6, 'Standard', '2025-05-04 14:00:00'),
+    (5, 2, 7, 'Express', '2025-05-05 12:30:00'),
+    (6, 3, 8, 'Priority', '2025-05-06 11:15:00'),
+    (7, 4, 9, 'Standard', '2025-05-07 15:45:00'),
+    (8, 4, 10, 'Express', '2025-05-08 13:30:00'),
+    (9, 5, 11, 'Priority', '2025-05-09 10:00:00'),
+    (10, 6, 12, 'Standard', '2025-05-10 17:00:00'),
+    (11, 7, 13, 'Express', '2025-05-11 16:15:00'),
+    (12, 8, 14, 'Priority', '2025-05-12 09:45:00'),
+    (13, 9, 15, 'Standard', '2025-05-13 18:00:00'),
+    (14, 10, 16, 'Express', '2025-05-14 11:30:00'),
+    (15, 11, 17, 'Priority', '2025-05-15 10:45:00'),
+    (16, 12, 18, 'Standard', '2025-05-16 14:30:00'),
+    (17, 13, 19, 'Express', '2025-05-17 12:00:00'),
+    (18, 14, 20, 'Priority', '2025-05-18 09:00:00'),
+    (19, 15, 1, 'Standard', '2025-05-19 16:45:00'),
+    (20, 16, 2, 'Express', '2025-05-20 14:15:00');
