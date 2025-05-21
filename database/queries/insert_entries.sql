@@ -35,3 +35,16 @@ VALUES (0, 0, 0, 1745632800000),
 
 INSERT INTO ProductListEntry(ProductListId, ProductId, Quantity)
 VALUES (1, 0, 1);
+-- Additional addresses for shipments
+INSERT INTO Address(AddressId, StreetNumber, Street, Suburb, State, Postcode)
+VALUES 
+    (10, '42', 'Shipping Lane', 'Delivery Bay', 0, 2000),
+    (11, '123', 'Parcel Street', 'Package City', 1, 3000),
+    (12, '7', 'Post Road', 'Mail Town', 2, 4000);
+
+-- Sample shipments
+INSERT INTO Shipment(ShipmentId, OrderId, AddressId, Method, ShipmentDate)
+VALUES 
+    (1, 1, 10, 'Standard', '2025-05-01 10:00:00'),
+    (2, 1, 11, 'Express', '2025-05-02 09:30:00'),
+    (3, 1, 12, 'Priority', '2025-05-03 08:15:00');
