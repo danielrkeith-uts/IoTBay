@@ -15,6 +15,8 @@ import java.util.logging.Logger;
 import model.dao.ApplicationAccessLogDBManager;
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
+import model.dao.ShipmentDBManager;
+import model.dao.OrderDBManager;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -24,6 +26,7 @@ public class ConnServlet extends HttpServlet {
     private Connection conn;
     private UserDBManager userDBManager;
     private ApplicationAccessLogDBManager applicationAccessLogDBManager;
+    private OrderDBManager orderDBManager;
 
     @Override
     public void init() {
@@ -56,6 +59,14 @@ public class ConnServlet extends HttpServlet {
 
             logger.info("Session ID: " + session.getId());
             logger.info("UserDBManager in session: " + (session.getAttribute("userDBManager") == null ? "Not Found" : "Found"));
+            if (session.getAttribute("shipmentDBManager") == null) {
+                ShipmentDBManager shipmentDBManager = new ShipmentDBManager(conn);
+                session.setAttribute("shipmentDBManager", shipmentDBManager);
+            }
+            if (session.getAttribute("orderDBManager") == null) {
+                orderDBManager = new OrderDBManager(conn);
+                session.setAttribute("orderDBManager", orderDBManager);
+            }
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error opening DB connection", e);

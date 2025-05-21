@@ -99,3 +99,13 @@ CREATE TABLE ApplicationAccessLog (
     DateTime DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId)
 );
+
+CREATE TABLE Shipment (
+    ShipmentId INTEGER PRIMARY KEY AUTOINCREMENT,
+    OrderId INTEGER NOT NULL,
+    AddressId INTEGER NOT NULL,
+    Method VARCHAR(30) NOT NULL,
+    ShipmentDate DATETIME NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
+    FOREIGN KEY (AddressId) REFERENCES Address(AddressId)
+);
