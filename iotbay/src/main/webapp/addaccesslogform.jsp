@@ -43,7 +43,8 @@
                 <option value="ADD_TO_CART">ADD TO CART</option>
                 <option value="PLACE_ORDER">PLACE ORDER</option>
             </select>
-            <input type="hidden" name="userId" value="<%= targetUser.getUserId() %>" />
+            <label for="userId">User ID:</label>
+            <input type="text" name="userId" required/>
             <button type="submit">Add Log</button>
             <div class="text-center mt-4">
         <button class="btn btn-secondary" onclick="goBack()">

@@ -29,7 +29,7 @@ VALUES (0, 999);
 INSERT INTO Staff (UserId, StaffCardId)
 VALUES (1, 1001);
 
-INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
+INSERT INTO ApplicationAccessLog (AccessLogId, UserId, ApplicationAction, DateTime)
 VALUES (0, 0, 0, 1745632800000),
 (1, 0, 1, 1745633100000);
 
