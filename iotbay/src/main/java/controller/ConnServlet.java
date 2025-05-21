@@ -19,6 +19,7 @@ import model.dao.CartDBManager;
 import model.dao.OrderDBManager;
 import model.dao.ProductDBManager;
 import model.dao.ProductListEntryDBManager;
+import model.dao.ShipmentDBManager;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -81,6 +82,12 @@ public class ConnServlet extends HttpServlet {
                 productDBManager = new ProductDBManager(conn);
                 session.setAttribute("productDBManager", productDBManager);
             }
+
+            if (session.getAttribute("shipmentDBManager") == null) {
+                ShipmentDBManager shipmentDBManager = new ShipmentDBManager(conn);
+                session.setAttribute("shipmentDBManager", shipmentDBManager);
+            }
+
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
