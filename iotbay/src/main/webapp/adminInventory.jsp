@@ -74,7 +74,7 @@
                    <form action="<%=request.getContextPath()%>/ProductServlet" method="post">
                        <h5><input type="text" name="name" class="form-control mb-2" value="<%= p.getName() %>" required/></h5>
                        <label>Description:</label>
-                       <input type="text" name="description" class="form-control mb-2" value="<%= p.getDescription() %>" />
+                       <input type="text" name="description" class="form-control mb-2" value="<%= p.getDescription() == null ? "" : p.getDescription() %>" />
                        <label>Price:</label>
                        <input type="number" name="cost" class="form-control mb-2" value="<%= p.getCost() %>" step="0.01" required/>
                        <label>Stock:</label>
