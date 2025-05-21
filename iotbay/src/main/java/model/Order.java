@@ -4,17 +4,21 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import model.Enums.*;
+
 public class Order implements Serializable {
     private int orderId;
     private List<ProductListEntry> productList;
     private Payment payment;
     private Date datePlaced;
+    private OrderStatus status;
 
-    public Order(int orderId, List<ProductListEntry> productList, Payment payment, Date datePlaced) {
+    public Order(int orderId, List<ProductListEntry> productList, Payment payment, Date datePlaced, OrderStatus status) {
         this.orderId = orderId;
         this.productList = productList;
         this.payment = payment;
         this.datePlaced = datePlaced;
+        this.status = status;
     }
 
     public int getOrderId() {
@@ -33,6 +37,10 @@ public class Order implements Serializable {
         return datePlaced;
     }
 
+    public OrderStatus getOrderStatus() {
+        return status;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -47,7 +55,8 @@ public class Order implements Serializable {
         return this.orderId == order.orderId
             && checkListEqual(this.productList, order.productList)
             && this.payment.equals(order.payment)
-            && this.datePlaced.equals(order.datePlaced);
+            && this.datePlaced.equals(order.datePlaced)
+            && this.status.equals(order.status);
     }
 
     private boolean checkListEqual(List<ProductListEntry> list1, List<ProductListEntry> list2) {
@@ -66,6 +75,7 @@ public class Order implements Serializable {
             ", productList='" + getProductList() + "'" +
             ", payment='" + getPayment() + "'" +
             ", datePlaced='" + getDatePlaced() + "'" +
+            ", status='" + getOrderStatus() + "'" +
             "}";
     }
     

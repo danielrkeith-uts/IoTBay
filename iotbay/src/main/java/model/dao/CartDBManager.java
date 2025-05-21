@@ -18,7 +18,7 @@ public class CartDBManager {
     //Find a cart by CartId in the database   
     public Cart getCart(int cartId) throws SQLException {   
 
-        //get LastUpdated from the Cart table
+        //get a cart from the db
         String query = "SELECT * FROM Cart WHERE CartId = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setInt(1, cartId);
@@ -65,7 +65,7 @@ public class CartDBManager {
         updateCartPs.executeUpdate();
     } 
 
-    //delete an order from the database   
+    //delete a cart from the database   
     public void deleteCart(int CartId) throws SQLException{       
         st.executeUpdate("DELETE FROM Cart WHERE CartId = " + CartId); 
     }

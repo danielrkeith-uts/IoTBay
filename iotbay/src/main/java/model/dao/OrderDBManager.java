@@ -4,16 +4,17 @@ import model.*;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
+import model.Enums.*;
 
 public class OrderDBManager {
     private Statement st;
     private Connection conn;
-    private static final String UPDATE_ORDER_STMT = "UPDATE `Order` SET UserId = ?, CartId = ?, PaymentId = ?, DatePlaced = ? WHERE OrderId = ?;";
+    private static final String UPDATE_ORDER_STMT = "UPDATE `Order` SET UserId = ?, CartId = ?, PaymentId = ?, DatePlaced = ?, OrderStatus = ? WHERE OrderId = ?;";
     private final PreparedStatement updateOrderPs;
         
     public OrderDBManager(Connection conn) throws SQLException {    
         this.conn = conn;
-        st = conn.createStatement(); 
+        this.st = conn.createStatement(); 
         this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
@@ -29,6 +30,9 @@ public class OrderDBManager {
             int PaymentId = rs.getInt("PaymentId");
             Timestamp timestamp = rs.getTimestamp("DatePlaced");
             Date DatePlaced = new Date(timestamp.getTime());
+            String statusString = rs.getString("OrderStatus");
+
+            OrderStatus status = OrderStatus.valueOf(statusString);
             
             //Step 1: Get all entries from ProductListEntry table with this CartId
             String entryQuery = "SELECT * FROM ProductListEntry WHERE CartId = '" + CartId + "'"; 
@@ -51,15 +55,26 @@ public class OrderDBManager {
             PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
-            Order order = new Order(orderId, ProductList, Payment, DatePlaced);
+            Order order = new Order(orderId, ProductList, Payment, DatePlaced, status);
             return order;
         } 
         return null;
     }
 
     //Add an order into the database   
-    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("INSERT INTO `Order` VALUES ('" + OrderId + "', '" + UserId + "', '" + CartId + "', '" + PaymentId + "', " + DatePlaced + ")");   
+    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, Date DatePlaced, String status) throws SQLException {       
+        String query = "INSERT INTO `Order` (OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, OrderId);
+            pst.setInt(2, UserId);
+            pst.setInt(3, CartId);
+            pst.setInt(4, PaymentId);
+            pst.setDate(5, new java.sql.Date(DatePlaced.getTime()));
+            pst.setString(6, status);
+
+            pst.executeUpdate();
+        }
     }
 
     //update an order's details in the database   

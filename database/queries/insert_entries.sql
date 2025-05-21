@@ -16,8 +16,8 @@ VALUES(1, 1, 23.45, 1);
 INSERT INTO Card(CardId, Name, Number, Expiry, CVC)
 VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123');
 
-INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced)
-VALUES (1, 0, 1, 1, '2025-04-25 00:00:00');
+INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus)
+VALUES (1, 0, 1, 1, '2025-04-25 00:00:00', 'PROCESSING');
 
 INSERT INTO User (UserId, FirstName, LastName, Email, Phone, Password)
 VALUES (0, 'John', 'Smith', 'john.smith@gmail.com', '+61412345678', 'johnsPassword'),

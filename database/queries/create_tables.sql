@@ -48,8 +48,10 @@ CREATE TABLE `Order` (
     CartId INTEGER,
     PaymentId INTEGER,
     DatePlaced DATETIME NOT NULL,
+    OrderStatus VARCHAR(50),
     FOREIGN KEY (UserId) REFERENCES User(UserId),
-    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId)
+    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
+    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
 );
 
 CREATE TABLE Delivery (

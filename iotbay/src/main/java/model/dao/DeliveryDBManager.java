@@ -1,7 +1,7 @@
 package model.dao;
 
 import model.*;
-import model.Enums.AuState;
+import model.Enums.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +64,8 @@ public class DeliveryDBManager {
                         int CartId = orderRs.getInt("CartId");
                         int PaymentId = orderRs.getInt("PaymentId");
                         Date DatePlaced = orderRs.getDate("DatePlaced");
+                        String statusString = orderRs.getString("OrderStatus");
+                        OrderStatus status = OrderStatus.valueOf(statusString);
 
                         ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager(conn);
                         List<ProductListEntry> productList = productListEntryDBManager.getProductList(CartId);
@@ -71,7 +73,7 @@ public class DeliveryDBManager {
                         PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
                         Payment payment = paymentDBManager.getPayment(PaymentId);
 
-                        Order order = new Order(OrderId, productList, payment, DatePlaced);
+                        Order order = new Order(OrderId, productList, payment, DatePlaced, status);
                         orders.add(order); 
                     }
                     Delivery delivery = new Delivery(DeliveryId, orders, source, destination, Courier, CourierDeliveryId);

@@ -36,14 +36,14 @@ public class CartServlet extends HttpServlet {
         String productName = request.getParameter("productName");
         double price = Double.parseDouble(request.getParameter("price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
-        Product product = new Product(productName, "", price, 0, "");
+        Product product = new Product(productName, "", price, 0);
 
         try {
-            int productId = productDBManager.addProduct(product);
+            //int productId = productDBManager.addProduct(product);
             if (user != null && user instanceof Customer) {
                 //customer is logged in
                 Cart cart = ((Customer) user).getCart();
-                productListEntryDBManager.addProduct(cart.getCartId(), productId, quantity);
+                //productListEntryDBManager.addProduct(cart.getCartId(), productId, quantity);
 
             } else {
                 //customer is not logged in

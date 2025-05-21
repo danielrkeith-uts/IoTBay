@@ -2,19 +2,14 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProductDBManager {
     private Connection conn;
     private Statement st;
-    private static final String UPDATE_PRODUCT_STMT = "UPDATE Cart SET LastUpdated = ? WHERE CartId = ?;";
-    private final PreparedStatement updateProductPs;
 
     public ProductDBManager(Connection conn) throws SQLException {
         this.conn = conn;
-        st = conn.createStatement();
-        this.updateProductPs = conn.prepareStatement(UPDATE_PRODUCT_STMT);
+        this.st = conn.createStatement();
     }
 
     public Product getProduct(int ProductId) throws SQLException {

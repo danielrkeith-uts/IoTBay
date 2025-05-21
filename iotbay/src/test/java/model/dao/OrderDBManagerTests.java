@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 import model.*;
-import model.Enums.PaymentStatus;
+import model.Enums.*;
 
 public class OrderDBManagerTests {
     static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -26,8 +26,10 @@ public class OrderDBManagerTests {
 
     static List<ProductListEntry> productList = new ArrayList<>();
     static Payment payment = new Payment(0, 0, null, null);
+    static String statusString = "PROCESSING";
+    static OrderStatus status = OrderStatus.valueOf(statusString);
 
-    private static Order order = new Order(1, productList, payment, datePlaced);
+    private static Order order = new Order(1, productList, payment, datePlaced, status);
     OrderDBManager orderDBManager;
     private final Connection conn;
 
@@ -61,11 +63,14 @@ public class OrderDBManagerTests {
         Assert.assertEquals(1, payment.getCard().getCardId());
         Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
 
-        // //Check ProductList fields
+        //Check ProductList fields
         for (int i = 0; i < productlist.size(); i++) {
             Assert.assertEquals("Raspberry Pi", productlist.get(i).getProduct().getName());
             Assert.assertEquals(1, productlist.get(i).getQuantity());
         }
+
+        //Check OrderStatus field
+        Assert.assertEquals(OrderStatus.PROCESSING, order.getOrderStatus());
     }
 
     @Test
@@ -74,11 +79,14 @@ public class OrderDBManagerTests {
         List<ProductListEntry> testPLE = new ArrayList<ProductListEntry>();
         Product product = new Product("Raspberry Pi", "", 99.99, 3);
         testPLE.add(new ProductListEntry(product,1));
+        String statusString = "PROCESSING";
+        OrderStatus status = OrderStatus.valueOf(statusString);
         Order newOrder = new Order(
             order.getOrderId(),
             testPLE,
             order.getPayment(),
-            newDate
+            newDate,
+            status
         );
 
         try {
@@ -104,8 +112,9 @@ public class OrderDBManagerTests {
             int CartId = 1;
             int PaymentId = 1;
             Date DatePlaced = new Date();
+            String statusString = "PROCESSING";
             
-            orderDBManager.addOrder(OrderId, UserId, CartId, PaymentId, new java.sql.Date(DatePlaced.getTime()));
+            orderDBManager.addOrder(OrderId, UserId, CartId, PaymentId, new java.sql.Date(DatePlaced.getTime()), statusString);
             
             Order order = orderDBManager.getOrder(OrderId);
             Assert.assertNotNull(order);
