@@ -132,11 +132,12 @@ public class OrderDBManagerTests {
     }
 
     @Test
-    public void testDeleteOrder() {
+    public void testCancelOrder() {
         try {
-            orderDBManager.deleteOrder(1);
-            Order deletedOrder = orderDBManager.getOrder(1);
-            Assert.assertNull(deletedOrder);
+            orderDBManager.cancelOrder(1);
+            Order updatedOrder = orderDBManager.getOrder(1);
+            Assert.assertNotNull(updatedOrder);
+            Assert.assertEquals("CANCELLED", String.valueOf(updatedOrder.getOrderStatus()));
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } finally {

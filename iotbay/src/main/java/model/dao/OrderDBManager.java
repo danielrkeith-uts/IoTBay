@@ -91,8 +91,8 @@ public class OrderDBManager {
         updateOrderPs.executeUpdate();
     } 
 
-    //delete an order from the database   
-    public void deleteOrder(int OrderId) throws SQLException{       
-        st.executeUpdate("DELETE FROM `Order` WHERE OrderId = '" + OrderId + "'"); 
+    //orders can't be deleted, only set to cancelled  
+    public void cancelOrder(int OrderId) throws SQLException{       
+        st.executeUpdate("UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = " + OrderId); 
     }
 }
