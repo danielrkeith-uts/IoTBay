@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -28,11 +29,11 @@ public class ConnServlet extends HttpServlet {
     private DBConnector dbConnector;
     private Connection conn;
     private UserDBManager userDBManager;
-    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
+    private ProductDBManager productDBManager;
     private CartDBManager cartDBManager;
     private OrderDBManager orderDBManager;
-    private ProductListEntryDBManager productListEntryDBManager;
-    private ProductDBManager productDBManager;
+    private ShipmentDBManager shipmentDBManager;
+    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     @Override
     public void init() {
@@ -46,7 +47,7 @@ public class ConnServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
 
         // Instantiate all DBManagers
@@ -56,6 +57,11 @@ public class ConnServlet extends HttpServlet {
             if (session.getAttribute("userDBManager") == null) {
                 userDBManager = new UserDBManager(conn);
                 session.setAttribute("userDBManager", userDBManager);
+            }
+
+            if (session.getAttribute("productDBManager") == null) {
+                productDBManager = new ProductDBManager(conn);
+                session.setAttribute("productDBManager", productDBManager);
             }
 
             if (session.getAttribute("applicationAccessLogDBManager") == null) {
@@ -71,11 +77,6 @@ public class ConnServlet extends HttpServlet {
             if (session.getAttribute("orderDBManager") == null) {
                 orderDBManager = new OrderDBManager(conn);
                 session.setAttribute("orderDBManager", orderDBManager);
-            }
-
-            if (session.getAttribute("productListEntryDBManager") == null) {
-                productListEntryDBManager = new ProductListEntryDBManager(conn);
-                session.setAttribute("productListEntryDBManager", productListEntryDBManager);
             }
 
             if (session.getAttribute("productDBManager") == null) {

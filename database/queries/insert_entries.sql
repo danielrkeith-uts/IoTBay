@@ -1,5 +1,7 @@
 INSERT INTO Product(ProductId, Name, Cost, Stock, ImageUrl)
 VALUES (0, 'Raspberry Pi', 99.99, 3, 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSksSIv20lOBy1zAyO0r-tDFlUFCiE-8pTyqFT0WbtlUfqwt2yT31aY2_xRoCbjdcSu_FPJgL2Y');
+INSERT INTO Product(ProductId, Name, Cost, Stock, ImageUrl)
+VALUES (0, 'Raspberry Pi', 99.99, 3, 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSksSIv20lOBy1zAyO0r-tDFlUFCiE-8pTyqFT0WbtlUfqwt2yT31aY2_xRoCbjdcSu_FPJgL2Y');
 
 INSERT INTO Delivery(DeliveryId, OrderId, SourceAddressId, DestinationAddressId, Courier, CourierDeliveryId)
 VALUES (1, 1, 2, 3, 'Best Couriers', 4);
