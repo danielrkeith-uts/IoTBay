@@ -29,6 +29,9 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
+                <% if (isStaff) { %>
+                            <a href="adminInventory.jsp">Manage Inventory</a>
+                        <% } %>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">

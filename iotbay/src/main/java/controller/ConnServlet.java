@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
 import model.dao.ApplicationAccessLogDBManager;
 import model.dao.DBConnector;
 import model.dao.UserDBManager;
+import model.dao.ProductDBManager;
 import model.dao.ShipmentDBManager;
 import model.dao.OrderDBManager;
 
@@ -24,6 +26,7 @@ public class ConnServlet extends HttpServlet {
     private DBConnector dbConnector;
     private Connection conn;
     private UserDBManager userDBManager;
+    private ProductDBManager productDBManager;
     private ApplicationAccessLogDBManager applicationAccessLogDBManager;
     private OrderDBManager orderDBManager;
 
@@ -39,7 +42,7 @@ public class ConnServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)throws IOException {
         HttpSession session = request.getSession();
 
         // Instantiate all DBManagers
@@ -51,10 +54,16 @@ public class ConnServlet extends HttpServlet {
                 session.setAttribute("userDBManager", userDBManager);
             }
 
+            if (session.getAttribute("productDBManager") == null) {
+                productDBManager = new ProductDBManager(conn);
+                session.setAttribute("productDBManager", productDBManager);
+            }
+
             if (session.getAttribute("applicationAccessLogDBManager") == null) {
                 applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
                 session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
             }
+            
 
             if (session.getAttribute("shipmentDBManager") == null) {
                 ShipmentDBManager shipmentDBManager = new ShipmentDBManager(conn);

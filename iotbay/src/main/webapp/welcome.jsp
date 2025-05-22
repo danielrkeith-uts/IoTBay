@@ -12,7 +12,12 @@
         }
 
         User user = (User) session.getAttribute("user");
-        String firstName = user.getFirstName();
+        boolean isStaff = false;
+    if (user != null && user instanceof model.Staff) {
+        isStaff = true;
+    }
+    String firstName = (user != null) ? user.getFirstName() : "";
+        //String firstName = user.getFirstName();
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -28,6 +33,9 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
+                <% if (isStaff) { %>
+                            <a href="adminInventory.jsp">Manage Inventory</a>
+                        <% } %>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
@@ -37,6 +45,7 @@
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
                             <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+                        
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>
