@@ -73,7 +73,7 @@ VALUES (1, '5', 'Source Avenue', 'Source Valley', 2, 321),
 -- Payment
 INSERT INTO Payment(PaymentId, CardId, Amount, PaymentStatus)
 VALUES
-    (1, 1, 23.45, 1)
+    (1, 1, 23.45, 1),
     (2, 2, 45.67, 1),
     (3, 3, 89.99, 2),
     (4, 4, 12.34, 1),
@@ -120,10 +120,7 @@ VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123'),
 
 -- Order
 INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus)
-VALUES (1, 1, 1, 1, '2025-04-25 00:00:00', 'PROCESSING');
-
-INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus)
-VALUES
+VALUES 
     (1, 1, 1, 1, '2025-04-25 00:00:00', 'PROCESSING'),
     (2, 1, 2, 2, '2025-04-26 00:00:00', 'PROCESSING'),
     (3, 2, 3, 3, '2025-04-27 00:00:00', 'PLACED'),

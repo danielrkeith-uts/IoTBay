@@ -85,7 +85,7 @@
             <label for="phone">Phone Number:</label><br>
             <input type="tel" id="phone" name="phone" value="<%= phone %>" required><br><br>
         </form>
-        <%-- <h2>Shipping Details</h2>
+        <h2>Shipping Details</h2>
         <form>
             <label for="streetNumber">Street Number:</label><br>
             <input type="text" id="streetNumber" name="streetNumber" value="<%= streetNumber %>" required><br><br>
@@ -115,6 +115,6 @@
 
             <label for="cvc">CVC:</label><br>
             <input type="text" id="cvc" name="cvc" value="<%= cvc %>" required><br><br>
-        </form> --%>
+        </form>
     </body>
 </html>

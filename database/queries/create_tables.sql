@@ -33,7 +33,7 @@ CREATE TABLE ProductListEntry (
     CartId INTEGER,
     ProductId INTEGER,
     Quantity INTEGER NOT NULL,
-    PRIMARY KEY (ProductListId, ProductId),
+    PRIMARY KEY (CartId, ProductId),
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId) ON DELETE CASCADE
 );
 
