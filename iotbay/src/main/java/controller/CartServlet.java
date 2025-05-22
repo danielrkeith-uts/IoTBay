@@ -28,34 +28,32 @@ public class CartServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
-        ProductDBManager productDBManager = (ProductDBManager) session.getAttribute("productDBManager");
-
         User user = (User) session.getAttribute("user");
 
         String productName = request.getParameter("productName");
         double price = Double.parseDouble(request.getParameter("price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
+        
         Product product = new Product(productName, "", price, 0);
 
         try {
-            //int productId = productDBManager.addProduct(product);
-            if (user != null && user instanceof Customer) {
-                //customer is logged in
-                Cart cart = ((Customer) user).getCart();
-                //productListEntryDBManager.addProduct(cart.getCartId(), productId, quantity);
-
-            } else {
-                //customer is not logged in
-                Cart cart = (Cart) session.getAttribute("cart");
+            Cart cart;
+            if (user != null && user instanceof Customer) { //customer is logged in
+                cart = ((Customer) user).getCart();
+            } else { //customer is not logged in
+                cart = (Cart) session.getAttribute("cart");
                 if (cart == null) {
                     cart = new Cart();
                     session.setAttribute("cart", cart);
                 }
+            }
+
+            for (int i = 0; i < quantity; i++) {
                 cart.addProduct(product);
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Database error while adding product to cart", e);
+            
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Database error while getting cart", e);
         }
 
         session.setAttribute("productName", productName);
@@ -69,34 +67,24 @@ public class CartServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
-
+        
         try {
+            Cart cart;
             if (user != null && user instanceof Customer) {
                 // Logged-in user: load cart from DB
-                Cart cart = ((Customer) user).getCart();
-                List<ProductListEntry> productList = cart.getProductList();
-                
-                // for (ProductListEntry item : productList) {
-                //     cart.addProduct(item);
-                //     //cart.addProduct(productListEntryDBManager.getProductList(cart.getCartId()));
-                // }
-                // request.setAttribute("cart", cart);
-
+                cart = ((Customer) user).getCart();
             } else {
                 // Guest user: load cart from session
-                Cart cart = (Cart) session.getAttribute("cart");
+                cart = (Cart) session.getAttribute("cart");
                 if (cart == null) {
                     cart = new Cart();
                     session.setAttribute("cart", cart);
                 }
-                request.setAttribute("cart", cart);
             }
-
+            request.setAttribute("cart", cart);
             request.getRequestDispatcher("cart.jsp").forward(request, response);
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error retrieving cart contents", e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error retrieving cart", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unable to retrieve cart.");
         }
     }
