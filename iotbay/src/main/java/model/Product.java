@@ -20,20 +20,18 @@ public class Product implements Serializable {
     public Product(String name, String description, double cost, int stock) {
         this(name, description, cost, stock, null); // Set imageUrl to null by default
     }
+
+    public int getProductId() {
+        return productId;
+    }
+    
     public String getImageUrl() {
         return imageUrl;
     }
 
-<<<<<<< HEAD
-    public int getProductId() {
-        return productId;
-    }
-
-=======
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
->>>>>>> origin/main
     public String getName() {
         return name;
     }
