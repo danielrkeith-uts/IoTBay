@@ -29,24 +29,18 @@ CREATE TABLE Product (
     ImageUrl VARCHAR(500)
 );
 
-CREATE TABLE ProductList (
-    ProductListId INTEGER PRIMARY KEY AUTOINCREMENT
-);
-
 CREATE TABLE ProductListEntry (
     ProductListId INTEGER,
     ProductId INTEGER,
     Quantity INTEGER NOT NULL,
     PRIMARY KEY (ProductListId, ProductId),
-    FOREIGN KEY (ProductListId) REFERENCES ProductList(ProductListId) ON DELETE CASCADE,
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId) ON DELETE CASCADE
 );
 
 CREATE TABLE Cart (
     CartId INTEGER PRIMARY KEY,
     ProductListId INTEGER,
-    LastUpdated DATETIME,
-    FOREIGN KEY (ProductListId) REFERENCES ProductList(ProductListId)
+    LastUpdated DATETIME
 );
 
 CREATE TABLE `Order` (
