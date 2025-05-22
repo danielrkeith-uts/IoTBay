@@ -19,7 +19,7 @@
 <body>
     <div class="banner">
         <h1>Internet of Things Store</h1>
-            <jsp:include page="navbar.jsp" />
+        <jsp:include page="navbar.jsp" />
     </div>
 
     <div class="container d-flex justify-content-center mt-5">
@@ -37,21 +37,21 @@
                     </div>
                     <div class="form-group">
                         <label for="firstName">First Name:</label>
-                        <input type="text" id="firstName" name="firstName" value="<%= customer.getFirstName() %>" class="form-control" />
+                        <input type="text" id="firstName" name="firstName" value="<%= customer.getFirstName() %>" class="form-control" required />
                     </div>
                     <div class="form-group">
                         <label for="lastName">Last Name:</label>
-                        <input type="text" id="lastName" name="lastName" value="<%= customer.getLastName() %>" class="form-control" />
+                        <input type="text" id="lastName" name="lastName" value="<%= customer.getLastName() %>" class="form-control" required />
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone:</label>
-                        <input type="text" id="phone" name="phone" value="<%= customer.getPhone() %>" class="form-control" />
+                        <input type="text" id="phone" name="phone" value="<%= customer.getPhone() %>" class="form-control" required />
                     </div>
 
                     <p class="error text-center"><%= (error == null ? "" : error) %></p>
-                    <p class="success text-center"><%= (success == null ? "" : success) %></p>
+                    <p class="success text-center text-success"><%= (success == null ? "" : success) %></p>
                     <div class="text-center">
-                        <input type="submit" value="Update Customer" class="btn-green" />
+                        <input type="submit" value="Update Customer" class="btn btn-success" />
                     </div>
                 </form>
             <% } %>

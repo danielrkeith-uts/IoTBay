@@ -19,7 +19,7 @@ public class EditCustomerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
 
@@ -35,16 +35,16 @@ public class EditCustomerServlet extends HttpServlet {
             String phone = request.getParameter("phone");
 
             Validator.validatePhoneNumber(phone);
+            Validator.validateName(firstName, "First name");
+            Validator.validateName(lastName, "Last name");
 
-            Customer customer = userDBManager.getCustomer(userId); 
+            Customer customer = userDBManager.getCustomer(userId);
             if (customer != null) {
-                Validator.validateName(firstName, "First name");
-                Validator.validateName(lastName, "Last name");
+                customer.setFirstName(firstName);
+                customer.setLastName(lastName);
                 customer.setPhone(phone);
 
                 userDBManager.updateCustomer(customer); 
-
-                customer = userDBManager.getCustomer(userId);
 
                 request.setAttribute("customer", customer);
                 request.setAttribute("success", "Customer updated successfully.");

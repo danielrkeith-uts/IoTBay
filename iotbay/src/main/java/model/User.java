@@ -126,6 +126,7 @@ public abstract class User implements Serializable {
             && this.email.equals(user.email)
             && this.phone.equals(user.phone)
             && this.password.equals(user.password)
-            && this.deactivated == user.deactivated;
+            && this.deactivated == user.deactivated
+           && this.role == user.role;
     }
 }

@@ -54,6 +54,7 @@ public class RegisterServlet extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String phone = request.getParameter("phone");
+        String type = request.getParameter("type");
         Boolean isStaff = request.getParameter("isStaff") != null;
         String staffCardIdInput = request.getParameter("staffCardId");
         String adminPassword = request.getParameter("adminPassword");
@@ -70,7 +71,7 @@ public class RegisterServlet extends HttpServlet {
 
                 user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
             } else {
-                user = new Customer(-1, firstName, lastName, email, phone, password);
+                user = new Customer(-1, firstName, lastName, email, phone, password, Customer.Type.valueOf(type));
             }
     
             Validator.validateUser(user);

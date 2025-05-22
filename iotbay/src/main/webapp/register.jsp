@@ -42,6 +42,13 @@
                     <label for="phone" class="form-label">Phone Number (optional)</label>
                     <input type="text" name="phone" class="form-control" />
                 </div>
+                <div class="mb-3" id="customer-type-section">
+                    <label for="userType" class="form-label">User Type</label>
+                        <select name="userType" class="form-select">
+                           <option value="INDIVIDUAL">Individual</option>
+                         <option value="COMPANY">Company</option>
+                          </select>
+                </div>
                 <div class="mb-3">
                     <input id="staff-checkbox" type="checkbox" name="isStaff" class="form-check-input" onclick="handleStaffCheckbox()"/>
                     <label for="is-staff" class="form-check-label">Register as staff</label>

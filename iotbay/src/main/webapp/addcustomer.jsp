@@ -57,14 +57,21 @@
             <label>Password:</label>
             <input type="password" name="password" required>
         </div>
+        <div>
+            <label>Type:</label>
+            <select name="type" required>
+                <option value="INDIVIDUAL">Individual</option>
+                <option value="COMPANY">Company</option>
+            </select>
+        </div>
+
         <input type="submit" value="Add Customer" class="btn-green">
 
-<div class="text-center mt-4">
-    <button class="btn btn-custom" onclick="goBack()">
-        <i class="fas fa-arrow-left"></i> Back
-    </button>
-</div>
-        
+        <div class="text-center mt-4">
+            <button class="btn btn-custom" type="button" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
     </form>
 
     <p style="color:red;"><%= request.getAttribute("error") != null ? request.getAttribute("error") : "" %></p>

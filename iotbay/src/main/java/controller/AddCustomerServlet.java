@@ -28,9 +28,15 @@ public class AddCustomerServlet extends HttpServlet {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String phone = request.getParameter("phone");
+        String typeParam = request.getParameter("type");
 
         try {
-            Customer customer = new Customer(-1, firstName, lastName, email, phone, password);
+            if (typeParam == null || typeParam.isEmpty()) {
+                throw new InvalidInputException("Customer type is required.");
+            }
+
+            Customer.Type type = Customer.Type.valueOf(typeParam.toUpperCase());
+            Customer customer = new Customer(-1, firstName, lastName, email, phone, password, type);
             Validator.validateUser(customer);
 
             if (userDBManager.userExists(email)) {
@@ -40,6 +46,8 @@ public class AddCustomerServlet extends HttpServlet {
             userDBManager.addCustomer(customer);
             request.setAttribute("success", "Customer added successfully.");
 
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", "Invalid customer type.");
         } catch (InvalidInputException e) {
             request.setAttribute("error", e.getMessage());
         } catch (SQLException e) {

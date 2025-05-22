@@ -6,15 +6,27 @@ import model.Shipment;
 
 public class Customer extends User {
     private Cart cart;
+    private Type type;
     private List<Order> orders;
     private List<Shipment> shipments;   // i added this
 
-    public Customer(int userId, String firstName, String lastName, String email, String phone, String password) {
+    public Customer(int userId, String firstName, String lastName, String email, String phone, String password, Type type) {
         super(userId, firstName, lastName, email, phone, password, Role.CUSTOMER);
+       
+        this.type = type;
 
         cart = new Cart();
         orders = new LinkedList<Order>();
         shipments = new LinkedList<Shipment>();   // i added this
+    }
+
+    public enum Type {
+        COMPANY,
+        INDIVIDUAL
+    }
+
+    public Type getType() {
+        return this.type;
     }
 
     public Cart getCart() {

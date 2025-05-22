@@ -93,26 +93,27 @@ public class UserDBManager {
 
     public List<Customer> getAllCustomers() throws SQLException {
         List<Customer> customers = new ArrayList<>();
-        String query = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone, U.Deactivated " +
-                       "FROM User U JOIN Customer C ON U.UserId = C.UserId";
+        String query = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone, U.Password, U.Deactivated, C.Type " +
+                        "FROM User U JOIN Customer C ON U.UserId = C.UserId";
 
         try (PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
-            while (rs.next()) {
-                Customer customer = new Customer(
+                while (rs.next()) {
+                    Customer customer = new Customer(
                         rs.getInt("UserId"),
                         rs.getString("FirstName"),
                         rs.getString("LastName"),
                         rs.getString("Email"),
                         rs.getString("Phone"),
-                        ""
-                );
-                customer.setDeactivated(rs.getBoolean("Deactivated"));
-                customers.add(customer);
-            }
-        }
+                        rs.getString("Password"),
+                        Customer.Type.valueOf(rs.getString("Type").toUpperCase())
+                    );
+                    customer.setDeactivated(rs.getBoolean("Deactivated"));
+                    customers.add(customer);
+                }
         return customers;
+            }
     }
 
     public void updateCustomer(Customer customer) throws SQLException {
@@ -200,7 +201,8 @@ public class UserDBManager {
                 rs.getString("LastName"),
                 rs.getString("Email"),
                 rs.getString("Phone"),
-                rs.getString("Password")
+                rs.getString("Password"),
+                Customer.Type.valueOf(rs.getString("Type").toUpperCase()) 
         );
         try {
             customer.setDeactivated(rs.getBoolean("Deactivated"));

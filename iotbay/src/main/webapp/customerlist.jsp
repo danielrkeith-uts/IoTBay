@@ -46,6 +46,7 @@
                 <p><strong>Email:</strong> <%= customer.getEmail() %></p>
                 <p><strong>Phone:</strong> <%= customer.getPhone() %></p>
                 <p><strong>Status:</strong> <%= isDeactivated ? "Deactivated" : "Active" %></p>
+                <p><strong>Type</strong> <%= customer.getType() %></p>
             </div>
             <div class="actions">
                 <button 
@@ -77,6 +78,12 @@
                     View Logs
                 </button>
             </div>
+            <form action="DeleteCustomerServlet" method="post"
+                onsubmit="return confirm('Are you sure you want to delete this customer?');"
+                style="margin-top: 15px; display: flex; justify-content: center;">
+                    <input type="hidden" name="userId" value="<%= customer.getUserId() %>" />
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+            </form>
         </div>
     <% } %>
 </div>
