@@ -21,6 +21,7 @@ import model.dao.OrderDBManager;
 import model.dao.ProductDBManager;
 import model.dao.ProductListEntryDBManager;
 import model.dao.ShipmentDBManager;
+import model.dao.DeliveryDBManager;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -33,6 +34,7 @@ public class ConnServlet extends HttpServlet {
     private CartDBManager cartDBManager;
     private OrderDBManager orderDBManager;
     private ShipmentDBManager shipmentDBManager;
+    private DeliveryDBManager deliveryDBManager;
     private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     @Override
@@ -85,8 +87,13 @@ public class ConnServlet extends HttpServlet {
             }
 
             if (session.getAttribute("shipmentDBManager") == null) {
-                ShipmentDBManager shipmentDBManager = new ShipmentDBManager(conn);
+                shipmentDBManager = new ShipmentDBManager(conn);
                 session.setAttribute("shipmentDBManager", shipmentDBManager);
+            }
+
+            if (session.getAttribute("deliveryDBManager") == null) {
+                deliveryDBManager = new DeliveryDBManager(conn);
+                session.setAttribute("deliveryDBManager", deliveryDBManager);
             }
 
         } catch (SQLException e) {

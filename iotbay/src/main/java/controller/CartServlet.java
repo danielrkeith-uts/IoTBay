@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.*;
-import model.Cart;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
@@ -31,7 +30,7 @@ public class CartServlet extends HttpServlet {
         double price = Double.parseDouble(request.getParameter("price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         
-        Product product = new Product(productName, "", price, 0);
+        Product product = new Product(productName, "", price, 0, "");
 
         try {
             Cart cart;
@@ -43,8 +42,8 @@ public class CartServlet extends HttpServlet {
                     cart = new Cart();
                     session.setAttribute("cart", cart);
                 }
-                cart.addProduct(product, quantity);
             }
+            cart.addProduct(product, quantity);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Database error while getting cart", e);
         }

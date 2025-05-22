@@ -4,6 +4,7 @@
 <%@ page import="model.ProductListEntry"%>
 <%@ page import="model.Product"%>
 <%@ page import="model.Cart"%>
+<%@ page import="java.text.DecimalFormat"%>
 
 <html>
    <jsp:include page="/ConnServlet" flush="true"/>
@@ -72,7 +73,8 @@
                     }
                 %>
             </ul>
-            <p><strong>Total: $<%= cart.totalCost() %></strong></p>
+            <% DecimalFormat df = new DecimalFormat("#.##"); %>
+            <p><strong>Total: $<%= df.format(cart.totalCost()) %></strong></p>
             <div class="cart-card">
                 <a href="products.jsp" class="btn-green">Return to Products</a>
                 <form action="OrderServlet" method="post">

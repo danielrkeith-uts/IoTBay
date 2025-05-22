@@ -1,28 +1,59 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
-<%@ page import="model.User"%>
-<%@ page import="model.ProductListEntry"%>
-<%@ page import="model.Product"%>
-<%@ page import="model.Cart"%>
+<%@ page import="model.Enums.*"%>
+<%@ page import="model.*"%>
+<%@ page import="java.time.YearMonth" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 
 <html>
-   <jsp:include page="/ConnServlet" flush="true"/>
+    <jsp:include page="/ConnServlet" flush="true"/>
+    <%-- <jsp:include page="/ConfirmOrderServlet" flush="true"/> --%>
     <%
         // Retrieve session attributes
         String error = (String) session.getAttribute("cartError");
         session.removeAttribute("cartError"); 
 
         User user = (User) session.getAttribute("user");
-        String firstName = user != null ? user.getFirstName() : "";
-        String lastName = user != null ? user.getLastName() : "";
-        String email = user != null ? user.getEmail() : "";
-        String phone = user != null ? user.getPhone() : "";
+        String firstName = user != null ? user.getFirstName() : (String) session.getAttribute("firstName");
+        String lastName = user != null ? user.getLastName() : (String) session.getAttribute("lastName");
+        String email = user != null ? user.getEmail() : (String) session.getAttribute("email");
+        String phone = user != null ? user.getPhone() : (String) session.getAttribute("phone");
 
         // Ensure cart exists in session
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
             session.setAttribute("cart", cart);
+        }
+
+        // Get session address 
+        Address address = (Address) session.getAttribute("address");
+        String streetName = address != null ? address.getStreet() : "";
+        int streetNumber = address != null ? address.getStreetNumber() : -1;
+        AuState state = address != null ? address.getState() : AuState.WA;
+        String postCode = address != null ? address.getPostcode() : "";
+        String suburb = address != null ? address.getSuburb() : "";
+
+        Card card = (Card) session.getAttribute("card");
+        String cardName = card != null ? card.getName() : "";
+        String cardNumber = card != null ? card.getNumber() : "";
+        YearMonth expiry = card != null ? card.getExpiry() : null;
+        String cvc = card != null ? card.getCvc() : "";
+
+        if (user == null) {
+            out.println("User is null<br>");
+        }
+
+        if (cart == null) {
+            out.println("Cart is null<br>");
+        } 
+
+        if (address == null) {
+            out.println("Address is null<br>");
+        }
+
+        if (card == null) {
+            out.println("Card is null<br>");
         }
 
     %>
@@ -74,36 +105,32 @@
         <h2>Personal Details</h2>
         <form action="ConfirmOrderServlet" method="post">
             <label for="firstName">First Name:</label><br>
-            <input type="text" id="firstName" name="firstName" value="<%= firstName %>" required><br><br>
+            <input type="text" id="firstName" name="firstName" value="<%= firstName != null ? firstName : "" %>" required><br><br>
 
             <label for="lastName">Last Name:</label><br>
-            <input type="text" id="lastName" name="lastName" value="<%= lastName %>" required><br><br>
+            <input type="text" id="lastName" name="lastName" value="<%= lastName != null ? lastName : "" %>" required><br><br>
 
             <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" value="<%= email %>" required><br><br>
+            <input type="email" id="email" name="email" value="<%= email != null ? email : "" %>" required><br><br>
 
             <label for="phone">Phone Number:</label><br>
-            <input type="tel" id="phone" name="phone" value="<%= phone %>" required><br><br>
-        </form>
+            <input type="tel" id="phone" name="phone" value="<%= phone != null ? phone : "" %>" required><br><br>
         <h2>Shipping Details</h2>
-        <form action="ViewShipmentsServlet" method="post">
             <label for="streetNumber">Street Number:</label><br>
-            <input type="text" id="streetNumber" name="streetNumber" value="<%= streetNumber %>" required><br><br>
+            <input type="text" id="streetNumber" name="streetNumber" value="<%= streetNumber != -1 ? streetNumber : ""%>" required><br><br>
 
             <label for="streetName">Street Name:</label><br>
-            <input type="text" id="streetName" name="streetName" value="<%= streetName %>" required><br><br>
+            <input type="text" id="streetName" name="streetName" value="<%= streetName != null ? streetName : "" %>" required><br><br>
 
             <label for="suburb">Suburb:</label><br>
-            <input type="text" id="suburb" name="suburb" value="<%= suburb %>" required><br><br>
+            <input type="text" id="suburb" name="suburb" value="<%= suburb != null ? suburb : ""%>" required><br><br>
 
             <label for="state">State:</label><br>
-            <input type="text" id="state" name="state" value="<%= state %>" required><br><br>
+            <input type="text" id="state" name="state" value="<%= state != AuState.WA ? state : "" %>" required><br><br>
 
             <label for="postCode">Post Code:</label><br>
-            <input type="text" id="postCode" name="postCode" value="<%= postCode %>" required><br><br>
-        </form>
+            <input type="text" id="postCode" name="postCode" value="<%= postCode != null ? postCode : "" %>" required><br><br>
         <h2>Payment Details</h2>
-        <form>
             <label for="cardNumber">Card Number:</label><br>
             <input type="text" id="cardNumber" name="cardNumber" value="<%= cardNumber %>" required><br><br>
 
@@ -111,10 +138,11 @@
             <input type="text" id="cardName" name="cardName" value="<%= cardName %>" required><br><br>
 
             <label for="expiry">Expiration Date:</label><br>
-            <input type="text" id="expiry" name="expiry" value="<%= expiry %>" required><br><br>
+            <input type="text" id="expiry" name="expiry" value="<%=expiry != null ? expiry.toString() : "" %>" required><br><br>
 
             <label for="cvc">CVC:</label><br>
             <input type="text" id="cvc" name="cvc" value="<%= cvc %>" required><br><br>
+            <button type="submit" class="btn btn-success">Confirm Order</button>
         </form>
     </body>
 </html>

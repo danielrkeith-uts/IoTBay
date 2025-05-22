@@ -17,7 +17,6 @@ public class DeliveryDBManager {
     }
 
     public Delivery getDelivery(int DeliveryId) throws SQLException {
-        System.out.println("Looking for Delivery ID: " + DeliveryId);
         String query = "SELECT * FROM Delivery WHERE DeliveryId = '" + DeliveryId + "'"; 
         ResultSet rs = st.executeQuery(query); 
 
