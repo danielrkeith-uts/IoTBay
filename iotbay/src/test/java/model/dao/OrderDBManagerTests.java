@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import model.*;
 import model.Enums.PaymentStatus;
+import model.Enums.ProductType;
 
 public class OrderDBManagerTests {
     static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -72,7 +73,7 @@ public class OrderDBManagerTests {
     public void testUpdateOrder() {
         Date newDate = new Date();
         List<ProductListEntry> testPLE = new ArrayList<ProductListEntry>();
-        Product product = new Product("Raspberry Pi", "", 99.99, 3);
+        Product product = new Product("Raspberry Pi", "", ProductType.COMPONENTS, 99.99, 3);
         testPLE.add(new ProductListEntry(product,1));
         Order newOrder = new Order(
             order.getOrderId(),
