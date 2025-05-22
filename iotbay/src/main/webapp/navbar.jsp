@@ -2,7 +2,7 @@
 <%
     User user = (User) session.getAttribute("user");
     boolean isLoggedIn = user != null;
-    boolean isAdmin = isLoggedIn && user.getRole() == User.Role.ADMIN;
+    boolean isAdmin = isLoggedIn && (user instanceof Staff) && ((Staff) user).isAdmin();
     boolean isStaff = isLoggedIn && (user instanceof Staff);
 
     String currentPage = request.getRequestURI();

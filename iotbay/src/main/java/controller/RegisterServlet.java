@@ -24,15 +24,16 @@ import utils.Validator;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
-    public static final String PAGE = "register.jsp";
+    private static final String PAGE = "register.jsp";
     private static final String ERROR_ATTR = "registerError";
-    private static final String ADMIN_PASSWORD = "admin";
+    private static final String STAFF_PASSWORD = "staff123";
+    private static final String ADMIN_PASSWORD = "admin123";
 
     private Logger logger;
 
     @Override
     public void init() {
-        logger = Logger.getLogger(LoginServlet.class.getName());
+        logger = Logger.getLogger(RegisterServlet.class.getName());
     }
 
     @Override
@@ -40,13 +41,10 @@ public class RegisterServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-        if (userDBManager == null) {
-            throw new ServletException("UserDBManager retrieved from session is null");
-        }
-
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
-        if (applicationAccessLogDBManager == null) {
-            throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
+
+        if (userDBManager == null || applicationAccessLogDBManager == null) {
+            throw new ServletException("Database managers are not initialized in session.");
         }
 
         String email = request.getParameter("email");
@@ -55,66 +53,57 @@ public class RegisterServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         String phone = request.getParameter("phone");
         String type = request.getParameter("type");
-        Boolean isStaff = request.getParameter("isStaff") != null;
+        boolean isStaff = request.getParameter("isStaff") != null;
+        boolean isAdmin = request.getParameter("isSystemAdmin") != null;
         String staffCardIdInput = request.getParameter("staffCardId");
-        String adminPassword = request.getParameter("adminPassword");
+        String staffPassword = request.getParameter("staffPassword");
+        String adminPassword = request.getParameter("systemAdminPassword");
 
-        User user;
         try {
-            if (isStaff) {
-                int staffCardId;
-                staffCardId = Validator.validateStaffCardId(staffCardIdInput);
-                
-                if (!adminPassword.equals(ADMIN_PASSWORD)) {
-                    throw new InvalidInputException("Incorrect admin password");
+            User user;
+
+            if (isStaff || isAdmin) {
+                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+
+                if (isAdmin) {
+                    if (!ADMIN_PASSWORD.equals(adminPassword)) {
+                        throw new InvalidInputException("Incorrect system admin password");
+                    }
+                    user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
+                } else {
+                    if (!STAFF_PASSWORD.equals(staffPassword)) {
+                        throw new InvalidInputException("Incorrect staff password");
+                    }
+                    user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, false);
                 }
 
-                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
             } else {
                 user = new Customer(-1, firstName, lastName, email, phone, password, Customer.Type.valueOf(type));
             }
-    
+
             Validator.validateUser(user);
-    
-            boolean emailInUse;
-            try {
-                emailInUse = userDBManager.userExists(email);
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Could not Users for in-use email in DB");
-                return;
-            }
-    
-            if (emailInUse) {
+
+            if (userDBManager.userExists(email)) {
                 throw new InvalidInputException("User already exists with that email");
             }
-        } catch (InvalidInputException e) {
-            session.setAttribute(ERROR_ATTR, e.getMessage());
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-        
-        try {
-            if (isStaff) {
+
+            if (user instanceof Staff) {
                 userDBManager.addStaff((Staff) user);
-            } else {        
+            } else {
                 userDBManager.addCustomer((Customer) user);
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add user into DB");
-            return;
+
+            ApplicationAccessLog log = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
+            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), log);
+
+            session.setAttribute("user", user);
+            session.removeAttribute(ERROR_ATTR);
+            request.getRequestDispatcher("welcome.jsp").include(request, response);
+
+        } catch (InvalidInputException | SQLException e) {
+            logger.log(Level.SEVERE, "Registration error", e);
+            session.setAttribute(ERROR_ATTR, e.getMessage());
+            request.getRequestDispatcher(PAGE).include(request, response);
         }
-
-        ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
-
-        try {
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add REGISTER log");
-            return;
-        }
-
-        session.setAttribute("user", user);
-        session.removeAttribute(ERROR_ATTR);
-        request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
 }
