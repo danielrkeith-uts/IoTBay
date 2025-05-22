@@ -1,8 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,8 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.*;
-import model.dao.ProductDBManager;
-import model.dao.ProductListEntryDBManager;
+import model.Cart;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
@@ -46,12 +43,8 @@ public class CartServlet extends HttpServlet {
                     cart = new Cart();
                     session.setAttribute("cart", cart);
                 }
+                cart.addProduct(product, quantity);
             }
-
-            for (int i = 0; i < quantity; i++) {
-                cart.addProduct(product);
-            }
-            
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Database error while getting cart", e);
         }
@@ -89,4 +82,5 @@ public class CartServlet extends HttpServlet {
         }
     }
 }
+
 
