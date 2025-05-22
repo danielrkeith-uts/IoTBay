@@ -86,7 +86,7 @@
             <input type="tel" id="phone" name="phone" value="<%= phone %>" required><br><br>
         </form>
         <h2>Shipping Details</h2>
-        <form>
+        <form action="ViewShipmentsServlet" method="post">
             <label for="streetNumber">Street Number:</label><br>
             <input type="text" id="streetNumber" name="streetNumber" value="<%= streetNumber %>" required><br><br>
 
