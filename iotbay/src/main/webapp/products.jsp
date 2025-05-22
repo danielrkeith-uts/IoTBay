@@ -69,9 +69,15 @@
                         <img src="<%= p.getImageUrl() != null && !p.getImageUrl().isEmpty() ? p.getImageUrl() : "images/default-product.png" %>" class="card-img-top" alt="<%= p.getName() %>" style="height: 200px; object-fit: contain;" />
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title"><%= p.getName() %></h5>
-                            <p class="card-text flex-grow-1"><%= p.getDescription() == null ? "" : p.getDescription()%></p>
+                            <p class="card-text flex-grow-1"><%= p.getDescription() == null ? "" : p.getDescription() %></p>
                             <p class="card-text fw-bold">$<%= String.format("%.2f", p.getCost()) %></p>
-                            <button class="btn btn-primary mt-auto" type="button">Add to Cart</button>
+
+                            <form action="CartServlet" method="post">
+                                <input type="hidden" name="productName" value="<%= p.getName() %>" />
+                                <input type="hidden" name="price" value="<%= p.getCost() %>" />
+                                <input type="number" name="quantity" value="1" min="1" />
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                            </form>
                         </div>
                     </div>
                 </div>

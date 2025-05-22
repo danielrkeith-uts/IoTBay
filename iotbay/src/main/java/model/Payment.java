@@ -17,7 +17,7 @@ public class Payment implements Serializable {
         this.paymentStatus = paymentStatus;
     }
 
-    public double getPaymentId() {
+    public int getPaymentId() {
         return paymentId;
     }
 

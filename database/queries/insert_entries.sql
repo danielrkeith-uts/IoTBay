@@ -26,7 +26,7 @@ VALUES
 -- Delivery
 INSERT INTO Delivery(DeliveryId, OrderId, SourceAddressId, DestinationAddressId, Courier, CourierDeliveryId)
 VALUES 
-    (1, 1, 1, 1, 'Best Couriers', 1001), 
+    (1, 1, 1, 2, 'Best Couriers', 1001), 
     (2, 2, 2, 3, 'Swift Logistics', 1002),
     (3, 3, 1, 4, 'QuickShip', 3456),
     (4, 4, 3, 2, 'Express Freight', 7689),
