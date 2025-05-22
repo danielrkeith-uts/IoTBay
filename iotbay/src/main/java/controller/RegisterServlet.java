@@ -69,7 +69,7 @@ public class RegisterServlet extends HttpServlet {
                     throw new InvalidInputException("Incorrect admin password");
                 }
 
-                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
             } else {
                 user = new Customer(-1, firstName, lastName, email, phone, password, Customer.Type.valueOf(type));
             }

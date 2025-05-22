@@ -2,11 +2,24 @@ package model;
 
 public class Staff extends User {
     private int staffCardId;
-    public Staff(int userId, String firstName, String lastName, String email, String phone, String password, int deactivated) {
+    private boolean isAdmin;
+
+    public Staff(int userId, String firstName, String lastName, String email, String phone, String password, int deactivated, boolean isAdmin) {
         super(userId, firstName, lastName, email, phone, password, Role.STAFF);
 
         this.staffCardId = deactivated;
+        this.isAdmin = isAdmin;
+
     }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
 
     public int getStaffCardId() {
         return staffCardId;

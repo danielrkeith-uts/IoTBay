@@ -120,6 +120,51 @@ public class UserDBManager {
         updateUser(customer);
     }
 
+    public List<Customer> getCustomersFiltered(String name, String type) throws SQLException {
+        List<Customer> customers = new ArrayList<>();
+    
+        String sql = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone, U.Password, U.Deactivated, C.Type " +
+                     "FROM User U JOIN Customer C ON U.UserId = C.UserId WHERE 1=1";
+        List<Object> params = new ArrayList<>();
+    
+        if (name != null && !name.trim().isEmpty()) {
+            sql += " AND (LOWER(U.FirstName) LIKE ? OR LOWER(U.LastName) LIKE ?)";
+            String pattern = "%" + name.toLowerCase() + "%";
+            params.add(pattern);
+            params.add(pattern);
+        }
+    
+        if (type != null && !type.trim().isEmpty()) {
+            sql += " AND C.Type = ?";
+            params.add(type.toUpperCase());
+        }
+    
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+    
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Customer customer = new Customer(
+                        rs.getInt("UserId"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        rs.getString("Password"),
+                        Customer.Type.valueOf(rs.getString("Type"))
+                    );
+                    customer.setDeactivated(rs.getBoolean("Deactivated"));
+                    customers.add(customer);
+                }
+            }
+        }
+    
+        return customers;
+    }
+    
+
     public void updateStaff(Staff staff) throws SQLException {
         updateUser(staff);
         updateStaffPs.setInt(1, staff.getStaffCardId());
@@ -219,7 +264,9 @@ public class UserDBManager {
                 rs.getString("Email"),
                 rs.getString("Phone"),
                 rs.getString("Password"),
-                rs.getInt("StaffCardId")
+                rs.getInt("StaffCardId"),
+                rs.getBoolean("Admin")
+
         );
     }
 

@@ -13,7 +13,7 @@ import model.User;
 public class UserDBManagerTests {
     // In database
     private static final Customer johnSmith = new Customer(0, "John", "Smith", "john.smith@gmail.com", "+61412345678", "johnsPassword", Customer.Type.INDIVIDUAL );
-    private static final Staff gregoryStafferson = new Staff(1, "Gregory", "Stafferson", "gregory.stafferson@iotbay.com", "+61487654321", "!@#$%^&*()", 1001);
+    private static final Staff gregoryStafferson = new Staff(1, "Gregory", "Stafferson", "gregory.stafferson@iotbay.com", "+61487654321", "!@#$%^&*()", 1001, true);
 
     // Not in database
     private static final Customer michaelJackson = new Customer(999, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal", Customer.Type.INDIVIDUAL);
@@ -136,7 +136,8 @@ public class UserDBManagerTests {
             gregoryStafferson.getEmail() + "3",
             gregoryStafferson.getPhone() + "4",
             gregoryStafferson.getPassword() + "5",
-            gregoryStafferson.getStaffCardId() + 6
+            gregoryStafferson.getStaffCardId() + 6,
+            gregoryStafferson.isAdmin()
         );
 
         try {

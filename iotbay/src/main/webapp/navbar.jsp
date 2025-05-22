@@ -13,7 +13,7 @@
     <a href="index.jsp" class="<%= currentPage.equals("index.jsp") ? "active" : "" %>">Home</a>
     <a href="products.jsp" class="<%= currentPage.equals("products.jsp") ? "active" : "" %>">Products</a>
 
-    <% if ((isAdmin || isStaff)) { %>
+    <% if ((isAdmin )) { %>
         <a href="customerlist.jsp" class="<%= currentPage.equals("customerlist.jsp") ? "active" : "" %>">Customers</a>
     <% } %>
 

@@ -34,11 +34,26 @@
 
     <div class="customer-section">
         <h1>Registered Customers</h1>
+
+         <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+        <form method="get" action="CustomerListServlet" class="d-flex gap-2">
+            <input type="text" name="searchName" placeholder="Search by name" 
+                value="<%= request.getParameter("searchName") != null ? request.getParameter("searchName") : "" %>" 
+                class="form-control" />
+            <select name="searchType" class="form-select">
+                <option value="">All Types</option>
+                <option value="INDIVIDUAL" <%= "INDIVIDUAL".equals(request.getParameter("searchType")) ? "selected" : "" %>>Individual</option>
+                <option value="COMPANY" <%= "COMPANY".equals(request.getParameter("searchType")) ? "selected" : "" %>>Company</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+    </div>
         
         <div class="customer-grid">
     <% for (Customer customer : customers) { 
         boolean isDeactivated = customer.isDeactivated();
     %>
+    
         <div class="customer-card <%= isDeactivated ? "deactivated" : "" %>">
             <div class="content-wrapper">
                 <p><strong>First Name:</strong> <%= customer.getFirstName() %></p>
