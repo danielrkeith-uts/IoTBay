@@ -2,6 +2,8 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import model.Enums.*;
@@ -28,10 +30,12 @@ public class OrderDBManager {
             int orderId = rs.getInt("OrderID");
             int CartId = rs.getInt("CartId");
             int PaymentId = rs.getInt("PaymentId");
-            Timestamp timestamp = rs.getTimestamp("DatePlaced");
-            Date DatePlaced = new Date(timestamp.getTime());
-            String statusString = rs.getString("OrderStatus");
 
+            String dateString = rs.getString("DatePlaced");
+            LocalDateTime ldt = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+            Timestamp timestamp = Timestamp.valueOf(ldt);
+
+            String statusString = rs.getString("OrderStatus");
             OrderStatus status = OrderStatus.valueOf(statusString);
             
             //Step 1: Get all entries from ProductListEntry table with this CartId
@@ -55,14 +59,14 @@ public class OrderDBManager {
             PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
-            Order order = new Order(orderId, ProductList, Payment, DatePlaced, status);
+            Order order = new Order(orderId, ProductList, Payment, timestamp, status);
             return order;
         } 
         return null;
     }
 
     //Add an order into the database   
-    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, Date DatePlaced, String status) throws SQLException {       
+    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
         String query = "INSERT INTO `Order` (OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement pst = conn.prepareStatement(query)) {
@@ -70,7 +74,10 @@ public class OrderDBManager {
             pst.setInt(2, UserId);
             pst.setInt(3, CartId);
             pst.setInt(4, PaymentId);
-            pst.setDate(5, new java.sql.Date(DatePlaced.getTime()));
+            
+            Timestamp timestamp = new Timestamp(DatePlaced.getTime());
+            String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
+            pst.setString(5, formatted);
             pst.setString(6, status);
 
             pst.executeUpdate();
@@ -79,14 +86,19 @@ public class OrderDBManager {
 
     //update an order's details in the database   
     public void updateOrder(Order order) throws SQLException {
-        String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
+        String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
         ResultSet rs = st.executeQuery(query); 
 
         updateOrderPs.setInt(1, rs.getInt("UserId"));
         updateOrderPs.setInt(2, rs.getInt("CartId"));
         updateOrderPs.setInt(3, rs.getInt("PaymentId"));
-        updateOrderPs.setTimestamp(4, new Timestamp(order.getDatePlaced().getTime()));
-        updateOrderPs.setInt(5, rs.getInt("OrderId"));
+
+        String formattedDate = order.getDatePlaced().toLocalDateTime().toString().replace("T", " ");
+        updateOrderPs.setString(4, formattedDate);
+        System.out.println("Updating with timestamp: " + order.getDatePlaced().getTime());
+
+        updateOrderPs.setString(5, rs.getString("OrderStatus"));
+        updateOrderPs.setInt(6, rs.getInt("OrderId"));
 
         updateOrderPs.executeUpdate();
     } 

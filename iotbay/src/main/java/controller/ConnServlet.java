@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.io.IOException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -19,7 +17,6 @@ import model.dao.UserDBManager;
 import model.dao.CartDBManager;
 import model.dao.OrderDBManager;
 import model.dao.ProductDBManager;
-import model.dao.ProductListEntryDBManager;
 import model.dao.ShipmentDBManager;
 import model.dao.DeliveryDBManager;
 

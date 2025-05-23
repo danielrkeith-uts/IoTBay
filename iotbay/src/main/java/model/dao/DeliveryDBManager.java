@@ -62,7 +62,7 @@ public class DeliveryDBManager {
                     while (orderRs.next()) {
                         int CartId = orderRs.getInt("CartId");
                         int PaymentId = orderRs.getInt("PaymentId");
-                        Date DatePlaced = orderRs.getDate("DatePlaced");
+                        Timestamp DatePlaced = orderRs.getTimestamp("DatePlaced");
                         String statusString = orderRs.getString("OrderStatus");
                         OrderStatus status = OrderStatus.valueOf(statusString);
 

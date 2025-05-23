@@ -2,8 +2,6 @@ package model;
 
 import java.util.LinkedList;
 import java.util.List;
-import model.Shipment;
-import model.Shipment;
 
 public class Customer extends User {
     private Cart cart;

@@ -47,7 +47,7 @@ CREATE TABLE `Order` (
     UserId INTEGER,
     CartId INTEGER,
     PaymentId INTEGER,
-    DatePlaced DATETIME NOT NULL,
+    DatePlaced TEXT NOT NULL,
     OrderStatus VARCHAR(50),
     FOREIGN KEY (UserId) REFERENCES User(UserId),
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),

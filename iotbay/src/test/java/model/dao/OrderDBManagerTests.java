@@ -2,11 +2,11 @@ package model.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
 import org.junit.Assert;
@@ -15,23 +15,15 @@ import model.*;
 import model.Enums.*;
 
 public class OrderDBManagerTests {
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    static Date datePlaced;
-    static {
-        try {
-            datePlaced = sdf.parse("2025-04-25 00:00:00");
-        } catch (ParseException e) {
-            e.printStackTrace();
-            datePlaced = new Date(); // Fallback option
-        }
-    }
+    static Date now = new Date();
+    static Timestamp timestamp = new Timestamp(now.getTime());
 
     static List<ProductListEntry> productList = new ArrayList<>();
     static Payment payment = new Payment(0, 0, null, null);
     static String statusString = "PROCESSING";
     static OrderStatus status = OrderStatus.valueOf(statusString);
 
-    private static Order order = new Order(1, productList, payment, datePlaced, status);
+    private static Order order = new Order(1, productList, payment, timestamp, status);
     OrderDBManager orderDBManager;
     private final Connection conn;
 
@@ -56,9 +48,9 @@ public class OrderDBManagerTests {
         List<ProductListEntry> productlist = order.getProductList();
         
         //Testing the DatePlaced field
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         String formatted = sdf.format(order.getDatePlaced());
-        Assert.assertEquals("2025-04-25", formatted);
+        Assert.assertEquals("2025-04-25 00:00:00.000", formatted);
 
         //Check Payment fields
         Assert.assertEquals(23.45, payment.getAmount(), 0.01);
@@ -78,52 +70,54 @@ public class OrderDBManagerTests {
         Assert.assertEquals(OrderStatus.PROCESSING, order.getOrderStatus());
     }
 
-    // @Test
-    // public void testUpdateOrder() {
-    //     Date newDate = new Date();
-    //     List<ProductListEntry> testPLE = new ArrayList<>();
-    //     Product product = new Product("Raspberry Pi", "", 99.99, 3);
-    //     testPLE.add(new ProductListEntry(product, 1));
+    @Test
+    public void testUpdateOrder() {
+        Date now = new Date();
+        Timestamp timestamp = new Timestamp(now.getTime());
 
-    //     OrderStatus status = OrderStatus.PROCESSING;
-    //     String expirationDateString = "2026-08";
-    //     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-    //     YearMonth expirationDate = YearMonth.parse(expirationDateString, formatter);
+        List<ProductListEntry> testPLE = new ArrayList<>();
+        Product product = new Product("Raspberry Pi", "", 99.99, 3, "");
+        testPLE.add(new ProductListEntry(product, 1));
 
-    //     Payment payment = new Payment(1, 30.00, new Card(1, "John Smith", "123456789", expirationDate, "123"), PaymentStatus.ACCEPTED);
+        OrderStatus status = OrderStatus.PROCESSING;
+        String expirationDateString = "2026-08";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        YearMonth expirationDate = YearMonth.parse(expirationDateString, formatter);
 
-    //     Order updatedOrder = new Order(
-    //         order.getOrderId(),
-    //         testPLE,
-    //         payment,
-    //         newDate,
-    //         status
-    //     );
+        Payment payment = new Payment(1, 30.00, new Card(1, "John Smith", "123456789", expirationDate, "123"), PaymentStatus.ACCEPTED);
 
-    //     try {
-    //         orderDBManager.updateOrder(updatedOrder);
-    //         Order result = orderDBManager.getOrder(updatedOrder.getOrderId());
+        Order updatedOrder = new Order(
+            order.getOrderId(),
+            testPLE,
+            payment,
+            timestamp,
+            status
+        );
 
-    //         Assert.assertEquals(updatedOrder.getOrderId(), result.getOrderId());
-    //         Assert.assertEquals(updatedOrder.getPayment().getPaymentId(), result.getPayment().getPaymentId());
-    //         Assert.assertEquals(status, result.getOrderStatus());
+        try {
+            orderDBManager.updateOrder(updatedOrder);
+            Order result = orderDBManager.getOrder(updatedOrder.getOrderId());
 
-    //         // Date check (using timestamp)
-    //         Assert.assertEquals(newDate.getTime(), result.getDatePlaced().getTime());
+            Assert.assertEquals(updatedOrder.getOrderId(), result.getOrderId());
+            Assert.assertEquals(updatedOrder.getPayment().getPaymentId(), result.getPayment().getPaymentId());
+            Assert.assertEquals(status, result.getOrderStatus());
 
-    //         // Optional: check product name
-    //         Assert.assertEquals("Raspberry Pi", result.getProductList().get(0).getProduct().getName());
+            // Date check (using timestamp)
+            Assert.assertEquals(timestamp.getTime(), result.getDatePlaced().getTime());
 
-    //     } catch (SQLException e) {
-    //         Assert.fail("SQLException: " + e.getMessage());
-    //     } finally {
-    //         try {
-    //             conn.rollback();
-    //         } catch (SQLException e) {
-    //             System.err.println("Rollback failed: " + e.getMessage());
-    //         }
-    //     }
-    // }
+            // Optional: check product name
+            Assert.assertEquals("Google Home Voice Controller", result.getProductList().get(0).getProduct().getName());
+
+        } catch (SQLException e) {
+            Assert.fail("SQLException: " + e.getMessage());
+        } finally {
+            try {
+                conn.rollback();
+            } catch (SQLException e) {
+                System.err.println("Rollback failed: " + e.getMessage());
+            }
+        }
+    }
 
     @Test
     public void testAddOrder() {
@@ -135,7 +129,7 @@ public class OrderDBManagerTests {
             Date DatePlaced = new Date();
             String statusString = "PROCESSING";
             
-            orderDBManager.addOrder(OrderId, UserId, CartId, PaymentId, new java.sql.Date(DatePlaced.getTime()), statusString);
+            orderDBManager.addOrder(OrderId, UserId, CartId, PaymentId, new java.sql.Timestamp(DatePlaced.getTime()), statusString);
             
             Order order = orderDBManager.getOrder(OrderId);
             Assert.assertNotNull(order);
