@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ import model.*;
 import model.Enums.PaymentStatus;
 
 public class OrderDBManagerTests {
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     static Date datePlaced;
     static {
         try {
-            datePlaced = sdf.parse("2025-04-25 00:00:00");
+            datePlaced = sdf.parse("2025-04-25");
         } catch (ParseException e) {
             e.printStackTrace();
             datePlaced = new Date(); // Fallback option
@@ -25,7 +26,7 @@ public class OrderDBManagerTests {
     }
 
     static List<ProductListEntry> productList = new ArrayList<>();
-    static Payment payment = new Payment(0, null, null);
+    static Payment payment = new Payment(0.0, null, PaymentStatus.PENDING, new Date(), 0);
 
     private static Order order = new Order(1, productList, payment, datePlaced);
     OrderDBManager orderDBManager;
@@ -60,6 +61,8 @@ public class OrderDBManagerTests {
         Assert.assertEquals(23.45, payment.getAmount(), 0.01);
         Assert.assertEquals(1, payment.getCard().getCardId());
         Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
+        Assert.assertEquals(new Date(1745539200), payment.getDate());
+        Assert.assertEquals(0, payment.getUserId());
 
         // //Check ProductList fields
         for (int i = 0; i < productlist.size(); i++) {

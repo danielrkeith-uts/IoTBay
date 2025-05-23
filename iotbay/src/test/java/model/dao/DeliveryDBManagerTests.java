@@ -18,7 +18,7 @@ public class DeliveryDBManagerTests {
         try {
             delivery = deliveryDBManager.getDelivery(1);
         } catch (SQLException e) {
-            Assert.fail();
+            Assert.fail(e.getMessage());
             return;
         }
 
