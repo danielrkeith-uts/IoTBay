@@ -1,4 +1,4 @@
-<%@ page import="model.User, model.Customer"%>
+<%@ page import="model.User, model.Customer, model.Staff"%>
 <html>
     <%!
         public boolean isNullOrEmpty(String str) {
@@ -12,6 +12,7 @@
         }
 
         User user = (User) session.getAttribute("user");
+        boolean isAdmin = (user instanceof Staff) && ((Staff)user).isAdmin();
         String firstName = user.getFirstName();
     %>
     <head>
@@ -28,6 +29,9 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
+                <% if (isAdmin) { %>
+                    <a href="StaffListServlet">Staff</a>
+                <% } %>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>

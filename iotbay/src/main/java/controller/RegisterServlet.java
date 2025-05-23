@@ -8,10 +8,8 @@ import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
+
 import model.ApplicationAccessLog;
 import model.Customer;
 import model.Staff;
@@ -32,86 +30,104 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(LoginServlet.class.getName());
+        logger = Logger.getLogger(RegisterServlet.class.getName());
     }
 
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response)
+            throws ServletException, IOException {
+
         HttpSession session = request.getSession();
-
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-        if (userDBManager == null) {
-            throw new ServletException("UserDBManager retrieved from session is null");
+        ApplicationAccessLogDBManager logMgr = (ApplicationAccessLogDBManager)
+                                               session.getAttribute("applicationAccessLogDBManager");
+
+        if (userDBManager == null || logMgr == null) {
+            throw new ServletException("Missing DB managers in session");
         }
 
-        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
-        if (applicationAccessLogDBManager == null) {
-            throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
-        }
-
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String phone = request.getParameter("phone");
-        Boolean isStaff = request.getParameter("isStaff") != null;
-        String staffCardIdInput = request.getParameter("staffCardId");
+        String email         = request.getParameter("email");
+        String password      = request.getParameter("password");
+        String firstName     = request.getParameter("firstName");
+        String lastName      = request.getParameter("lastName");
+        String phone         = request.getParameter("phone");
+        boolean isStaff      = request.getParameter("isStaff") != null;
+        String staffCardRaw  = request.getParameter("staffCardId");
         String adminPassword = request.getParameter("adminPassword");
+        String position      = request.getParameter("position");          // new field
+        if (position == null || position.trim().isEmpty()) {
+            position = "STAFF";
+        }
 
         User user;
         try {
             if (isStaff) {
-                int staffCardId;
-                staffCardId = Validator.validateStaffCardId(staffCardIdInput);
-                
-                if (!adminPassword.equals(ADMIN_PASSWORD)) {
-                    throw new InvalidInputException("Incorrect admin password");
+                // validate staff‐card
+                int staffCardId = Validator.validateStaffCardId(staffCardRaw);
+
+                // only allow staff creation with correct admin‐pass
+                boolean makeAdmin = false;
+                if (ADMIN_PASSWORD.equals(adminPassword)) {
+                    makeAdmin = true;
                 }
 
-                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId);
+                // now create Staff with the new 8‐arg constructor
+                user = new Staff(
+                    -1,
+                    firstName, lastName, email, phone, password,
+                    staffCardId,
+                    makeAdmin,
+                    position
+                );
             } else {
-                user = new Customer(-1, firstName, lastName, email, phone, password);
+                user = new Customer(
+                    -1,
+                    firstName, lastName, email, phone, password
+                );
             }
-    
+
+            // validate common fields (email/password/phone)
             Validator.validateUser(user);
-    
-            boolean emailInUse;
-            try {
-                emailInUse = userDBManager.userExists(email);
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Could not Users for in-use email in DB");
-                return;
+
+            // ensure email not already used
+            if (userDBManager.userExists(email)) {
+                throw new InvalidInputException("Email already in use");
             }
-    
-            if (emailInUse) {
-                throw new InvalidInputException("User already exists with that email");
-            }
-        } catch (InvalidInputException e) {
+        }
+        catch (InvalidInputException e) {
             session.setAttribute(ERROR_ATTR, e.getMessage());
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-        
+        catch (SQLException sqle) {
+            logger.log(Level.SEVERE, "Error checking userExists", sqle);
+            throw new ServletException(sqle);
+        }
+
+        // persisted
         try {
-            if (isStaff) {
+            if (user instanceof Staff) {
                 userDBManager.addStaff((Staff) user);
-            } else {        
+            } else {
                 userDBManager.addCustomer((Customer) user);
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add user into DB");
-            return;
+        } catch (SQLException sqle) {
+            logger.log(Level.SEVERE, "Error inserting new user", sqle);
+            throw new ServletException(sqle);
         }
 
-        ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
-
+        // log registration
+        ApplicationAccessLog appLog = new ApplicationAccessLog(
+            ApplicationAction.REGISTER, new Date()
+        );
         try {
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add REGISTER log");
-            return;
+            logMgr.addApplicationAccessLog(user.getUserId(), appLog);
+        } catch (SQLException sqle) {
+            logger.log(Level.WARNING, "Could not log registration", sqle);
         }
 
+        // ready to go
         session.setAttribute("user", user);
         session.removeAttribute(ERROR_ATTR);
         request.getRequestDispatcher("welcome.jsp").include(request, response);

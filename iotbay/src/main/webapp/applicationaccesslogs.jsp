@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, model.User, model.ApplicationAccessLog"%>
+<%@ page import="java.util.List, model.User, model.Staff,model.ApplicationAccessLog"%>
 <html>
     <jsp:include page="/ApplicationAccessLogServlet" flush="true"/>
     <%
@@ -8,6 +8,8 @@
         }
 
         User user = (User)session.getAttribute("user");
+        
+        boolean isAdmin = (user instanceof Staff) && ((Staff)user).isAdmin();
 
         List<ApplicationAccessLog> logs = user.getApplicationAccessLogs();
     %>
@@ -24,6 +26,9 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
+                <% if (isAdmin) { %>
+                    <a href="StaffListServlet">Staff</a>
+                <% } %>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">

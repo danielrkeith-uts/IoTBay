@@ -26,8 +26,8 @@ VALUES (0, 'John', 'Smith', 'john.smith@gmail.com', '+61412345678', 'johnsPasswo
 INSERT INTO Customer (UserId, CartId)
 VALUES (0, 999);
 
-INSERT INTO Staff (UserId, StaffCardId)
-VALUES (1, 1001);
+INSERT INTO Staff (UserId, StaffCardId, Admin)
+VALUES (1, 1001, TRUE);
 
 INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
 VALUES (0, 0, 0, 1745632800000),
