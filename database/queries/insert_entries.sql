@@ -319,7 +319,7 @@ INSERT INTO Shipment(ShipmentId, OrderId, AddressId, Method, ShipmentDate)
 VALUES 
     (1, 1, 3, 'Standard', '2025-05-01 10:00:00'),
     (2, 1, 4, 'Express', '2025-05-02 09:30:00'),
-    (3, 1, 5, 'Priority', '2025-05-03 08:15:00'),
+    (3, 2, 5, 'Priority', '2025-05-03 08:15:00'),
     (4, 2, 6, 'Standard', '2025-05-04 14:00:00'),
     (5, 2, 7, 'Express', '2025-05-05 12:30:00'),
     (6, 3, 8, 'Priority', '2025-05-06 11:15:00'),

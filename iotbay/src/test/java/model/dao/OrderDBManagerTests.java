@@ -9,6 +9,8 @@ import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 import model.*;
@@ -58,7 +60,7 @@ public class OrderDBManagerTests {
         Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
 
         //Check ProductList fields
-        List<String> expectedNames = List.of("Google Home Voice Controller", "Philips Hue Smart Bulbs");
+        List<String> expectedNames = Arrays.asList("Google Home Voice Controller", "Philips Hue Smart Bulbs");
         Assert.assertEquals(expectedNames.size(), productlist.size());
 
         for (int i = 0; i < productlist.size(); i++) {

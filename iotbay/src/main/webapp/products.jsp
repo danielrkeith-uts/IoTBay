@@ -2,11 +2,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:include page="/ConnServlet" flush="true"/>
 <%
-    ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
-    if (productManager == null) {
-        out.println("<p>Product manager is not available. Please <a href='ConnServlet'>connect</a>.</p>");
+    if (session.getAttribute("productDBManager") == null) {
+        response.sendRedirect("ConnServlet?redirect=products.jsp");
         return;
     }
+    ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
+
     String query = request.getParameter("query");
     List<Product> products = productManager.getAllProducts();
 
@@ -17,6 +18,22 @@
                          p.getType().name().toLowerCase().contains(finalQuery))
             .collect(java.util.stream.Collectors.toList()); 
     }
+
+    if (user == null) {
+            out.println("User is null<br>");
+        }
+
+        if (cart == null) {
+            out.println("Cart is null<br>");
+        } 
+
+        if (address == null) {
+            out.println("Address is null<br>");
+        }
+
+        if (card == null) {
+            out.println("Card is null<br>");
+        }
 %>
 
 <!DOCTYPE html>
@@ -100,13 +117,13 @@
                             </p>
                             <p class="card-text fw-bold">$<%= String.format("%.2f", p.getCost()) %></p>
                             <form action="CartServlet" method="post">
-                                <input type="hidden" name="productName" value="<%= p.getName() %>" />
+                                <input type="hidden" name="productName" value="<%= p.getName() != null ? p.getName() : "" %>" />
                                 <input type="hidden" name="price" value="<%= p.getCost() %>" />
                                 <input type="number" name="quantity" value="1" min="1" />
-                                <input type="hidden" name="productType" value="<%= p.getType() %>" />
+                                <input type="hidden" name="productType" value="<%= p.getType() != null ? p.getType() : "UNKNOWN" %>" />
                                 
-                                <button type="submit" class="btn btn-primary mt-auto <%= p.getStock() == 0 ? "disabled-button" : "" %>" 
-                                    <%= p.getStock() == 0 ? "disabled" : "" %>>
+                                <button type="submit" class="btn btn-primary mt-auto <%= (p.getStock() == 0) ? "disabled-button" : "" %>" 
+                                    <%= (p.getStock() == 0) ? "disabled" : "" %>>
                                     Add to Cart
                                 </button>
                             </form>

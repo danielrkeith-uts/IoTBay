@@ -9,14 +9,16 @@ import java.util.ArrayList;
 import model.Enums.*;
 
 public class OrderDBManager {
-    private Statement st;
+    private Statement st1;
+    private Statement st2;
     private Connection conn;
     private static final String UPDATE_ORDER_STMT = "UPDATE `Order` SET UserId = ?, CartId = ?, PaymentId = ?, DatePlaced = ?, OrderStatus = ? WHERE OrderId = ?;";
     private final PreparedStatement updateOrderPs;
         
     public OrderDBManager(Connection conn) throws SQLException {    
         this.conn = conn;
-        this.st = conn.createStatement(); 
+        this.st1 = conn.createStatement(); 
+        this.st2 = conn.createStatement(); 
         this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
@@ -24,7 +26,7 @@ public class OrderDBManager {
     public Order getOrder(int inputOrderId) throws SQLException {       
         //get the CartId, PaymentId, and DatePlaced from the Order table
         String query = "SELECT * FROM `Order` WHERE OrderID = '" + inputOrderId + "'"; 
-        ResultSet rs = st.executeQuery(query); 
+        ResultSet rs = st1.executeQuery(query); 
 
         if (rs.next()) {
             int orderId = rs.getInt("OrderID");
@@ -40,7 +42,7 @@ public class OrderDBManager {
             
             //Step 1: Get all entries from ProductListEntry table with this CartId
             String entryQuery = "SELECT * FROM ProductListEntry WHERE CartId = '" + CartId + "'"; 
-            ResultSet entryRs = st.executeQuery(entryQuery);
+            ResultSet entryRs = st2.executeQuery(entryQuery);
 
             List<ProductListEntry> ProductList = new ArrayList<>();
             ProductDBManager productDBManager = new ProductDBManager(conn);
@@ -87,7 +89,7 @@ public class OrderDBManager {
     //update an order's details in the database   
     public void updateOrder(Order order) throws SQLException {
         String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
-        ResultSet rs = st.executeQuery(query); 
+        ResultSet rs = st1.executeQuery(query); 
 
         updateOrderPs.setInt(1, rs.getInt("UserId"));
         updateOrderPs.setInt(2, rs.getInt("CartId"));
@@ -95,7 +97,6 @@ public class OrderDBManager {
 
         String formattedDate = order.getDatePlaced().toLocalDateTime().toString().replace("T", " ");
         updateOrderPs.setString(4, formattedDate);
-        System.out.println("Updating with timestamp: " + order.getDatePlaced().getTime());
 
         updateOrderPs.setString(5, rs.getString("OrderStatus"));
         updateOrderPs.setInt(6, rs.getInt("OrderId"));
@@ -105,6 +106,6 @@ public class OrderDBManager {
 
     //orders can't be deleted, only set to cancelled  
     public void cancelOrder(int OrderId) throws SQLException{       
-        st.executeUpdate("UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = " + OrderId); 
+        st1.executeUpdate("UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = " + OrderId); 
     }
 }

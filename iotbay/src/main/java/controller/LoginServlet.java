@@ -13,9 +13,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
+import model.Cart;
+import model.Customer;
+import model.ProductListEntry;
 import model.User;
 import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
+import model.dao.ProductListEntryDBManager;
 import model.dao.UserDBManager;
 
 @WebServlet("/LoginServlet")
@@ -78,6 +82,31 @@ public class LoginServlet extends HttpServlet {
 
         session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
-        request.getRequestDispatcher("welcome.jsp").include(request, response);
+
+        Cart sessionCart = (Cart) session.getAttribute("cart");
+
+        if (sessionCart != null && user instanceof Customer) {
+            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+
+            if (productListEntryDBManager == null) {
+                throw new ServletException("ProductListEntryDBManager retrieved from session is null");
+            }
+
+            Customer customer = (Customer) user;
+            Cart dbCart = customer.getCart(); 
+
+            for (ProductListEntry entry : sessionCart.getProductList()) {
+                dbCart.addProduct(entry.getProduct(), entry.getQuantity());
+
+                try {
+                    productListEntryDBManager.addProduct(user.getUserId(), entry.getProduct().getProductId(), entry.getQuantity());
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE, "Failed to merge cart item to DB", e);
+                }
+            }
+
+            session.removeAttribute("cart");
+            request.getRequestDispatcher("welcome.jsp").include(request, response);
+        }
     }
 }

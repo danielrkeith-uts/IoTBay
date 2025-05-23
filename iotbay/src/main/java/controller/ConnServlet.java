@@ -12,14 +12,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.dao.ApplicationAccessLogDBManager;
-import model.dao.DBConnector;
-import model.dao.UserDBManager;
-import model.dao.CartDBManager;
-import model.dao.OrderDBManager;
-import model.dao.ProductDBManager;
-import model.dao.ShipmentDBManager;
-import model.dao.DeliveryDBManager;
+import model.dao.*;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -29,6 +22,7 @@ public class ConnServlet extends HttpServlet {
     private Connection conn;
     private UserDBManager userDBManager;
     private ProductDBManager productDBManager;
+    private ProductListEntryDBManager productListEntryDBManager;
     private CartDBManager cartDBManager;
     private OrderDBManager orderDBManager;
     private ShipmentDBManager shipmentDBManager;
@@ -77,6 +71,11 @@ public class ConnServlet extends HttpServlet {
             if (session.getAttribute("productDBManager") == null) {
                 productDBManager = new ProductDBManager(conn);
                 session.setAttribute("productDBManager", productDBManager);
+            }
+
+            if (session.getAttribute("productListEntryDBManager") == null) {
+                productListEntryDBManager = new ProductListEntryDBManager(conn);
+                session.setAttribute("productListEntryDBManager", productListEntryDBManager);
             }
 
             if (session.getAttribute("shipmentDBManager") == null) {

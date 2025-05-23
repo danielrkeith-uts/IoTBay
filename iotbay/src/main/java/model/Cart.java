@@ -12,7 +12,6 @@ public class Cart implements Serializable {
     private Timestamp lastUpdated;
 
     public Cart() {
-        this.cartId = 999;
         productList = new ArrayList<ProductListEntry>();
         Date now = new Date();
         lastUpdated = new java.sql.Timestamp(now.getTime());

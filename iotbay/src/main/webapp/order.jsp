@@ -40,21 +40,21 @@
         YearMonth expiry = card != null ? card.getExpiry() : null;
         String cvc = card != null ? card.getCvc() : "";
 
-        if (user == null) {
-            out.println("User is null<br>");
-        }
+        // if (user == null) {
+        //     out.println("User is null<br>");
+        // }
 
-        if (cart == null) {
-            out.println("Cart is null<br>");
-        } 
+        // if (cart == null) {
+        //     out.println("Cart is null<br>");
+        // } 
 
-        if (address == null) {
-            out.println("Address is null<br>");
-        }
+        // if (address == null) {
+        //     out.println("Address is null<br>");
+        // }
 
-        if (card == null) {
-            out.println("Card is null<br>");
-        }
+        // if (card == null) {
+        //     out.println("Card is null<br>");
+        // }
 
     %>
     <head>

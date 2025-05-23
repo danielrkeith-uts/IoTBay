@@ -32,6 +32,22 @@ public class ProductDBManager {
         return null;
     }
 
+    public Product getProductByName(String ProductName) throws SQLException {
+        String query = "SELECT * FROM Product WHERE Name = '" + ProductName + "'"; 
+        ResultSet rs = st.executeQuery(query); 
+
+        if (rs.next()) {
+            String Description = rs.getString("Description");
+            String typeStr = rs.getString("Type"); 
+            ProductType type = ProductType.valueOf(typeStr); 
+            double Cost = rs.getDouble("Cost");
+            int Stock = rs.getInt("Stock");
+            String imageUrl = rs.getString("ImageUrl");
+            return new Product(ProductName, Description, type, Cost, Stock, imageUrl);
+        }
+        return null;
+    }
+
 
 
 public List<Product> getAllProducts() throws SQLException {
