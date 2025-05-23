@@ -19,11 +19,7 @@
     <link rel="stylesheet" href="css/addcustomer.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
+
 </head>
 
 <body>
@@ -65,11 +61,9 @@
 
         <input type="submit" value="Add Customer" class="btn-green">
 
-        <div class="text-center mt-4">
-            <button class="btn btn-custom" type="button" onclick="goBack()">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-        </div>
+      <button class="btn btn-custom" type="button" onclick="window.location.href='CustomerListServlet'" style="margin-top: 4px;">
+    <i class="fas fa-arrow-left"></i> Back
+</button>
     </form>
 
     <p style="color:red;"><%= request.getAttribute("error") != null ? request.getAttribute("error") : "" %></p>

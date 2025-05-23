@@ -33,7 +33,7 @@ public class EditCustomerServlet extends HttpServlet {
             String firstName = request.getParameter("firstName");
             String lastName = request.getParameter("lastName");
             String phone = request.getParameter("phone");
-
+            String typeStr = request.getParameter("type");
             Validator.validatePhoneNumber(phone);
             Validator.validateName(firstName, "First name");
             Validator.validateName(lastName, "Last name");
@@ -43,6 +43,18 @@ public class EditCustomerServlet extends HttpServlet {
                 customer.setFirstName(firstName);
                 customer.setLastName(lastName);
                 customer.setPhone(phone);
+
+                if (typeStr != null && !typeStr.isEmpty()) {
+                    try {
+                        Customer.Type type = Customer.Type.valueOf(typeStr);
+                        customer.setType(type);
+                    } catch (IllegalArgumentException e) {
+                        request.setAttribute("error", "Invalid customer type.");
+                        request.setAttribute("customer", customer);
+                        request.getRequestDispatcher("editcustomer.jsp").forward(request, response);
+                        return;
+                    }
+                }
 
                 userDBManager.updateCustomer(customer); 
 

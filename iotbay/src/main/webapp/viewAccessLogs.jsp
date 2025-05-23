@@ -21,11 +21,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-     <script>
-        function goBack() {
-            window.history.back();
-        }
-    </script>
+     
 </head>
 
 <body>
@@ -65,9 +61,9 @@
                 </tbody>
             </table>
            <div class="text-center mb-4">
-    <button class="btn btn-custom" onclick="goBack()">
-        <i class="fas fa-arrow-left"></i> Back
-    </button>
+    <a href="CustomerListServlet" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Customer List
+    </a>
 </div>
         </div>
     </div>

@@ -99,3 +99,14 @@ thead tr:hover {
     background-color: #6c757d !important;
     color: white;
 }
+.btn-secondary {
+    background-color: #6c757d !important;
+    color: white;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62;
+    color: white;
+}

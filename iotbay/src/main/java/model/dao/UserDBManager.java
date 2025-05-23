@@ -115,8 +115,18 @@ public class UserDBManager {
         return customers;
     }
 
+    private void updateCustomerDetails(Customer customer) throws SQLException {
+        String sql = "UPDATE Customer SET Type = ? WHERE UserId = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, customer.getType().name());
+            stmt.setInt(2, customer.getUserId());
+            stmt.executeUpdate();
+        }
+    }
+
     public void updateCustomer(Customer customer) throws SQLException {
         updateUser(customer);
+        updateCustomerDetails(customer);
     }
 
     public List<Customer> getCustomersFiltered(String name, String type) throws SQLException {

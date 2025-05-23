@@ -37,7 +37,11 @@
     <div class="customer-section">
         <h1>Registered Customers</h1>
 
-         <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    
+    <button class="btn-green" onclick="window.location.href='addcustomer.jsp'">
+        <i class="fas fa-user-plus"></i> Add New Customer
+    </button>
         <form method="get" action="CustomerListServlet" class="d-flex gap-2">
             <input type="text" name="searchName" placeholder="Search by name" 
                 value="<%= request.getParameter("searchName") != null ? request.getParameter("searchName") : "" %>" 
@@ -47,7 +51,7 @@
                 <option value="INDIVIDUAL" <%= "INDIVIDUAL".equals(request.getParameter("searchType")) ? "selected" : "" %>>Individual</option>
                 <option value="COMPANY" <%= "COMPANY".equals(request.getParameter("searchType")) ? "selected" : "" %>>Company</option>
             </select>
-            <button type="submit" class="btn btn-primary">Filter</button>
+            <button type="submit" class="btn-custom">Filter</button>
         </form>
     </div>
         
@@ -63,7 +67,7 @@
                 <p><strong>Email:</strong> <%= customer.getEmail() %></p>
                 <p><strong>Phone:</strong> <%= customer.getPhone() %></p>
                 <p><strong>Status:</strong> <%= isDeactivated ? "Deactivated" : "Active" %></p>
-<p><strong>Type:</strong> <%= customer.getType().name() %></p>
+                <p><strong>Type:</strong> <%= customer.getType().name() %></p>
             </div>
             <div class="actions">
                 <button 
@@ -103,12 +107,6 @@
             </form>
         </div>
     <% } %>
-</div>
-
-<div class="text-center mt-4">
-    <button class="btn-green" onclick="window.location.href='addcustomer.jsp'">
-        <i class="fas fa-user-plus"></i> Add New Customer
-    </button>
 </div>
 
     </div>

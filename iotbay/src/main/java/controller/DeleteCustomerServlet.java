@@ -32,7 +32,7 @@ public class DeleteCustomerServlet extends HttpServlet {
             int userId = Integer.parseInt(request.getParameter("userId"));
             userDBManager.deleteUser(userId);
             logger.log(Level.INFO, "Deleted customer with userId: {0}", userId);
-            response.sendRedirect("customerlist.jsp");
+            response.sendRedirect("CustomerListServlet");
         } catch (NumberFormatException e) {
             logger.log(Level.SEVERE, "Invalid userId format.", e);
             request.setAttribute("errorMessage", "Invalid customer ID.");

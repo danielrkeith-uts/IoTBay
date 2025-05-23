@@ -20,12 +20,8 @@
     <body>
         <div class="banner">
             <h1>Internet of Things Store</h1>
-            <navbar>
-                <a href="index.jsp">Home</a>
-                <a href="products.jsp">Products</a>
-                <a href="login.jsp" class="active">Login</a>
-                <a href="cart.jsp" class="bi bi-cart"></a>
-            </navbar>
+                      <jsp:include page="navbar.jsp" />
+
         </div>
         <div class="content">
             <h2>Login</h2>

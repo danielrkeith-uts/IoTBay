@@ -47,7 +47,13 @@
                         <label for="phone">Phone:</label>
                         <input type="text" id="phone" name="phone" value="<%= customer.getPhone() %>" class="form-control" required />
                     </div>
-
+<div class="form-group">
+    <label for="type">Type:</label>
+    <select id="type" name="type" class="form-select" required>
+        <option value="INDIVIDUAL" <%= "INDIVIDUAL".equals(customer.getType().name()) ? "selected" : "" %>>Individual</option>
+        <option value="COMPANY" <%= "COMPANY".equals(customer.getType().name()) ? "selected" : "" %>>Company</option>
+    </select>
+</div>
                     <p class="error text-center"><%= (error == null ? "" : error) %></p>
                     <p class="success text-center text-success"><%= (success == null ? "" : success) %></p>
                     <div class="text-center">
@@ -57,10 +63,10 @@
             <% } %>
 
             <div class="text-center mb-4">
-                <a href="customerlist.jsp" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Customer List
-                </a>
-            </div>
+    <a href="CustomerListServlet" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Customer List
+    </a>
+</div>
         </div>
     </div>
 
