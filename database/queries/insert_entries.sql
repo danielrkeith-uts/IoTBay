@@ -117,7 +117,6 @@ VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123'),
     (19, 'Ryan Adams', '990011223', '2028-07-21 00:00:00.000', '123'),
     (20, 'Sophia Mitchell', '112233445', '2029-01-01 00:00:00.000', '456');
 
-
 -- Order
 INSERT INTO `Order`(OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus)
 VALUES 

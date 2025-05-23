@@ -39,7 +39,7 @@ CREATE TABLE ProductListEntry (
 
 CREATE TABLE Cart (
     CartId INTEGER PRIMARY KEY AUTOINCREMENT,
-    LastUpdated DATETIME
+    LastUpdated TEXT
 );
 
 CREATE TABLE `Order` (

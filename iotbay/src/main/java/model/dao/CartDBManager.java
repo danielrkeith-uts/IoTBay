@@ -26,7 +26,7 @@ public class CartDBManager {
 
         if (rs.next()) {
             Timestamp timestamp = rs.getTimestamp("LastUpdated");
-            Date LastUpdated = new Date(timestamp.getTime());
+            Timestamp LastUpdated = new java.sql.Timestamp(timestamp.getTime());
 
             Cart cart = new Cart();
             cart.setCartId(cartId);
@@ -38,10 +38,11 @@ public class CartDBManager {
     }
 
     //Add a cart to the database   
-    public int addCart(Date LastUpdated) throws SQLException {       
+    public int addCart(Timestamp LastUpdated) throws SQLException {       
         String query = "INSERT INTO Cart (LastUpdated) VALUES (?)";
         PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        ps.setDate(1, LastUpdated);
+        String formatted = LastUpdated.toLocalDateTime().toString().replace("T", " "); // e.g., "2026-08-20 00:00:00"
+        ps.setString(1, formatted);
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -57,10 +58,10 @@ public class CartDBManager {
         String query = "SELECT * FROM Cart WHERE CartId = " + cart.getCartId(); 
         ResultSet rs = st.executeQuery(query); 
         Timestamp timestamp = new Timestamp(cart.getLastUpdated().getTime());
-        java.sql.Date sqlDate = new java.sql.Date(timestamp.getTime());
 
         updateCartPs.setInt(1, rs.getInt("CartId"));
-        updateCartPs.setDate(2, sqlDate);
+        String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
+        updateCartPs.setString(2, formatted);
 
         updateCartPs.executeUpdate();
     } 

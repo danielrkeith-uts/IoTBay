@@ -55,9 +55,10 @@ public class OrderServlet extends HttpServlet {
             CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
             
             Date now = new Date();
-            cart.setLastUpdated(now);
+            java.sql.Timestamp lastUpdated = new java.sql.Timestamp(now.getTime());
+            cart.setLastUpdated(lastUpdated);
             
-            int cartId = cartDBManager.addCart(new java.sql.Date(now.getTime()));
+            int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
             cart.setCartId(cartId);
 
             session.setAttribute("cart", cart);

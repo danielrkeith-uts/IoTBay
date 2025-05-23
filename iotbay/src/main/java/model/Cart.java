@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +9,13 @@ import java.util.List;
 public class Cart implements Serializable {
     private int cartId;
     private List<ProductListEntry> productList;
-    private Date lastUpdated;
+    private Timestamp lastUpdated;
 
     public Cart() {
         this.cartId = 999;
         productList = new ArrayList<ProductListEntry>();
-        lastUpdated = new Date();
+        Date now = new Date();
+        lastUpdated = new java.sql.Timestamp(now.getTime());
     }
 
     public int getCartId() {
@@ -24,7 +26,7 @@ public class Cart implements Serializable {
         this.cartId = cartId;
     }
 
-    public void setLastUpdated(Date newDate) {
+    public void setLastUpdated(Timestamp newDate) {
         this.lastUpdated = newDate;
     }
 
@@ -41,7 +43,8 @@ public class Cart implements Serializable {
         }
         // If product not found, add new entry
         productList.add(new ProductListEntry(product, quantity));
-        lastUpdated = new Date();
+        Date now = new Date();
+        lastUpdated = new java.sql.Timestamp(now.getTime());
     }
 
     public double totalCost() {

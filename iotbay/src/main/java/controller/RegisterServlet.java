@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -117,11 +118,10 @@ public class RegisterServlet extends HttpServlet {
 
                 // Create a cart in the DB and store it in session
                 java.sql.Date now = new java.sql.Date(new Date().getTime());
-                int cartId = cartDBManager.addCart(now);
+                int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
 
                 Cart cart = new Cart();
                 cart.setCartId(cartId); 
-                cart.setLastUpdated(new Date());
                 session.setAttribute("cart", cart);
                 customer.setCart(cart);
             }
