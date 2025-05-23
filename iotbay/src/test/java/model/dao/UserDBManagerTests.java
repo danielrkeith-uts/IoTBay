@@ -1,7 +1,6 @@
 package model.dao;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.junit.Assert;
@@ -158,29 +157,18 @@ public class UserDBManagerTests {
 
     @Test
     public void testDeleteUser() {
-        Connection conn = null;
         try {
-            DBConnector dbConnector = new DBConnector();
-            conn = dbConnector.openConnection(); 
-
-            UserDBManager userDBManager = new UserDBManager(conn);
-
-            PreparedStatement ps = conn.prepareStatement("UPDATE Customer SET CartId = NULL WHERE UserId = ?");
-            ps.setInt(1, 1);
-            ps.executeUpdate();
-
             userDBManager.deleteUser(1);
-
             User deletedUser = userDBManager.getUser(1);
-            Assert.assertNull(deletedUser);
 
-        } catch (Exception e) {
+            Assert.assertNull(deletedUser);
+        } catch (SQLException e) {
             Assert.fail(e.getMessage());
         } finally {
             try {
-                if (conn != null) conn.rollback();
+                conn.rollback();
             } catch (SQLException e) {
-                System.err.println("Rollback failed: " + e.getMessage());
+                System.err.println(e);
             }
         }
     }

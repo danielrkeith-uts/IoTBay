@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.*;
+import model.Enums.*;
 
 @WebServlet("/CartServlet")
 public class CartServlet extends HttpServlet {
@@ -27,10 +28,12 @@ public class CartServlet extends HttpServlet {
         User user = (User) session.getAttribute("user");
 
         String productName = request.getParameter("productName");
+        String productType = request.getParameter("productType");
+
         double price = Double.parseDouble(request.getParameter("price"));
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         
-        Product product = new Product(productName, "", price, 0, "");
+        Product product = new Product(productName, "", ProductType.valueOf(productType), price, 0, "");
 
         try {
             Cart cart;

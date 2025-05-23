@@ -1,27 +1,27 @@
 -- Product
-INSERT INTO Product(ProductId, Name, Cost, Stock, ImageUrl)
+INSERT INTO Product(ProductId, Name, Type, Cost, Stock, ImageUrl)
 VALUES 
-    (0, 'Raspberry Pi', 99.99, 3, 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSksSIv20lOBy1zAyO0r-tDFlUFCiE-8pTyqFT0WbtlUfqwt2yT31aY2_xRoCbjdcSu_FPJgL2Y'),
-    (1, 'Google Home Voice Controller', 149, 50, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (2, 'Amazon Echo Plus Voice Controller', 179, 30, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (3, 'August Smart Lock', 249, 20, 'https://mindmajix.com/iot-devices'),
-    (4, 'Nest Learning Thermostat', 329, 15, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (5, 'Philips Hue Smart Bulbs', 99, 100, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (6, 'Ring Doorbell', 199, 40, 'https://mindmajix.com/iot-devices'),
-    (7, 'WeMo Smart Plug', 49, 75, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (8, 'NETGEAR Orbi Mesh Wi-Fi System', 399, 25, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (9, 'Kuri Mobile Robot', 799, 10, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (10, 'Bitdefender BOX IoT Security Solution', 199, 35, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (11, 'Footbot Air Quality Monitor', 129, 45, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (12, 'Flow by Plume Labs Air Pollution Monitor', 179, 20, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (13, 'Logitech Harmony Universal Remote', 249, 30, 'https://www.softwaretestinghelp.com/iot-devices/'),
-    (14, 'Amazon Dash Button', 4.99, 200, 'https://mindmajix.com/iot-devices'),
-    (15, 'Mr Coffee Smart Coffeemaker', 129, 50, 'https://mindmajix.com/iot-devices'),
-    (16, 'SmartThings Hub', 99, 60, 'https://mindmajix.com/iot-devices'),
-    (17, 'TP-Link Kasa Smart Light Switch', 39, 80, 'https://mindmajix.com/iot-devices'),
-    (18, 'Ecobee Smart Thermostat', 249, 25, 'https://mindmajix.com/iot-devices'),
-    (19, 'Arlo Pro Security Camera', 299, 20, 'https://mindmajix.com/iot-devices'),
-    (20, 'Tile Mate Bluetooth Tracker', 29, 150, 'https://mindmajix.com/iot-devices');
+    (0, 'Raspberry Pi', 'ELECTRONICS', 99.99, 3, 'https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSksSIv20lOBy1zAyO0r-tDFlUFCiE-8pTyqFT0WbtlUfqwt2yT31aY2_xRoCbjdcSu_FPJgL2Y'),
+    (1, 'Google Home Voice Controller', 'ELECTRONICS', 149, 50, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (2, 'Amazon Echo Plus Voice Controller', 'ELECTRONICS', 179, 30, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (3, 'August Smart Lock', 'COMPONENTS', 249, 20, 'https://mindmajix.com/iot-devices'),
+    (4, 'Nest Learning Thermostat', 'ELECTRONICS', 329, 15, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (5, 'Philips Hue Smart Bulbs', 'ACCESSORY', 99, 100, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (6, 'Ring Doorbell', 'COMPONENTS', 199, 40, 'https://mindmajix.com/iot-devices'),
+    (7, 'WeMo Smart Plug', 'ACCESSORY', 49, 75, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (8, 'NETGEAR Orbi Mesh Wi-Fi System', 'ELECTRONICS', 399, 25, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (9, 'Kuri Mobile Robot', 'ELECTRONICS', 799, 10, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (10, 'Bitdefender BOX IoT Security Solution', 'ELECTRONICS', 199, 35, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (11, 'Footbot Air Quality Monitor', 'ELECTRONICS', 129, 45, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (12, 'Flow by Plume Labs Air Pollution Monitor', 'ELECTRONICS', 179, 20, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (13, 'Logitech Harmony Universal Remote', 'ACCESSORY', 249, 30, 'https://www.softwaretestinghelp.com/iot-devices/'),
+    (14, 'Amazon Dash Button', 'OTHER', 4.99, 200, 'https://mindmajix.com/iot-devices'),
+    (15, 'Mr Coffee Smart Coffeemaker', 'OTHER', 129, 50, 'https://mindmajix.com/iot-devices'),
+    (16, 'SmartThings Hub', 'ELECTRONICS', 99, 60, 'https://mindmajix.com/iot-devices'),
+    (17, 'TP-Link Kasa Smart Light Switch', 'ACCESSORY', 39, 80, 'https://mindmajix.com/iot-devices'),
+    (18, 'Ecobee Smart Thermostat', 'ELECTRONICS', 249, 25, 'https://mindmajix.com/iot-devices'),
+    (19, 'Arlo Pro Security Camera', 'ELECTRONICS', 299, 20, 'https://mindmajix.com/iot-devices'),
+    (20, 'Tile Mate Bluetooth Tracker', 'ACCESSORY', 29, 150, 'https://mindmajix.com/iot-devices');
 
 -- Delivery
 INSERT INTO Delivery(DeliveryId, OrderId, SourceAddressId, DestinationAddressId, Courier, CourierDeliveryId)

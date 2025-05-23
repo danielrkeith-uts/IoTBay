@@ -99,13 +99,17 @@
                                 <%= p.getStock() > 0 ? p.getStock() + " available" : "Out of stock" %>
                             </p>
                             <p class="card-text fw-bold">$<%= String.format("%.2f", p.getCost()) %></p>
-                            <button 
-                                class="btn btn-primary mt-auto <%= p.getStock() == 0 ? "disabled-button" : "" %>" 
-                                type="button" 
-                                <%= p.getStock() == 0 ? "disabled" : "" %>
-                            >
-                                Add to Cart
-                            </button>
+                            <form action="CartServlet" method="post">
+                                <input type="hidden" name="productName" value="<%= p.getName() %>" />
+                                <input type="hidden" name="price" value="<%= p.getCost() %>" />
+                                <input type="number" name="quantity" value="1" min="1" />
+                                <input type="hidden" name="productType" value="<%= p.getType() %>" />
+                                
+                                <button type="submit" class="btn btn-primary mt-auto <%= p.getStock() == 0 ? "disabled-button" : "" %>" 
+                                    <%= p.getStock() == 0 ? "disabled" : "" %>>
+                                    Add to Cart
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -23,12 +23,13 @@ public class Product implements Serializable {
     public Product(String name, String description, ProductType type, double cost, int stock) {
         this(name, description, type, cost, stock, null); 
     }
-    public String getImageUrl() {
-        return imageUrl;
-    }
 
     public String getName() {
         return name;
+    }
+
+    public int getProductId() {
+        return productId;
     }
 
     public void setName(String name) {

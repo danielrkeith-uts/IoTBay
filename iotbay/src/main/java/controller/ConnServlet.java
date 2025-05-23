@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -56,11 +57,6 @@ public class ConnServlet extends HttpServlet {
             if (session.getAttribute("userDBManager") == null) {
                 userDBManager = new UserDBManager(conn);
                 session.setAttribute("userDBManager", userDBManager);
-            }
-
-            if (session.getAttribute("productDBManager") == null) {
-                productDBManager = new ProductDBManager(conn);
-                session.setAttribute("productDBManager", productDBManager);
             }
 
             if (session.getAttribute("applicationAccessLogDBManager") == null) {
