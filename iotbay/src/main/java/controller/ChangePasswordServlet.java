@@ -18,11 +18,10 @@ import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
 
-@WebServlet("/AccountDetailsServlet")
-public class AccountDetailsServlet extends HttpServlet {
-    public static final String PAGE = "account.jsp";
-    private static final String ERROR_ATTR = "accountError";
-    private static final String SUCCESS_ATTR = "accountSuccess";
+@WebServlet("/ChangePasswordServlet")
+public class ChangePasswordServlet extends HttpServlet {
+    public static final String PAGE = "changepassword.jsp";
+    private static final String ERROR_ATTR = "changePasswordError";
 
     private Logger logger;
 
@@ -41,22 +40,25 @@ public class AccountDetailsServlet extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
 
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String phone = request.getParameter("phone");
-        String staffCardIdInput = request.getParameter("staffCardId");
+        String oldPassword = request.getParameter("old-password");
+        String newPassword = request.getParameter("new-password");
+        String newPasswordConfirmation = request.getParameter("new-password-confirmation");
 
         try {
-            Validator.validatePhoneNumber(phone);
+            if (!user.checkPassword(oldPassword)) {
+                throw new InvalidInputException("Old password is incorrect");
+            }
 
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setPhone(phone);
+            if (newPassword.equals(oldPassword)) {
+                throw new InvalidInputException("New password cannot be the same as your old password");
+            }
 
-            if (user instanceof Staff) {
-                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
-                
-                ((Staff) user).setStaffCardId(staffCardId);
+            if (!Validator.isSecurePassword(newPassword)) {
+                throw new InvalidInputException("Invalid password");
+            }
+            
+            if (!newPassword.equals(newPasswordConfirmation)) {
+                throw new InvalidInputException("New passwords don't match");
             }
         } catch (InvalidInputException e) {
             session.setAttribute(ERROR_ATTR, e.getMessage());
@@ -64,6 +66,7 @@ public class AccountDetailsServlet extends HttpServlet {
             return;
         }
 
+        user.setPassword(newPassword);
         try {
             if (user instanceof Customer) {
                 userDBManager.updateCustomer((Customer) user);
@@ -71,12 +74,12 @@ public class AccountDetailsServlet extends HttpServlet {
                 userDBManager.updateStaff((Staff) user);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not update user");
+            logger.log(Level.SEVERE, "Could not update user's password");
+            user.setPassword(oldPassword);
             return;
         }
 
         session.removeAttribute(ERROR_ATTR);
-        session.setAttribute(SUCCESS_ATTR, "Changes saved!");
-        request.getRequestDispatcher(PAGE).include(request, response);
+        request.getRequestDispatcher(AccountDetailsServlet.PAGE).include(request, response);
     }
 }

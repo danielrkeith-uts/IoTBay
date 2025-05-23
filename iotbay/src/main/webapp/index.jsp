@@ -1,13 +1,15 @@
-<%@ page import="model.User"%>
+<%@ page import="model.User, model.Staff"%>
 <html>
     <%
-        User user = (User)session.getAttribute("user");
+        User user = (User) session.getAttribute("user");
+        boolean isStaff = (user != null && user instanceof Staff);
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
         <link rel="stylesheet" href="index.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
     </head>
@@ -17,6 +19,9 @@
             <navbar>
                 <a href="index.jsp" class="active">Home</a>
                 <a href="products.jsp">Products</a>
+                <% if (isStaff) { %>
+                            <a href="adminInventory.jsp">Manage Inventory</a>
+                        <% } %>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
@@ -24,12 +29,15 @@
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                            <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+            
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>
                     </div>
                 <% } %>
+                <a href="cart.jsp" class="bi bi-cart"></a>
             </navbar>
         </div>
         <div class="content">
@@ -76,6 +84,8 @@
                                     <i class="fas fa-lock"></i>
 
                         <p>Leading class security to keep your information safe and transaction protected.</p>
+
+
                     </div>
                 </div>
             </section>

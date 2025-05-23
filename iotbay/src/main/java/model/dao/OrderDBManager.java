@@ -2,35 +2,47 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
+import model.Enums.*;
 
 public class OrderDBManager {
-    
-    private Statement st;
+    private Statement st1;
+    private Statement st2;
     private Connection conn;
+    private static final String UPDATE_ORDER_STMT = "UPDATE `Order` SET UserId = ?, CartId = ?, PaymentId = ?, DatePlaced = ?, OrderStatus = ? WHERE OrderId = ?;";
+    private final PreparedStatement updateOrderPs;
         
-    public OrderDBManager(Connection conn) throws SQLException {       
+    public OrderDBManager(Connection conn) throws SQLException {    
         this.conn = conn;
-        st = conn.createStatement();   
+        this.st1 = conn.createStatement(); 
+        this.st2 = conn.createStatement(); 
+        this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
     //Find an order by OrderId in the database   
     public Order getOrder(int inputOrderId) throws SQLException {       
-        //get the ProductListId, PaymentId, and DatePlaced from the Order table
+        //get the CartId, PaymentId, and DatePlaced from the Order table
         String query = "SELECT * FROM `Order` WHERE OrderID = '" + inputOrderId + "'"; 
-        ResultSet rs = st.executeQuery(query); 
+        ResultSet rs = st1.executeQuery(query); 
 
         if (rs.next()) {
-            int ProductListId = rs.getInt("ProductListId");
+            int orderId = rs.getInt("OrderID");
+            int CartId = rs.getInt("CartId");
             int PaymentId = rs.getInt("PaymentId");
-            int DeliveryId = rs.getInt("DeliveryId");
-            Timestamp timestamp = rs.getTimestamp("DatePlaced");
-            Date DatePlaced = new Date(timestamp.getTime());
+
+            String dateString = rs.getString("DatePlaced");
+            LocalDateTime ldt = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+            Timestamp timestamp = Timestamp.valueOf(ldt);
+
+            String statusString = rs.getString("OrderStatus");
+            OrderStatus status = OrderStatus.valueOf(statusString);
             
-            //Step 1: Get all entries from ProductListEntry table with this ProductListId
-            String entryQuery = "SELECT * FROM ProductListEntry WHERE ProductListId = '" + ProductListId + "'"; 
-            ResultSet entryRs = st.executeQuery(entryQuery);
+            //Step 1: Get all entries from ProductListEntry table with this CartId
+            String entryQuery = "SELECT * FROM ProductListEntry WHERE CartId = '" + CartId + "'"; 
+            ResultSet entryRs = st2.executeQuery(entryQuery);
 
             List<ProductListEntry> ProductList = new ArrayList<>();
             ProductDBManager productDBManager = new ProductDBManager(conn);
@@ -49,29 +61,51 @@ public class OrderDBManager {
             PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
-            //Step 4: Create Delivery instance to get DeliveryId for setDelivery()
-            DeliveryDBManager deliveryDBManager = new DeliveryDBManager(conn);
-            Delivery Delivery = deliveryDBManager.getDelivery(DeliveryId);
-
-            Order order = new Order(ProductList, Payment, DatePlaced);
-            order.setDelivery(Delivery);
+            Order order = new Order(orderId, ProductList, Payment, timestamp, status);
             return order;
         } 
         return null;
     }
 
     //Add an order into the database   
-    public void addOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("INSERT INTO `Order` VALUES ('" + OrderId + "', '" + UserId + "', '" + ProductListId + "', '" + PaymentId + "', " + DeliveryId + "', " + DatePlaced + ")");   
+    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
+        String query = "INSERT INTO `Order` (OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, OrderId);
+            pst.setInt(2, UserId);
+            pst.setInt(3, CartId);
+            pst.setInt(4, PaymentId);
+            
+            Timestamp timestamp = new Timestamp(DatePlaced.getTime());
+            String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
+            pst.setString(5, formatted);
+            pst.setString(6, status);
+
+            pst.executeUpdate();
+        }
     }
 
     //update an order's details in the database   
-    public void updateOrder(int OrderId, int UserId, int ProductListId, int PaymentId, int DeliveryId, Date DatePlaced) throws SQLException {       
-        st.executeUpdate("UPDATE `Order` SET UserId = '" + UserId + "', ProductListId = '" + ProductListId + "', PaymentId = '" + PaymentId + "', DeliveryId = '" + DeliveryId + "', DatePlaced = '" + DatePlaced + "' WHERE OrderId = '" + OrderId);    
-    }       
+    public void updateOrder(Order order) throws SQLException {
+        String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
+        ResultSet rs = st1.executeQuery(query); 
 
-    //delete an order from the database   
-    public void deleteOrder(int OrderId) throws SQLException{       
-        st.executeUpdate("DELETE FROM `Order` WHERE OrderId = '" + OrderId); 
+        updateOrderPs.setInt(1, rs.getInt("UserId"));
+        updateOrderPs.setInt(2, rs.getInt("CartId"));
+        updateOrderPs.setInt(3, rs.getInt("PaymentId"));
+
+        String formattedDate = order.getDatePlaced().toLocalDateTime().toString().replace("T", " ");
+        updateOrderPs.setString(4, formattedDate);
+
+        updateOrderPs.setString(5, rs.getString("OrderStatus"));
+        updateOrderPs.setInt(6, rs.getInt("OrderId"));
+
+        updateOrderPs.executeUpdate();
+    } 
+
+    //orders can't be deleted, only set to cancelled  
+    public void cancelOrder(int OrderId) throws SQLException{       
+        st1.executeUpdate("UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = " + OrderId); 
     }
 }

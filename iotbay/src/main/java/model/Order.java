@@ -1,23 +1,28 @@
 package model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
+import model.Enums.*;
+
 public class Order implements Serializable {
+    private int orderId;
     private List<ProductListEntry> productList;
     private Payment payment;
-    private Delivery delivery;
-    private Date datePlaced;
+    private Timestamp datePlaced;
+    private OrderStatus status;
 
-    public Order(List<ProductListEntry> productList, Payment payment, Date datePlaced) {
+    public Order(int orderId, List<ProductListEntry> productList, Payment payment, Timestamp datePlaced, OrderStatus status) {
+        this.orderId = orderId;
         this.productList = productList;
         this.payment = payment;
         this.datePlaced = datePlaced;
+        this.status = status;
     }
 
-    public void setDelivery(Delivery delivery) {
-        this.delivery = delivery;
+    public int getOrderId() {
+        return orderId;
     }
 
     public List<ProductListEntry> getProductList() {
@@ -28,11 +33,51 @@ public class Order implements Serializable {
         return payment;
     }
 
-    public Delivery getDelivery() {
-        return delivery;
-    }
-
-    public Date getDatePlaced() {
+    public Timestamp getDatePlaced() {
         return datePlaced;
     }
+
+    public OrderStatus getOrderStatus() {
+        return status;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Order order = (Order) obj;
+
+        return this.orderId == order.orderId
+            && checkListEqual(this.productList, order.productList)
+            && this.payment.equals(order.payment)
+            && this.datePlaced.equals(order.datePlaced)
+            && this.status.equals(order.status);
+    }
+
+    private boolean checkListEqual(List<ProductListEntry> list1, List<ProductListEntry> list2) {
+        for(ProductListEntry entry : list1) {
+            if (!list2.contains(entry)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+            " orderId='" + getOrderId() + "'" +
+            ", productList='" + getProductList() + "'" +
+            ", payment='" + getPayment() + "'" +
+            ", datePlaced='" + getDatePlaced() + "'" +
+            ", status='" + getOrderStatus() + "'" +
+            "}";
+    }
+    
 }
+
