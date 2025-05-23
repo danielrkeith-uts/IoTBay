@@ -7,28 +7,28 @@
 <html>
     <jsp:include page="/ConnServlet" flush="true"/>
     <%
-        // Retrieve session attributes
-        User user = (User) session.getAttribute("user");
-         if (!(session.getAttribute("user") instanceof Customer)) {
-            response.sendRedirect("index.jsp");
-            return;
-        }
-
-        if (session.getAttribute("orderDBManager") == null) {
-            response.sendRedirect("index.jsp");
-            return;
-        }   
-
         OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
+        // User user = (User) session.getAttribute("user");
+
+        Order order = null;
+        String orderError = null;
+
+        // if (user == null || !(user instanceof Customer) || orderDBManager == null) {
+        //     response.sendRedirect("index.jsp");
+        //     return;
+        // }
 
         String query = request.getParameter("query");
-        List<Order> orders = orderManager.getOrder(query);
-
         if (query != null && !query.trim().isEmpty()) {
-            String finalQuery = query.toLowerCase(); 
-            orders = orders.stream()
-                .filter(o -> o.getOrderId.contains(finalQuery))
-                .collect(java.util.stream.Collectors.toList());
+            try {
+                int orderId = Integer.parseInt(query.trim());
+                order = orderDBManager.getOrder(orderId);
+                if (order == null) {
+                    orderError = "No order found with that ID.";
+                }
+            } catch (NumberFormatException e) {
+                orderError = "Please enter a valid numeric Order ID.";
+            }
         }
     %>
     <head>
@@ -46,7 +46,7 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <% if (user == null) { %>
+                <%-- <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>
                     <div class="nav-item dropdown">
@@ -60,47 +60,60 @@
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>
                     </div>
-                <% } %>
+                <% } %> --%>
                 <a href="cart.jsp" class="bi bi-cart"></a>
             </navbar>
         </div>
 
-        <form class="mb-4" method="get" action="myorders.jsp">
+        <%-- <form class="mb-4" method="get" action="myorders.jsp">
             <div class="input-group">
                 <input type="text" name="query" class="form-control" placeholder="Search by OrderId (plain number)" value="<%= request.getParameter("query") != null ? request.getParameter("query") : "" %>" />
                 <button type="submit" class="btn btn-outline-secondary">Search</button>
             </div>
+        </form> --%>
+        <form method="get" action="myorders.jsp" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="query" class="form-control" placeholder="Search by Order ID" value="<%= query != null ? query : "" %>" />
+                <button type="submit" class="btn btn-outline-secondary">Search</button>
+            </div>
         </form>
-        <% if (order.isEmpty()) { %>
+        <% if (order == null) { %>
             <div class="alert alert-secondary" role="alert">
                 No matching order found. Please try a different OrderId.
             </div>
         <% } else { %>
-        <div class="row">
-            <% for (Order o : orders) { %>
-                <div class="col-md-4 mb-4">
+            <div class="row">
+            <div class="col-md-4 mb-4">
                     <div class="card product-card p-3 h-100">
                         <div class="card-body d-flex flex-column">
-                            <h5 class="card-title"><%= o.getOrderId() %></h5>
+                            <h5 class="card-title">OrderID: <%= order.getOrderId() %></h5>
                             <p class="card-text">
-                                <strong>Products:</strong> 
-                                <%= o.getProductList()%>
+                                <strong>Products:</strong><br/>
+                                <ul>
+                                    <%
+                                        for (ProductListEntry entry : order.getProductList()) {
+                                    %>
+                                        <li><%= entry.getProduct().toString() %></li>
+                                    <%
+                                        }
+                                    %>
+                                </ul>
                             </p>
                             <p class="card-text">
                                 <strong>Payment Status:</strong> 
-                                <%= o.getPayment().getPaymentStatus() %>
+                                <%= order.getPayment().getPaymentStatus() %>
                             </p>
                             <p class="card-text">
                                 <strong>Date Placed:</strong> 
-                                <%= o.getDatePlaced() %>
+                                <%= order.getDatePlaced() %>
                             </p>
                             <p class="card-text">
                                 <strong>Order Status:</strong> 
-                                <%= o.getOrderStatus() %>
+                                <%= order.getOrderStatus() %>
                             </p>
                             <form> 
                             <%-- action="CartServlet" method="post" --%>
-                                <input type="hidden" name="orderId" value="<%= o.getOrderId() != null%>" />
+                                <%-- <input type="hidden" name="orderId" value="<%= order.getOrderId() != 0%>" />
                                 <button type="submit" class="btn btn-primary mt-auto">
                                     Cancel Order
                                 </button>
@@ -108,9 +121,7 @@
                         </div>
                     </div>
                 </div>
-            <% } %> 
-        </div>
-        <% } %>
-
+            </div> --%>
+        <% } %> 
     </body>
 </html>

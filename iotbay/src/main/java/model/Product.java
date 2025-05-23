@@ -85,4 +85,10 @@ public class Product implements Serializable {
             && this.stock == product.stock
             && ((this.type == null && product.type == null) || (this.type != null && this.type.equals(product.type)));
     }
+
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

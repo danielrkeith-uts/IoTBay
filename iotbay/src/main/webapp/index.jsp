@@ -38,6 +38,7 @@
                     </div>
                 <% } %>
                 <a href="cart.jsp" class="bi bi-cart"></a>
+                <a class="dropdown-item" href="myorders.jsp">Find an Order</a>
             </navbar>
         </div>
         <div class="content">
