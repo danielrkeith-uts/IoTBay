@@ -164,7 +164,7 @@ VALUES
     (18, 'Quinn', 'Scott', 'quinn.scott@example.com', '+61487654321', 'quinnScottPass'),
     (19, 'Ryan', 'Adams', 'ryan.adams@example.com', '+61412345678', 'ryanAdamsPass'),
     (20, 'Sophia', 'Mitchell', 'sophia.mitchell@example.com', '+61456789012', 'sophiaMitchellPass'),
-    (21, 'Aiden', 'Taylor', 'aiden.taylor@example.com', '+61412365478', 'aidenTayl0rPass'),
+    (21, 'Gregory', 'Stafferson', 'gregory.stafferson@iotbay.com', '+61487654321', '!@#$%^&*()'),
     (22, 'Bella', 'Anderson', 'bella.anderson@example.com', '+61487654322', 'bellaAnders9nPass'),
     (23, 'Caleb', 'Wright', 'caleb.wright@example.com', '+61456789013', 'calebWr1ghtPass'),
     (24, 'Daisy', 'Walker', 'daisy.walker@example.com', '+61490123457', 'daisyW4lkerPass'),

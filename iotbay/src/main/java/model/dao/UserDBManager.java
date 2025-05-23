@@ -10,6 +10,8 @@ import model.Staff;
 import model.User;
 
 public class UserDBManager {
+    private Connection conn;
+
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
     private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId) VALUES (?);";
     private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?);";
@@ -37,6 +39,8 @@ public class UserDBManager {
     private final ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     public UserDBManager(Connection conn) throws SQLException {
+        this.conn = conn;
+        
         this.addUserPs = conn.prepareStatement(ADD_USER_STMT);
         this.addCustomerPs = conn.prepareStatement(ADD_CUSTOMER_STMT);
         this.addStaffPs = conn.prepareStatement(ADD_STAFF_STMT);
@@ -111,6 +115,13 @@ public class UserDBManager {
     }
 
     public void deleteUser(int userId) throws SQLException {
+        // Cancel all orders from this user
+        PreparedStatement cancelOrders = conn.prepareStatement(
+            "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE UserId = ?"
+        );
+        cancelOrders.setInt(1, userId);
+        cancelOrders.executeUpdate();
+
         applicationAccessLogDBManager.anonymiseApplicationAccessLogs(userId);
 
         deleteUserPs.setInt(1, userId);

@@ -17,7 +17,7 @@ CREATE TABLE Customer (
     UserId INTEGER PRIMARY KEY,
     CartId INTEGER,
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
-    FOREIGN KEY (CartId) REFERENCES Cart(CartId)
+    FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE SET NULL
 );
 
 CREATE TABLE Product (
@@ -49,7 +49,7 @@ CREATE TABLE `Order` (
     PaymentId INTEGER,
     DatePlaced TEXT NOT NULL,
     OrderStatus VARCHAR(50),
-    FOREIGN KEY (UserId) REFERENCES User(UserId),
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE SET NULL,
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
     CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
 );
