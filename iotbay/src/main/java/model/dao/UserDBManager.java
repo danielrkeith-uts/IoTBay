@@ -11,7 +11,7 @@ import model.User;
 public class UserDBManager {
 
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
-    private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId) VALUES (?);";
+    private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId, Type) VALUES (?, ?);";
     private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?);";
     private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
@@ -63,7 +63,9 @@ public class UserDBManager {
 
     public void addCustomer(Customer customer) throws SQLException {
         int userId = addUser(customer);
+    
         addCustomerPs.setInt(1, userId);
+        addCustomerPs.setString(2, customer.getType().name());
         addCustomerPs.executeUpdate();
     }
 
@@ -123,21 +125,31 @@ public class UserDBManager {
     public List<Customer> getCustomersFiltered(String name, String type) throws SQLException {
         List<Customer> customers = new ArrayList<>();
     
-        String sql = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone, U.Password, U.Deactivated, C.Type " +
-                     "FROM User U JOIN Customer C ON U.UserId = C.UserId WHERE 1=1";
+        // Base SQL Query
+        String sql = "SELECT User.UserId, User.FirstName, User.LastName, User.Email, " +
+                     "User.Phone, User.Password, User.Deactivated, Customer.Type " +
+                     "FROM User " +
+                     "JOIN Customer ON User.UserId = Customer.UserId " +
+                     "WHERE 1=1";  // Ensures additional conditions append correctly
+    
         List<Object> params = new ArrayList<>();
     
+        // Apply name filtering
         if (name != null && !name.trim().isEmpty()) {
-            sql += " AND (LOWER(U.FirstName) LIKE ? OR LOWER(U.LastName) LIKE ?)";
+            sql += " AND (LOWER(User.FirstName) LIKE ? OR LOWER(User.LastName) LIKE ?)";
             String pattern = "%" + name.toLowerCase() + "%";
             params.add(pattern);
             params.add(pattern);
         }
     
+        // Apply type filtering
         if (type != null && !type.trim().isEmpty()) {
-            sql += " AND C.Type = ?";
-            params.add(type.toUpperCase());
+            sql += " AND Customer.Type = ?";
+            params.add(type.toUpperCase()); 
         }
+    
+        System.out.println("Debug: SQL Query = " + sql);
+        System.out.println("Debug: Parameters = " + params);
     
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             for (int i = 0; i < params.size(); i++) {
@@ -161,6 +173,7 @@ public class UserDBManager {
             }
         }
     
+        System.out.println("Debug: Customers found = " + customers.size());
         return customers;
     }
     

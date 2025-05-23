@@ -32,78 +32,86 @@ public class RegisterServlet extends HttpServlet {
     private Logger logger;
 
     @Override
-    public void init() {
-        logger = Logger.getLogger(RegisterServlet.class.getName());
+public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    HttpSession session = request.getSession();
+
+    UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+    ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+
+    if (userDBManager == null || applicationAccessLogDBManager == null) {
+        throw new ServletException("Database managers are not initialized in session.");
     }
 
-    @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+    String email = request.getParameter("email");
+    String password = request.getParameter("password");
+    String firstName = request.getParameter("firstName");
+    String lastName = request.getParameter("lastName");
+    String phone = request.getParameter("phone");
+    String type = request.getParameter("type"); // only used for customers
+    boolean isStaff = request.getParameter("isStaff") != null;
+    boolean isAdmin = request.getParameter("isSystemAdmin") != null;
+    String staffCardIdInput = request.getParameter("staffCardId");
+    String staffPassword = request.getParameter("staffPassword");
+    String adminPassword = request.getParameter("systemAdminPassword");
 
-        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+    try {
+        User user;
 
-        if (userDBManager == null || applicationAccessLogDBManager == null) {
-            throw new ServletException("Database managers are not initialized in session.");
-        }
+        if (isStaff || isAdmin) {
+            // Staff/Admin registration must have staffCardId validated
+            int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String phone = request.getParameter("phone");
-        String type = request.getParameter("type");
-        boolean isStaff = request.getParameter("isStaff") != null;
-        boolean isAdmin = request.getParameter("isSystemAdmin") != null;
-        String staffCardIdInput = request.getParameter("staffCardId");
-        String staffPassword = request.getParameter("staffPassword");
-        String adminPassword = request.getParameter("systemAdminPassword");
-
-        try {
-            User user;
-
-            if (isStaff || isAdmin) {
-                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
-
-                if (isAdmin) {
-                    if (!ADMIN_PASSWORD.equals(adminPassword)) {
-                        throw new InvalidInputException("Incorrect system admin password");
-                    }
-                    user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
-                } else {
-                    if (!STAFF_PASSWORD.equals(staffPassword)) {
-                        throw new InvalidInputException("Incorrect staff password");
-                    }
-                    user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, false);
+            if (isAdmin) {
+                if (adminPassword == null || !ADMIN_PASSWORD.equals(adminPassword)) {
+                    throw new InvalidInputException("Incorrect system admin password");
                 }
-
-            } else {
-                user = new Customer(-1, firstName, lastName, email, phone, password, Customer.Type.valueOf(type));
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
+            } else { // staff only
+                if (staffPassword == null || !STAFF_PASSWORD.equals(staffPassword)) {
+                    throw new InvalidInputException("Incorrect staff password");
+                }
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, false);
             }
-
-            Validator.validateUser(user);
-
-            if (userDBManager.userExists(email)) {
-                throw new InvalidInputException("User already exists with that email");
+        } else {
+            // Customer registration: Use type only if not staff/admin
+            Customer.Type customerType;
+            try {
+                customerType = Customer.Type.valueOf(type);
+            } catch (IllegalArgumentException | NullPointerException e) {
+                // fallback or default type if invalid or null
+                customerType = Customer.Type.INDIVIDUAL;
             }
-
-            if (user instanceof Staff) {
-                userDBManager.addStaff((Staff) user);
-            } else {
-                userDBManager.addCustomer((Customer) user);
-            }
-
-            ApplicationAccessLog log = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), log);
-
-            session.setAttribute("user", user);
-            session.removeAttribute(ERROR_ATTR);
-            request.getRequestDispatcher("welcome.jsp").include(request, response);
-
-        } catch (InvalidInputException | SQLException e) {
-            logger.log(Level.SEVERE, "Registration error", e);
-            session.setAttribute(ERROR_ATTR, e.getMessage());
-            request.getRequestDispatcher(PAGE).include(request, response);
+            user = new Customer(-1, firstName, lastName, email, phone, password, customerType);
         }
+
+        // Validate user fields (email, password strength, etc.)
+        Validator.validateUser(user);
+
+        // Check if user already exists by email
+        if (userDBManager.userExists(email)) {
+            throw new InvalidInputException("User already exists with that email");
+        }
+
+        // Add user to DB
+        if (user instanceof Staff) {
+            userDBManager.addStaff((Staff) user);
+        } else {
+            userDBManager.addCustomer((Customer) user);
+        }
+
+        // Log registration action
+        ApplicationAccessLog log = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
+        applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), log);
+
+        // Set user in session and forward to welcome page
+        session.setAttribute("user", user);
+        session.removeAttribute(ERROR_ATTR);
+        request.getRequestDispatcher("welcome.jsp").include(request, response);
+
+    } catch (InvalidInputException | SQLException e) {
+        logger.log(Level.SEVERE, "Registration error", e);
+        session.setAttribute(ERROR_ATTR, e.getMessage());
+        request.getRequestDispatcher(PAGE).include(request, response);
     }
+}
 }

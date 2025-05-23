@@ -14,7 +14,7 @@
     <a href="products.jsp" class="<%= currentPage.equals("products.jsp") ? "active" : "" %>">Products</a>
 
     <% if ((isAdmin )) { %>
-        <a href="customerlist.jsp" class="<%= currentPage.equals("customerlist.jsp") ? "active" : "" %>">Customers</a>
+<a href="CustomerListServlet" class="<%= currentPage.equals("CustomerListServlet") ? "active" : "" %>">Customers</a>
     <% } %>
 
     <% if (!isLoggedIn) { %>

@@ -15,6 +15,8 @@
             const adminCheckbox = document.getElementById('system-admin-checkbox');
             const staffSection = document.getElementById('staff-password-section');
             const adminSection = document.getElementById('admin-password-section');
+const customerTypeSection = document.getElementById('customer-type-section');
+
 
             if (role === 'staff') {
                 adminCheckbox.checked = false;
@@ -24,6 +26,12 @@
 
             staffSection.style.display = staffCheckbox.checked ? 'block' : 'none';
             adminSection.style.display = adminCheckbox.checked ? 'block' : 'none';
+
+           if (staffCheckbox.checked || adminCheckbox.checked) {
+    customerTypeSection.style.display = 'none';
+} else {
+    customerTypeSection.style.display = 'block';
+}
         }
     </script>
 </head>

@@ -43,7 +43,7 @@
                 <option value="ADD_TO_CART">ADD TO CART</option>
                 <option value="PLACE_ORDER">PLACE ORDER</option>
             </select>
-            <label for="userId">User ID:</label>
+            <label for="userId">Enter your User ID:</label>
             <input type="text" name="userId" required/>
             <button type="submit">Add Log</button>
             <div class="text-center mt-4">

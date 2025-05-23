@@ -1,7 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List, java.util.ArrayList, model.Customer, model.User" %>
-<jsp:include page="/ConnServlet" flush="true"/>
-<jsp:include page="/CustomerListServlet" flush="true"/>
 
 <%
     User loggedInUser = (User) session.getAttribute("user");

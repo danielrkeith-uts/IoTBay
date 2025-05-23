@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,10 +23,15 @@ public class CustomerListServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            logger.log(Level.WARNING, "Session not found. Redirecting to login.");
+            request.setAttribute("errorMessage", "Session expired or not found. Please log in.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
 
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-
         if (userDBManager == null) {
             logger.log(Level.SEVERE, "UserDBManager not found in session.");
             request.setAttribute("errorMessage", "Database connection error.");
@@ -35,7 +41,7 @@ public class CustomerListServlet extends HttpServlet {
 
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            logger.log(Level.WARNING, "User not found in session.");
+            logger.log(Level.WARNING, "User session expired. Redirecting to login.");
             request.setAttribute("errorMessage", "User session expired. Please log in again.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
@@ -45,17 +51,22 @@ public class CustomerListServlet extends HttpServlet {
         String searchType = request.getParameter("searchType");
 
         try {
-            List<Customer> filteredCustomers;
+            List<Customer> customers;
 
-            if ((searchName == null || searchName.isEmpty()) && (searchType == null || searchType.isEmpty())) {
-                filteredCustomers = userDBManager.getAllCustomers();
+            if ((searchName == null || searchName.trim().isEmpty()) && (searchType == null || searchType.trim().isEmpty())) {
+                customers = userDBManager.getAllCustomers();
             } else {
-                filteredCustomers = userDBManager.getCustomersFiltered(searchName, searchType);
+                customers = userDBManager.getCustomersFiltered(searchName, searchType);
             }
 
-            logger.log(Level.INFO, "Number of customers fetched: {0}", filteredCustomers.size());
+            if (customers == null) {
+                customers = new ArrayList<>();
+            }
 
-            request.setAttribute("customers", filteredCustomers);
+            logger.log(Level.INFO, "Number of customers fetched: {0}", customers.size());
+
+            request.setAttribute("customers", customers);
+            request.getRequestDispatcher("customerlist.jsp").forward(request, response);
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Failed to retrieve customers from the database", e);

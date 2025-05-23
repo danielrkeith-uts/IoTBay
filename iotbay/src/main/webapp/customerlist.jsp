@@ -1,14 +1,16 @@
 <%@ page import="java.util.List, java.util.ArrayList, model.Customer, model.User" %>
-<jsp:include page="/ConnServlet" flush="true"/>
-<jsp:include page="/CustomerListServlet" flush="true"/>
-
 <%
-    List<Customer> customers = (ArrayList<Customer>) request.getAttribute("customers");
+    List<Customer> customers = (List<Customer>) request.getAttribute("customers");
+
+    if (customers == null) {
+        customers = new ArrayList<>(); 
+    }
+
     User loggedInUser = (User) session.getAttribute("user");
+    
     boolean isAdmin = loggedInUser != null && loggedInUser.getRole() == User.Role.ADMIN; 
     boolean isStaff = loggedInUser != null && loggedInUser.getRole() == User.Role.STAFF; 
 %>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,7 +63,7 @@
                 <p><strong>Email:</strong> <%= customer.getEmail() %></p>
                 <p><strong>Phone:</strong> <%= customer.getPhone() %></p>
                 <p><strong>Status:</strong> <%= isDeactivated ? "Deactivated" : "Active" %></p>
-                <p><strong>Type</strong> <%= customer.getType() %></p>
+<p><strong>Type:</strong> <%= customer.getType().name() %></p>
             </div>
             <div class="actions">
                 <button 
