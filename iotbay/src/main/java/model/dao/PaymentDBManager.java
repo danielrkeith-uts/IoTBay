@@ -34,9 +34,18 @@ public class PaymentDBManager {
     
             int affectedRows = stmt.executeUpdate();
 
+<<<<<<< HEAD
             if (affectedRows == 0) {
                 throw new SQLException("Creating payment failed, no rows affected.");
             }
+=======
+        if (rs.next()) {
+            int paymentId = rs.getInt("PaymentId");
+            int CardId = rs.getInt("CardId");
+            double Amount = rs.getDouble("Amount");
+            int statusIndex = rs.getInt("PaymentStatus");
+            PaymentStatus paymentStatus = PaymentStatus.values()[statusIndex];
+>>>>>>> origin/main
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -48,6 +57,7 @@ public class PaymentDBManager {
         }
     }
 
+<<<<<<< HEAD
     public Payment getPayment(int paymentId) throws SQLException {
         String query = "SELECT * FROM Payment WHERE PaymentId = ?";
 
@@ -80,6 +90,9 @@ public class PaymentDBManager {
                         }
                     }
                 }
+=======
+                return new Payment(paymentId, Amount, Card, paymentStatus);
+>>>>>>> origin/main
             }
         }
         return null;

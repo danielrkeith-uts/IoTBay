@@ -24,12 +24,11 @@ public class DeliveryDBManagerTests {
 
         Assert.assertNotNull(delivery);
         
-
         Address source = delivery.getSource();
         Address destination = delivery.getDestination();
 
         Assert.assertEquals("Best Couriers", delivery.getCourier());
-        Assert.assertEquals(4, delivery.getCourierDeliveryId());
+        Assert.assertEquals(1001, delivery.getCourierDeliveryId());
 
         // Check source address fields
         Assert.assertEquals(5, source.getStreetNumber());

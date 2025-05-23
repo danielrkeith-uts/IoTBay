@@ -1,6 +1,6 @@
 <%@ page import="model.User, model.Staff, model.Product, model.dao.ProductDBManager, java.util.List" %>
 <%@ page session="true" %>
-<%-- <jsp:include page="/RequiresUserServlet" flush="true"/> --%>
+
 <%
    try {
        User user = (User) session.getAttribute("user");
@@ -13,20 +13,14 @@
            out.println("You are not authorized to view this page.");
            return;
        }
-
-
-       // ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
-      
+      // ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
       // out.println("User: " + user);
       // out.println("ProductDBManager: " + productManager);
       
-
-
        if (productManager == null) {
            out.println("Product manager is not available. Please ensure the database connection is initialized.");
            return;
        }
-
 
        List<Product> products = productManager.getAllProducts();
        //out.println("Total products found: " + products.size() + "<br>");
@@ -48,15 +42,15 @@
    <div class="banner">
        <h1>Internet of Things Store</h1>
        <navbar>
-           <a href="index.jsp" class="active">Home</a>
+           <a href="index.jsp">Home</a>
            <a href="products.jsp">Products</a>
-           <a href="adminInventory.jsp">Manage Inventory</a>
+           <a href="adminInventory.jsp" class="active">Manage Inventory</a>
            <div class="nav-item dropdown">
                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                <ul class="dropdown-menu">
                    <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                   <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                    <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
-
                    <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                    <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                </ul>
@@ -72,13 +66,21 @@
            <div class="col-md-4 mb-4">
                <div class="card product-card p-3">
                    <form action="<%=request.getContextPath()%>/ProductServlet" method="post">
+                       <label>Product Name:</label>
                        <h5><input type="text" name="name" class="form-control mb-2" value="<%= p.getName() %>" required/></h5>
                        <label>Description:</label>
                        <input type="text" name="description" class="form-control mb-2" value="<%= p.getDescription() == null ? "" : p.getDescription() %>" />
+                       <label>Type:</label>
+                        <select name="type" class="form-control mb-2" required>
+                            <option value="ELECTRONICS" <%= "ELECTRONICS".equals(p.getType().name()) ? "selected" : "" %>>Electronics</option>
+                            <option value="ACCESSORY" <%= "ACCESSORY".equals(p.getType().name()) ? "selected" : "" %>>Accessory</option>
+                            <option value="COMPONENTS" <%= "COMPONENTS".equals(p.getType().name()) ? "selected" : "" %>>Components</option>
+                        </select>
+
                        <label>Price:</label>
-                       <input type="number" name="cost" class="form-control mb-2" value="<%= p.getCost() %>" step="0.01" required/>
+                       <input type="number" name="cost" class="form-control mb-2" value="<%= p.getCost() %>" step="0.01" min="0" required/>
                        <label>Stock:</label>
-                       <input type="number" name="stock" class="form-control mb-3" value="<%= p.getStock() %>" required/>
+                       <input type="number" name="stock" class="form-control mb-3" value="<%= p.getStock() %>" min="0" required/>
                        <input type="hidden" name="originalName" value="<%= p.getName() %>" />
                        <label>Image URL:</label>
                        <input type="text" name="imageUrl" class="form-control mb-3" value="<%= p.getImageUrl() != null ? p.getImageUrl() : "" %>" placeholder="e.g. images/product1.jpg" />
@@ -97,13 +99,21 @@
        <div class="col-md-4 mb-4">
            <div class="card product-card p-3">
                <form action="<%=request.getContextPath()%>/ProductServlet" method="post">
+                   <label>Product Name:</label>
                    <h5><input type="text" name="name" class="form-control mb-2" placeholder="Product Name" required/></h5>
                    <label>Description:</label>
-                   <input type="text" name="description" class="form-control mb-2" placeholder="Description" />
+                   <input type="text" name="description" class="form-control mb-2" placeholder="Description (optional)" />
+                   <label>Type:</label>
+                    <select name="type" class="form-control mb-2" required>
+                        <option value="" disabled selected>Select a type</option>
+                        <option value="ELECTRONICS">Electronics</option>
+                        <option value="ACCESSORY">Accessory</option>
+                        <option value="COMPONENTS">Components</option>
+                    </select>
                    <label>Price:</label>
-                   <input type="number" name="cost" class="form-control mb-2" placeholder="Price" step="0.01" required/>
+                   <input type="number" name="cost" class="form-control mb-2" placeholder="Price" step="0.01" min="0" required/>
                    <label>Stock:</label>
-                   <input type="number" name="stock" class="form-control mb-3" placeholder="Stock" required/>
+                   <input type="number" name="stock" class="form-control mb-3" placeholder="Stock" min="0" required/>
                    <label>Image URL:</label>
                    <input type="text" name="imageUrl" class="form-control mb-3" placeholder="Image URL (optional)" />
                    <button class="btn btn-primary me-2" name="action" value="add">Add Product</button>

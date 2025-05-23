@@ -13,8 +13,13 @@ public class Payment implements Serializable {
     private Date date;
     private int userId;
 
+<<<<<<< HEAD
     public Payment(double amount, Card card, PaymentStatus paymentStatus, Date date, int userId) {
         this.paymentId = 0;
+=======
+    public Payment(int paymentId, double amount, Card card, PaymentStatus paymentStatus) {
+        this.paymentId = paymentId;
+>>>>>>> origin/main
         this.amount = amount;
         this.card = card;
         this.paymentStatus = paymentStatus;
@@ -29,6 +34,10 @@ public class Payment implements Serializable {
         this.paymentStatus = paymentStatus;
         this.date = date;
         this.userId = userId;
+    }
+
+    public int getPaymentId() {
+        return paymentId;
     }
 
     public int getPaymentId() {
