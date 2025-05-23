@@ -236,8 +236,8 @@ VALUES
 -- ApplicationAccessLog
 INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
 VALUES 
-    (1, 1, 1, 1745632800000),
-    (2, 1, 2, 1745633100000),
+    (1, 1, 0, 1745632800000),
+    (2, 1, 1, 1745633100000),
     (3, 2, 1, 1745633400000),
     (4, 2, 3, 1745633700000),
     (5, 3, 1, 1745634000000),
