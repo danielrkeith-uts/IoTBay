@@ -18,22 +18,6 @@
                          p.getType().name().toLowerCase().contains(finalQuery))
             .collect(java.util.stream.Collectors.toList()); 
     }
-
-    if (user == null) {
-            out.println("User is null<br>");
-        }
-
-        if (cart == null) {
-            out.println("Cart is null<br>");
-        } 
-
-        if (address == null) {
-            out.println("Address is null<br>");
-        }
-
-        if (card == null) {
-            out.println("Card is null<br>");
-        }
 %>
 
 <!DOCTYPE html>
