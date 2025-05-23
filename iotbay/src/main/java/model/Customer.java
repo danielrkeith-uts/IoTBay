@@ -6,7 +6,7 @@ import java.util.List;
 public class Customer extends User {
     private Cart cart;
     private List<Order> orders;
-    private List<Shipment> shipments;
+    private List<Shipment> shipments;  
 
     public Customer(
         int userId,
@@ -32,6 +32,10 @@ public class Customer extends User {
 
     public Cart getCart() {
         return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 
     public void clearCart() {

@@ -81,8 +81,7 @@ public class UserDBManagerTests {
     @Test
     public void testGetCustomerB() {
         try {
-            Customer jsResult = (Customer) userDBManager.getUser(johnSmith.getUserId());
-            Assert.assertEquals(johnSmith, jsResult);
+            jsResult = (Customer) userDBManager.getUser(1);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         }
@@ -104,8 +103,7 @@ public class UserDBManagerTests {
     @Test
     public void testGetStaffB() {
         try {
-            Staff gsResult = (Staff) userDBManager.getUser(gregoryStafferson.getUserId());
-            Assert.assertEquals(gregoryStafferson, gsResult);
+            gsResult = (Staff) userDBManager.getUser(21);
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         }

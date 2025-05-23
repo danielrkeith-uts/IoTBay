@@ -11,11 +11,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import model.ApplicationAccessLog;
+import model.Cart;
 import model.Customer;
 import model.Staff;
 import model.User;
 import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
+import model.dao.CartDBManager;
+import model.dao.OrderDBManager;
 import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
@@ -40,11 +43,23 @@ public class RegisterServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-        ApplicationAccessLogDBManager logMgr = (ApplicationAccessLogDBManager)
-                                               session.getAttribute("applicationAccessLogDBManager");
+        if (userDBManager == null) {
+            throw new ServletException("UserDBManager retrieved from session is null");
+        }
 
-        if (userDBManager == null || logMgr == null) {
-            throw new ServletException("Missing DB managers in session");
+        CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+        if (cartDBManager == null) {
+            throw new ServletException("CartDBManager retrieved from session is null");
+        }
+
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        if (applicationAccessLogDBManager == null) {
+            throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
+        }
+
+        OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
+        if (orderDBManager == null) {
+            throw new ServletException("OrderDBManager retrieved from session is null");
         }
 
         String email         = request.getParameter("email");
@@ -111,6 +126,19 @@ public class RegisterServlet extends HttpServlet {
                 userDBManager.addStaff((Staff) user);
             } else {
                 userDBManager.addCustomer((Customer) user);
+
+                Customer customer = userDBManager.getCustomer(user.getUserId());
+                int userId = customer.getUserId();
+                user.setUserId(userId); 
+
+                // Create a cart in the DB and store it in session
+                java.sql.Date now = new java.sql.Date(new Date().getTime());
+                int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
+
+                Cart cart = new Cart();
+                cart.setCartId(cartId); 
+                session.setAttribute("cart", cart);
+                customer.setCart(cart);
             }
         } catch (SQLException sqle) {
             logger.log(Level.SEVERE, "Error inserting new user", sqle);

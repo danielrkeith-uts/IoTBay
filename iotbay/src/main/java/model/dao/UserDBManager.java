@@ -161,6 +161,13 @@ public class UserDBManager {
 
     /** Fully delete a user (annonymise their logs first). */
     public void deleteUser(int userId) throws SQLException {
+        // Cancel all orders from this user
+        PreparedStatement cancelOrders = conn.prepareStatement(
+            "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE UserId = ?"
+        );
+        cancelOrders.setInt(1, userId);
+        cancelOrders.executeUpdate();
+
         accessLogMgr.anonymiseApplicationAccessLogs(userId);
         deleteUserPs.setInt(1, userId);
         deleteUserPs.executeUpdate();

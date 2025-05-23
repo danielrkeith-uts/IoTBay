@@ -1,7 +1,7 @@
 package model.dao;
 
 import model.*;
-import model.Enums.AuState;
+import model.Enums.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +17,11 @@ public class DeliveryDBManager {
     }
 
     public Delivery getDelivery(int DeliveryId) throws SQLException {
-        System.out.println("Looking for Delivery ID: " + DeliveryId);
         String query = "SELECT * FROM Delivery WHERE DeliveryId = '" + DeliveryId + "'"; 
         ResultSet rs = st.executeQuery(query); 
 
         if (rs.next()) {
+            int OrderId = rs.getInt("OrderId");
             int SourceAddressId = rs.getInt("SourceAddressId");
             int DestinationAddressId = rs.getInt("DestinationAddressId");
             String Courier = rs.getString("Courier");
@@ -53,25 +53,26 @@ public class DeliveryDBManager {
                     String destPostcode = String.valueOf(destinationAddRs.getInt("Postcode"));
                     Address destination = new Address(DestinationAddressId, destStreetNumber, destStreet, destSuburb, destState, destPostcode);
 
-                    // create an order list 
-                    String orderQuery = "SELECT * FROM `Order` WHERE DeliveryId = '" + DeliveryId + "'"; 
+                    // create a product list via order
+                    String orderQuery = "SELECT * FROM `Order` WHERE OrderId = '" + OrderId + "'"; 
                     ResultSet orderRs = st.executeQuery(orderQuery); 
 
                     List<Order> orders = new ArrayList<>();
                     
                     while (orderRs.next()) {
-                        int OrderId = orderRs.getInt("OrderId");
-                        int ProductListId = orderRs.getInt("ProductListId");
+                        int CartId = orderRs.getInt("CartId");
                         int PaymentId = orderRs.getInt("PaymentId");
-                        Date DatePlaced = orderRs.getDate("DatePlaced");
+                        Timestamp DatePlaced = orderRs.getTimestamp("DatePlaced");
+                        String statusString = orderRs.getString("OrderStatus");
+                        OrderStatus status = OrderStatus.valueOf(statusString);
 
                         ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager(conn);
-                        List<ProductListEntry> productList = productListEntryDBManager.getProductList(ProductListId);
+                        List<ProductListEntry> productList = productListEntryDBManager.getProductList(CartId);
 
                         PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
                         Payment payment = paymentDBManager.getPayment(PaymentId);
 
-                        Order order = new Order(OrderId, productList, payment, DatePlaced);
+                        Order order = new Order(OrderId, productList, payment, DatePlaced, status);
                         orders.add(order); 
                     }
                     Delivery delivery = new Delivery(DeliveryId, orders, source, destination, Courier, CourierDeliveryId);
