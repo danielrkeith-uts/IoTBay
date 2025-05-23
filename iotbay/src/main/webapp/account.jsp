@@ -37,6 +37,7 @@
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                        <li><a class="dropdown-item" href="myorders.jsp">My Orders</a></li>
                         <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                         <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                         <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>

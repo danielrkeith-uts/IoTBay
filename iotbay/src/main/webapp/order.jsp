@@ -39,23 +39,6 @@
         String cardNumber = card != null ? card.getNumber() : "";
         YearMonth expiry = card != null ? card.getExpiry() : null;
         String cvc = card != null ? card.getCvc() : "";
-
-        // if (user == null) {
-        //     out.println("User is null<br>");
-        // }
-
-        // if (cart == null) {
-        //     out.println("Cart is null<br>");
-        // } 
-
-        // if (address == null) {
-        //     out.println("Address is null<br>");
-        // }
-
-        // if (card == null) {
-        //     out.println("Card is null<br>");
-        // }
-
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -79,6 +62,8 @@
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                            <li><a class="dropdown-item" href="myorders.jsp">My Orders</a></li>
+                            <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                             <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>

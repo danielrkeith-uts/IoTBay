@@ -5,17 +5,11 @@
    try {
        User user = (User) session.getAttribute("user");
        ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
-
-
-       
       
        if (!(user instanceof Staff)) {
            out.println("You are not authorized to view this page.");
            return;
        }
-      // ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
-      // out.println("User: " + user);
-      // out.println("ProductDBManager: " + productManager);
       
        if (productManager == null) {
            out.println("Product manager is not available. Please ensure the database connection is initialized.");
@@ -23,7 +17,6 @@
        }
 
        List<Product> products = productManager.getAllProducts();
-       //out.println("Total products found: " + products.size() + "<br>");
        request.setAttribute("products", products);
 %>
 <!DOCTYPE html>
@@ -49,6 +42,7 @@
                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                <ul class="dropdown-menu">
                    <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                   <li><a class="dropdown-item" href="myorders.jsp">My Orders</a></li>
                    <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                    <li><a class="dropdown-item" href="#">Application Access Logs</a></li>
                    <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
