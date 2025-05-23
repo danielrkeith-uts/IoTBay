@@ -1,3 +1,4 @@
+<%@ page import="model.User, model.Staff" %>
 <html>
     <%
         if (session.getAttribute("user") == null) {
@@ -7,7 +8,9 @@
 
         String error = (String) session.getAttribute("changePasswordError");
         session.removeAttribute("changePasswordError");
-        boolean isStaff = user instanceof Staff;
+
+        User user = (User) session.getAttribute("user");
+        boolean isStaff = (user != null) && (user instanceof Staff);
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -24,8 +27,8 @@
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
                 <% if (isStaff) { %>
-                            <a href="adminInventory.jsp">Manage Inventory</a>
-                        <% } %>
+                    <a href="adminInventory.jsp">Manage Inventory</a>
+                <% } %>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">

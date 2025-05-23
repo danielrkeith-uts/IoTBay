@@ -1,15 +1,15 @@
 package controller;
 
+import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-
 import model.Product;
 import model.dao.ProductDBManager;
+import model.Enums.ProductType;
 
 @WebServlet("/ProductServlet")
 public class ProductServlet extends HttpServlet {
@@ -26,22 +26,26 @@ public class ProductServlet extends HttpServlet {
             String action = request.getParameter("action");
 
             if ("add".equals(action)) {
+                ProductType type = ProductType.valueOf(request.getParameter("type").toUpperCase());
                 Product p = new Product(
                     request.getParameter("name"),
                     request.getParameter("description"),
+                    type,
                     Double.parseDouble(request.getParameter("cost")),
                     Integer.parseInt(request.getParameter("stock")),
-                    request.getParameter("imageUrl") // 👈 image URL support
+                    request.getParameter("imageUrl") 
                 );
                 productDBManager.addProduct(p);
             } else if ("update".equals(action)) {
                 String originalName = request.getParameter("originalName");
+                ProductType type = ProductType.valueOf(request.getParameter("type").toUpperCase());
                 Product updated = new Product(
                     request.getParameter("name"),
                     request.getParameter("description"),
+                    type,
                     Double.parseDouble(request.getParameter("cost")),
                     Integer.parseInt(request.getParameter("stock")),
-                    request.getParameter("imageUrl") // 👈 image URL support
+                    request.getParameter("imageUrl") 
                 );
                 productDBManager.updateProduct(originalName, updated);
             } else if ("delete".equals(action)) {
