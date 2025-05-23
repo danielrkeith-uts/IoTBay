@@ -19,6 +19,7 @@ public class ApplicationAccessLogDBManagerTests {
         ApplicationAction.LOGIN,
         new GregorianCalendar(2025, 3, 26, 12, 0, 0).getTime()
     );
+    
     private static final ApplicationAccessLog log2 = new ApplicationAccessLog(
         ApplicationAction.LOGOUT,
         new GregorianCalendar(2025, 3, 26, 12, 5, 0).getTime()
@@ -42,10 +43,10 @@ public class ApplicationAccessLogDBManagerTests {
     @Test
     public void testAddApplicationAccessLog() {
         try {
-            applicationAccessLogDBManager.addApplicationAccessLog(0, log3);
+            applicationAccessLogDBManager.addApplicationAccessLog(1, log3);
 
             List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2, log3);
-            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(1);
 
             Assert.assertTrue(resultLogs.containsAll(expectedLogs));
         } catch (SQLException e) {
@@ -64,7 +65,7 @@ public class ApplicationAccessLogDBManagerTests {
         List<ApplicationAccessLog> expectedLogs = Arrays.asList(log1, log2);
         List<ApplicationAccessLog> resultLogs;
         try {
-            resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+            resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(1);
         } catch (SQLException e) {
             Assert.fail();
             return;
@@ -76,10 +77,10 @@ public class ApplicationAccessLogDBManagerTests {
     @Test
     public void testAnonymiseApplicationAccessLog() {
         try {
-            applicationAccessLogDBManager.anonymiseApplicationAccessLogs(0);
+            applicationAccessLogDBManager.anonymiseApplicationAccessLogs(1);
 
             List<ApplicationAccessLog> expectedLogs = new LinkedList<ApplicationAccessLog>();
-            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(1);
 
             Assert.assertEquals(expectedLogs, resultLogs);
         } catch (SQLException e) {
@@ -96,10 +97,10 @@ public class ApplicationAccessLogDBManagerTests {
     @Test
     public void testDeleteApplicationAccessLog() {
         try {
-            applicationAccessLogDBManager.deleteApplicationAccessLog(0);
+            applicationAccessLogDBManager.deleteApplicationAccessLog(1);
 
             List<ApplicationAccessLog> expectedLogs = Arrays.asList(log2);
-            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(0);
+            List<ApplicationAccessLog> resultLogs = applicationAccessLogDBManager.getApplicationAccessLogs(1);
 
             Assert.assertTrue(resultLogs.containsAll(expectedLogs));
         } catch (SQLException e) {

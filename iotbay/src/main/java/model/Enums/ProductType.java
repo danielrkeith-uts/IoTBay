@@ -4,4 +4,5 @@ public enum ProductType {
     ELECTRONICS,
     ACCESSORY,
     COMPONENTS,
+    OTHER,
 }

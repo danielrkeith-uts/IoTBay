@@ -4,6 +4,7 @@ import java.io.Serializable;
 import model.Enums.ProductType;
 
 public class Product implements Serializable {
+    private int productId;
     private String name;
     private String description;
     private ProductType type; 
@@ -22,19 +23,21 @@ public class Product implements Serializable {
     public Product(String name, String description, ProductType type, double cost, int stock) {
         this(name, description, type, cost, stock, null); 
     }
-    public String getImageUrl() {
-        return imageUrl;
-    }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
     public String getName() {
         return name;
     }
 
+    public int getProductId() {
+        return productId;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public String getDescription() {

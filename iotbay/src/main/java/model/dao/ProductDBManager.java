@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import model.Enums.ProductType;
 
 public class ProductDBManager {
+    private Connection conn;
     private Statement st;
 
     public ProductDBManager(Connection conn) throws SQLException {
-        st = conn.createStatement();
+        this.conn = conn;
+        this.st = conn.createStatement();
     }
 
     public Product getProduct(int ProductId) throws SQLException {
@@ -26,6 +28,22 @@ public class ProductDBManager {
             int Stock = rs.getInt("Stock");
             String imageUrl = rs.getString("ImageUrl");
             return new Product(Name, Description, type, Cost, Stock, imageUrl);
+        }
+        return null;
+    }
+
+    public Product getProductByName(String ProductName) throws SQLException {
+        String query = "SELECT * FROM Product WHERE Name = '" + ProductName + "'"; 
+        ResultSet rs = st.executeQuery(query); 
+
+        if (rs.next()) {
+            String Description = rs.getString("Description");
+            String typeStr = rs.getString("Type"); 
+            ProductType type = ProductType.valueOf(typeStr); 
+            double Cost = rs.getDouble("Cost");
+            int Stock = rs.getInt("Stock");
+            String imageUrl = rs.getString("ImageUrl");
+            return new Product(ProductName, Description, type, Cost, Stock, imageUrl);
         }
         return null;
     }

@@ -1,20 +1,24 @@
 package model;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
+
+import model.Enums.*;
 
 public class Order implements Serializable {
     private int orderId;
     private List<ProductListEntry> productList;
     private Payment payment;
-    private Date datePlaced;
+    private Timestamp datePlaced;
+    private OrderStatus status;
 
-    public Order(int orderId, List<ProductListEntry> productList, Payment payment, Date datePlaced) {
+    public Order(int orderId, List<ProductListEntry> productList, Payment payment, Timestamp datePlaced, OrderStatus status) {
         this.orderId = orderId;
         this.productList = productList;
         this.payment = payment;
         this.datePlaced = datePlaced;
+        this.status = status;
     }
 
     public int getOrderId() {
@@ -29,8 +33,12 @@ public class Order implements Serializable {
         return payment;
     }
 
-    public Date getDatePlaced() {
+    public Timestamp getDatePlaced() {
         return datePlaced;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return status;
     }
 
     @Override
@@ -47,7 +55,8 @@ public class Order implements Serializable {
         return this.orderId == order.orderId
             && checkListEqual(this.productList, order.productList)
             && this.payment.equals(order.payment)
-            && this.datePlaced.equals(order.datePlaced);
+            && this.datePlaced.equals(order.datePlaced)
+            && this.status.equals(order.status);
     }
 
     private boolean checkListEqual(List<ProductListEntry> list1, List<ProductListEntry> list2) {
@@ -66,6 +75,7 @@ public class Order implements Serializable {
             ", productList='" + getProductList() + "'" +
             ", payment='" + getPayment() + "'" +
             ", datePlaced='" + getDatePlaced() + "'" +
+            ", status='" + getOrderStatus() + "'" +
             "}";
     }
     

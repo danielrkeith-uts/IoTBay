@@ -17,7 +17,7 @@ CREATE TABLE Customer (
     UserId INTEGER PRIMARY KEY,
     CartId INTEGER,
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
-    FOREIGN KEY (CartId) REFERENCES Cart(CartId)
+    FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE SET NULL
 );
 
 CREATE TABLE Product (
@@ -31,38 +31,38 @@ CREATE TABLE Product (
 );
 
 CREATE TABLE ProductListEntry (
-    ProductListId INTEGER,
+    CartId INTEGER,
     ProductId INTEGER,
     Quantity INTEGER NOT NULL,
-    PRIMARY KEY (ProductListId, ProductId),
+    PRIMARY KEY (CartId, ProductId),
     FOREIGN KEY (ProductId) REFERENCES Product(ProductId) ON DELETE CASCADE
 );
 
 CREATE TABLE Cart (
-    CartId INTEGER PRIMARY KEY,
-    ProductListId INTEGER,
-    LastUpdated DATETIME
+    CartId INTEGER PRIMARY KEY AUTOINCREMENT,
+    LastUpdated TEXT
 );
 
 CREATE TABLE `Order` (
     OrderId INTEGER PRIMARY KEY,
     UserId INTEGER,
-    ProductListId INTEGER,
+    CartId INTEGER,
     PaymentId INTEGER,
-    DeliveryId INTEGER,
-    DatePlaced DATETIME NOT NULL,
-    FOREIGN KEY (UserId) REFERENCES User(UserId),
-    
+    DatePlaced TEXT NOT NULL,
+    OrderStatus VARCHAR(50),
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE SET NULL,
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
-    FOREIGN KEY (DeliveryId) REFERENCES Delivery(DeliveryId)
+    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
 );
 
 CREATE TABLE Delivery (
     DeliveryId INTEGER PRIMARY KEY,
+    OrderId INTEGER NOT NULL,
     SourceAddressId INTEGER,
     DestinationAddressId INTEGER,
     Courier VARCHAR(30) NOT NULL,
     CourierDeliveryId INTEGER NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
     FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId),
     FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
 );
