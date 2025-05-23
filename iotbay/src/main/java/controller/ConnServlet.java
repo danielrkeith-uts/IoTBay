@@ -12,11 +12,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.dao.ApplicationAccessLogDBManager;
-import model.dao.DBConnector;
-import model.dao.UserDBManager;
-import model.dao.ShipmentDBManager;
-import model.dao.OrderDBManager;
+import model.dao.*;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
@@ -24,9 +20,6 @@ public class ConnServlet extends HttpServlet {
 
     private DBConnector dbConnector;
     private Connection conn;
-    private UserDBManager userDBManager;
-    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
-    private OrderDBManager orderDBManager;
 
     @Override
     public void init() {
@@ -46,28 +39,48 @@ public class ConnServlet extends HttpServlet {
             logger.info("Database connection opened.");
 
             if (session.getAttribute("userDBManager") == null) {
-                userDBManager = new UserDBManager(conn);
+                UserDBManager userDBManager = new UserDBManager(conn);
                 session.setAttribute("userDBManager", userDBManager);
                 logger.info("UserDBManager added to session.");
             }
 
             if (session.getAttribute("applicationAccessLogDBManager") == null) {
-                applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
+                ApplicationAccessLogDBManager applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
                 session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
                 logger.info("ApplicationAccessLogDBManager added to session.");
             }
 
-            logger.info("Session ID: " + session.getId());
-            logger.info("UserDBManager in session: " + (session.getAttribute("userDBManager") == null ? "Not Found" : "Found"));
             if (session.getAttribute("shipmentDBManager") == null) {
                 ShipmentDBManager shipmentDBManager = new ShipmentDBManager(conn);
                 session.setAttribute("shipmentDBManager", shipmentDBManager);
             }
+
+            if (session.getAttribute("cartDBManager") == null) {
+                CartDBManager cartDBManager = new CartDBManager(conn);
+                session.setAttribute("cartDBManager", cartDBManager);
+            }
+
             if (session.getAttribute("orderDBManager") == null) {
-                orderDBManager = new OrderDBManager(conn);
+                OrderDBManager orderDBManager = new OrderDBManager(conn);
                 session.setAttribute("orderDBManager", orderDBManager);
             }
 
+            if (session.getAttribute("productDBManager") == null) {
+                ProductDBManager productDBManager = new ProductDBManager(conn);
+                session.setAttribute("productDBManager", productDBManager);
+            }
+
+            if (session.getAttribute("productListEntryDBManager") == null) {
+                ProductListEntryDBManager productListEntryDBManager = new ProductListEntryDBManager(conn);
+                session.setAttribute("productListEntryDBManager", productListEntryDBManager);
+            }
+
+            if (session.getAttribute("deliveryDBManager") == null) {
+                DeliveryDBManager deliveryDBManager = new DeliveryDBManager(conn);
+                session.setAttribute("deliveryDBManager", deliveryDBManager);
+            }
+
+            logger.info("Session ID: " + session.getId());
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error opening DB connection", e);
         }

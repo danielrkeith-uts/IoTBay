@@ -35,7 +35,8 @@
     background-color: #9CAFAA; 
 }
 
-.banner navbar a.active {
+.banner navbar a.active,
+.banner navbar i.active {
     background-color: #EFBC9B; 
     color: #333
 }
@@ -74,6 +75,11 @@
 
 .error {
     color: red;
+}
+
+.bi-cart {
+    font-size: 20px;
+    margin-left: 10px;
 }
 
 .success {

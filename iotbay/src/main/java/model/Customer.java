@@ -2,13 +2,12 @@ package model;
 
 import java.util.LinkedList;
 import java.util.List;
-import model.Shipment;
 
 public class Customer extends User {
     private Cart cart;
     private Type type;
     private List<Order> orders;
-    private List<Shipment> shipments;   // i added this
+    private List<Shipment> shipments;  
 
     public Customer(int userId, String firstName, String lastName, String email, String phone, String password, Type type) {
         super(userId, firstName, lastName, email, phone, password, Role.CUSTOMER);
@@ -17,7 +16,7 @@ public class Customer extends User {
 
         cart = new Cart();
         orders = new LinkedList<Order>();
-        shipments = new LinkedList<Shipment>();   // i added this
+        shipments = new LinkedList<Shipment>(); 
     }
 
     public enum Type {
@@ -33,6 +32,10 @@ public class Customer extends User {
         return cart;
     }
 
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
+
     public void clearCart() {
         cart = new Cart();
     }
@@ -45,7 +48,6 @@ public class Customer extends User {
         orders.add(order);
     }
     
-    //new methods
     public List<Shipment> getShipments() {
         return shipments;
     }
@@ -57,4 +59,5 @@ public class Customer extends User {
     public void addShipment(Shipment shipment) {
         shipments.add(shipment);
     }
+    
 }

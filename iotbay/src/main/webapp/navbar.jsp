@@ -12,6 +12,7 @@
 <navbar>
     <a href="index.jsp" class="<%= currentPage.equals("index.jsp") ? "active" : "" %>">Home</a>
     <a href="products.jsp" class="<%= currentPage.equals("products.jsp") ? "active" : "" %>">Products</a>
+     <a href="cart.jsp" class="bi bi-cart"></a>
 
     <% if ((isAdmin )) { %>
 <a href="CustomerListServlet" class="<%= currentPage.equals("CustomerListServlet") ? "active" : "" %>">Customers</a>

@@ -9,6 +9,7 @@ import model.Staff;
 import model.User;
 
 public class UserDBManager {
+    private Connection conn;
 
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
     private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId, Type) VALUES (?, ?);";
@@ -22,8 +23,6 @@ public class UserDBManager {
     private static final String UPDATE_STAFF_STMT = "UPDATE Staff SET StaffCardId = ? WHERE UserId = ?;";
     private static final String DELETE_USER_STMT = "DELETE FROM User WHERE UserId = ?;";
     private static final String DEACTIVATE_USER_STMT = "UPDATE User SET Deactivated = ? WHERE UserId = ?;";
-
-    private final Connection conn;
 
     private final PreparedStatement addUserPs;
     private final PreparedStatement addCustomerPs;
@@ -43,8 +42,6 @@ public class UserDBManager {
     public UserDBManager(Connection conn) throws SQLException {
         this.conn = conn;
 
-        conn.createStatement().execute("PRAGMA busy_timeout = 5000");
-
         this.addUserPs = conn.prepareStatement(ADD_USER_STMT, Statement.RETURN_GENERATED_KEYS);
         this.addCustomerPs = conn.prepareStatement(ADD_CUSTOMER_STMT);
         this.addStaffPs = conn.prepareStatement(ADD_STAFF_STMT);
@@ -63,7 +60,6 @@ public class UserDBManager {
 
     public void addCustomer(Customer customer) throws SQLException {
         int userId = addUser(customer);
-    
         addCustomerPs.setInt(1, userId);
         addCustomerPs.setString(2, customer.getType().name());
         addCustomerPs.executeUpdate();
@@ -96,26 +92,27 @@ public class UserDBManager {
     public List<Customer> getAllCustomers() throws SQLException {
         List<Customer> customers = new ArrayList<>();
         String query = "SELECT U.UserId, U.FirstName, U.LastName, U.Email, U.Phone, U.Password, U.Deactivated, C.Type " +
-                        "FROM User U JOIN Customer C ON U.UserId = C.UserId";
+                       "FROM User U JOIN Customer C ON U.UserId = C.UserId";
 
         try (PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
-                while (rs.next()) {
-                    Customer customer = new Customer(
-                        rs.getInt("UserId"),
-                        rs.getString("FirstName"),
-                        rs.getString("LastName"),
-                        rs.getString("Email"),
-                        rs.getString("Phone"),
-                        rs.getString("Password"),
-                        Customer.Type.valueOf(rs.getString("Type").toUpperCase())
-                    );
-                    customer.setDeactivated(rs.getBoolean("Deactivated"));
-                    customers.add(customer);
-                }
-        return customers;
+            while (rs.next()) {
+                Customer customer = new Customer(
+                    rs.getInt("UserId"),
+                    rs.getString("FirstName"),
+                    rs.getString("LastName"),
+                    rs.getString("Email"),
+                    rs.getString("Phone"),
+                    rs.getString("Password"),
+                    Customer.Type.valueOf(rs.getString("Type").toUpperCase())
+                );
+                customer.setDeactivated(rs.getBoolean("Deactivated"));
+                customers.add(customer);
             }
+        }
+
+        return customers;
     }
 
     public void updateCustomer(Customer customer) throws SQLException {
@@ -124,38 +121,29 @@ public class UserDBManager {
 
     public List<Customer> getCustomersFiltered(String name, String type) throws SQLException {
         List<Customer> customers = new ArrayList<>();
-    
-        // Base SQL Query
+
         String sql = "SELECT User.UserId, User.FirstName, User.LastName, User.Email, " +
                      "User.Phone, User.Password, User.Deactivated, Customer.Type " +
-                     "FROM User " +
-                     "JOIN Customer ON User.UserId = Customer.UserId " +
-                     "WHERE 1=1";  // Ensures additional conditions append correctly
-    
+                     "FROM User JOIN Customer ON User.UserId = Customer.UserId WHERE 1=1";
         List<Object> params = new ArrayList<>();
-    
-        // Apply name filtering
+
         if (name != null && !name.trim().isEmpty()) {
             sql += " AND (LOWER(User.FirstName) LIKE ? OR LOWER(User.LastName) LIKE ?)";
             String pattern = "%" + name.toLowerCase() + "%";
             params.add(pattern);
             params.add(pattern);
         }
-    
-        // Apply type filtering
+
         if (type != null && !type.trim().isEmpty()) {
             sql += " AND Customer.Type = ?";
-            params.add(type.toUpperCase()); 
+            params.add(type.toUpperCase());
         }
-    
-        System.out.println("Debug: SQL Query = " + sql);
-        System.out.println("Debug: Parameters = " + params);
-    
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             for (int i = 0; i < params.size(); i++) {
                 stmt.setObject(i + 1, params.get(i));
             }
-    
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Customer customer = new Customer(
@@ -172,11 +160,9 @@ public class UserDBManager {
                 }
             }
         }
-    
-        System.out.println("Debug: Customers found = " + customers.size());
+
         return customers;
     }
-    
 
     public void updateStaff(Staff staff) throws SQLException {
         updateUser(staff);
@@ -186,6 +172,13 @@ public class UserDBManager {
     }
 
     public void deleteUser(int userId) throws SQLException {
+        try (PreparedStatement cancelOrders = conn.prepareStatement(
+                "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE UserId = ?"
+        )) {
+            cancelOrders.setInt(1, userId);
+            cancelOrders.executeUpdate();
+        }
+
         applicationAccessLogDBManager.anonymiseApplicationAccessLogs(userId);
         deleteUserPs.setInt(1, userId);
         deleteUserPs.executeUpdate();
@@ -236,6 +229,23 @@ public class UserDBManager {
         }
     }
 
+    private Customer toCustomer(ResultSet rs) throws SQLException {
+        if (!rs.next()) return null;
+        Customer customer = new Customer(
+            rs.getInt("UserId"),
+            rs.getString("FirstName"),
+            rs.getString("LastName"),
+            rs.getString("Email"),
+            rs.getString("Phone"),
+            rs.getString("Password"),
+            Customer.Type.valueOf(rs.getString("Type").toUpperCase())
+        );
+        try {
+            customer.setDeactivated(rs.getBoolean("Deactivated"));
+        } catch (SQLException ignore) {}
+        return customer;
+    }
+
     private Staff getStaff(String email, String password) throws SQLException {
         getStaffPsA.setString(1, email);
         getStaffPsA.setString(2, password);
@@ -251,35 +261,17 @@ public class UserDBManager {
         }
     }
 
-    private Customer toCustomer(ResultSet rs) throws SQLException {
-        if (!rs.next()) return null;
-        Customer customer = new Customer(
-                rs.getInt("UserId"),
-                rs.getString("FirstName"),
-                rs.getString("LastName"),
-                rs.getString("Email"),
-                rs.getString("Phone"),
-                rs.getString("Password"),
-                Customer.Type.valueOf(rs.getString("Type").toUpperCase()) 
-        );
-        try {
-            customer.setDeactivated(rs.getBoolean("Deactivated"));
-        } catch (SQLException ignore) {}
-        return customer;
-    }
-
     private Staff toStaff(ResultSet rs) throws SQLException {
         if (!rs.next()) return null;
         return new Staff(
-                rs.getInt("UserId"),
-                rs.getString("FirstName"),
-                rs.getString("LastName"),
-                rs.getString("Email"),
-                rs.getString("Phone"),
-                rs.getString("Password"),
-                rs.getInt("StaffCardId"),
-                rs.getBoolean("Admin")
-
+            rs.getInt("UserId"),
+            rs.getString("FirstName"),
+            rs.getString("LastName"),
+            rs.getString("Email"),
+            rs.getString("Phone"),
+            rs.getString("Password"),
+            rs.getInt("StaffCardId"),
+            rs.getBoolean("Admin")
         );
     }
 

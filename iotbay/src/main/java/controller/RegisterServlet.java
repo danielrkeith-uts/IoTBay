@@ -13,11 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
+import model.Cart;
 import model.Customer;
 import model.Staff;
 import model.User;
 import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
+import model.dao.CartDBManager;
+import model.dao.OrderDBManager;
 import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
@@ -36,10 +39,12 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     HttpSession session = request.getSession();
 
     UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+    CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
     ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+    OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
 
-    if (userDBManager == null || applicationAccessLogDBManager == null) {
-        throw new ServletException("Database managers are not initialized in session.");
+    if (userDBManager == null || cartDBManager == null || applicationAccessLogDBManager == null || orderDBManager == null) {
+        throw new ServletException("One or more database managers are not initialized in session.");
     }
 
     String email = request.getParameter("email");
@@ -47,7 +52,7 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
     String phone = request.getParameter("phone");
-    String type = request.getParameter("type"); // only used for customers
+    String type = request.getParameter("type"); // for customers
     boolean isStaff = request.getParameter("isStaff") != null;
     boolean isAdmin = request.getParameter("isSystemAdmin") != null;
     String staffCardIdInput = request.getParameter("staffCardId");
@@ -55,10 +60,15 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
     String adminPassword = request.getParameter("systemAdminPassword");
 
     try {
+        // Check if user already exists by email
+        if (userDBManager.userExists(email)) {
+            throw new InvalidInputException("User already exists with that email");
+        }
+
         User user;
 
         if (isStaff || isAdmin) {
-            // Staff/Admin registration must have staffCardId validated
+            // Validate staff card id
             int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
 
             if (isAdmin) {
@@ -66,44 +76,51 @@ public void doPost(HttpServletRequest request, HttpServletResponse response) thr
                     throw new InvalidInputException("Incorrect system admin password");
                 }
                 user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
-            } else { // staff only
+            } else {
                 if (staffPassword == null || !STAFF_PASSWORD.equals(staffPassword)) {
                     throw new InvalidInputException("Incorrect staff password");
                 }
                 user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, false);
             }
         } else {
-            // Customer registration: Use type only if not staff/admin
+            // Customer registration
             Customer.Type customerType;
             try {
                 customerType = Customer.Type.valueOf(type);
             } catch (IllegalArgumentException | NullPointerException e) {
-                // fallback or default type if invalid or null
-                customerType = Customer.Type.INDIVIDUAL;
+                customerType = Customer.Type.INDIVIDUAL; // default
             }
             user = new Customer(-1, firstName, lastName, email, phone, password, customerType);
         }
 
-        // Validate user fields (email, password strength, etc.)
+        // Validate user fields (email format, password strength, etc.)
         Validator.validateUser(user);
-
-        // Check if user already exists by email
-        if (userDBManager.userExists(email)) {
-            throw new InvalidInputException("User already exists with that email");
-        }
 
         // Add user to DB
         if (user instanceof Staff) {
             userDBManager.addStaff((Staff) user);
         } else {
             userDBManager.addCustomer((Customer) user);
+
+            // Get inserted customer by email to retrieve userId
+            Customer customer = userDBManager.getCustomer(email, password);
+            user.setUserId(customer.getUserId());
+
+            // Create cart and save in session
+            java.sql.Date now = new java.sql.Date(new Date().getTime());
+            int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
+
+            Cart cart = new Cart();
+            cart.setCartId(cartId);
+            session.setAttribute("cart", cart);
+            customer.setCart(cart);
         }
 
-        // Log registration action
+        // Log registration
         ApplicationAccessLog log = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
         applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), log);
 
-        // Set user in session and forward to welcome page
+        // Set user session and forward
         session.setAttribute("user", user);
         session.removeAttribute(ERROR_ATTR);
         request.getRequestDispatcher("welcome.jsp").include(request, response);
