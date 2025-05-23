@@ -10,11 +10,11 @@ VALUES (2, '5', 'Source Avenue', 'Source Valley', 2, 321);
 INSERT INTO Address(AddressId, StreetNumber, Street, Suburb, State, Postcode)
 VALUES (3, '10', 'Destination Avenue', 'Destination Valley', 3, 456);
 
-INSERT INTO Payment(PaymentId, CardId, Amount, PaymentStatus)
-VALUES(1, 1, 23.45, 1);
+INSERT INTO Payment(PaymentId, CardId, Amount, PaymentStatus, PaymentDate, UserId)
+VALUES(1, 1, 23.45, 1, 1745539200, 0);
 
-INSERT INTO Card(CardId, Name, Number, Expiry, CVC)
-VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123');
+INSERT INTO Card(CardId, Name, Number, Expiry, CVC, UserId)
+VALUES(1, 'John Smith', '123456789', '2026-08-31 00:00:00.000', '123', 1);
 
 INSERT INTO `Order`(OrderId, UserId, ProductListId, PaymentId, DeliveryId, DatePlaced)
 VALUES (1, 0, 1, 1, 1, '2025-04-25 00:00:00');

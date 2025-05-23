@@ -50,7 +50,7 @@ CREATE TABLE `Order` (
     PaymentId INTEGER,
     DeliveryId INTEGER,
     DatePlaced DATETIME NOT NULL,
-    FOREIGN KEY (UserId) REFERENCES User(UserId),
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
     
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
     FOREIGN KEY (DeliveryId) REFERENCES Delivery(DeliveryId)
@@ -79,7 +79,10 @@ CREATE TABLE Payment (
     PaymentId INTEGER PRIMARY KEY,
     CardId INTEGER,
     Amount DECIMAL(10, 2) NOT NULL,
-    PaymentStatus INTEGER NOT NULL,
+    PaymentStatus INTEGER NOT NULL DEFAULT 'PENDING',
+    PaymentDate DATE NOT NULL,
+    UserId INTEGER NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
     FOREIGN KEY (CardId) REFERENCES Card(CardId)
 );
 
@@ -88,7 +91,9 @@ CREATE TABLE Card (
     Name VARCHAR(30),
     Number VARCHAR(19) NOT NULL,
     Expiry DATE NOT NULL,
-    CVC VARCHAR(3) NOT NULL
+    CVC VARCHAR(3) NOT NULL,
+    UserId INTEGER NOT NULL,
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
 );
 
 CREATE TABLE ApplicationAccessLog (
