@@ -61,7 +61,6 @@ public class PaymentServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        // Delete Card action
         if ("deleteCard".equals(action)) {
             String cardIdStr = request.getParameter("cardId");
             try {
