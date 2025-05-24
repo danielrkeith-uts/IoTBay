@@ -8,12 +8,26 @@ public class Customer extends User {
     private List<Order> orders;
     private List<Shipment> shipments;  
 
-    public Customer(int userId, String firstName, String lastName, String email, String phone, String password) {
-        super(userId, firstName, lastName, email, phone, password);
-
-        cart = new Cart();
-        orders = new LinkedList<Order>();
-        shipments = new LinkedList<Shipment>(); 
+    public Customer(
+        int userId,
+        String firstName,
+        String lastName,
+        String email,
+        String phone,
+        String password
+    ) {
+        super(
+            userId,
+            firstName,
+            lastName,
+            email,
+            phone,
+            password,
+            Role.CUSTOMER
+        );
+        this.cart      = new Cart();
+        this.orders    = new LinkedList<>();
+        this.shipments = new LinkedList<>();
     }
 
     public Cart getCart() {
@@ -25,7 +39,7 @@ public class Customer extends User {
     }
 
     public void clearCart() {
-        cart = new Cart();
+        this.cart = new Cart();
     }
 
     public List<Order> getOrders() {
@@ -33,9 +47,9 @@ public class Customer extends User {
     }
 
     public void placeOrder(Order order) {
-        orders.add(order);
+        this.orders.add(order);
     }
-    
+
     public List<Shipment> getShipments() {
         return shipments;
     }
@@ -45,6 +59,7 @@ public class Customer extends User {
     }
 
     public void addShipment(Shipment shipment) {
-        shipments.add(shipment);
+        this.shipments.add(shipment);
     }
 }
+

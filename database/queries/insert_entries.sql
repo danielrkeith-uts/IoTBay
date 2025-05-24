@@ -210,9 +210,9 @@ VALUES
     (20, 20);
 
 -- Staff
-INSERT INTO Staff (UserId, StaffCardId)
+INSERT INTO Staff (UserId, StaffCardId, Admin)
 VALUES 
-    (21, 1001),
+    (21, 1001, TRUE),
     (22, 1002),
     (23, 1003),
     (24, 1004),

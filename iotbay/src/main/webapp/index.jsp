@@ -1,8 +1,9 @@
-<%@ page import="model.User, model.Staff"%>
+<%@ page import="model.User, model.Staff, model.Staff"%>
 <html>
     <%
         User user = (User) session.getAttribute("user");
         boolean isStaff = (user != null && user instanceof Staff);
+        boolean isAdmin = (user instanceof Staff) && ((Staff)user).isAdmin();
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -22,6 +23,9 @@
                 <% if (isStaff) { %>
                             <a href="adminInventory.jsp">Manage Inventory</a>
                         <% } %>
+                <% if (isAdmin) { %>
+                    <a href="StaffListServlet">Staff</a>
+                <% } %>
                 <% if (user == null) { %>
                     <a href="login.jsp">Login</a>
                 <% } else { %>

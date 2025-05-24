@@ -1,4 +1,4 @@
-<%@ page import="java.util.List, model.User, model.ApplicationAccessLog, model.Staff"%>
+<%@ page import="java.util.List, model.User, model.Staff,model.ApplicationAccessLog, model.Staff"%>
 <html>
     <jsp:include page="/ApplicationAccessLogServlet" flush="true"/>
     <%
@@ -11,6 +11,8 @@
         boolean isStaff = user instanceof model.Staff;
         
 
+        
+        boolean isAdmin = (user instanceof Staff) && ((Staff)user).isAdmin();
 
         List<ApplicationAccessLog> logs = user.getApplicationAccessLogs();
     %>
@@ -31,6 +33,9 @@
                 <% if (isStaff) { %>
                             <a href="adminInventory.jsp">Manage Inventory</a>
                         <% } %>
+                <% if (isAdmin) { %>
+                    <a href="StaffListServlet">Staff</a>
+                <% } %>
                 <div class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
                     <ul class="dropdown-menu">
