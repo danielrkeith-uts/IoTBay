@@ -27,7 +27,7 @@ public class DeactivateCustomerServlet extends HttpServlet {
                 if (userDBManager != null) {
                     userDBManager.setCustomerDeactivated(userId, true);
 
-                    response.sendRedirect("customerlist.jsp");
+                    response.sendRedirect("CustomerListServlet");
                 } else {
                     request.setAttribute("error", "Database manager is not available.");
                     request.getRequestDispatcher("/error.jsp").forward(request, response);

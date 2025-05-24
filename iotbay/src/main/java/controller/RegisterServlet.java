@@ -32,7 +32,7 @@ public class RegisterServlet extends HttpServlet {
     private static final String STAFF_PASSWORD = "staff123";
     private static final String ADMIN_PASSWORD = "admin123";
 
-    private Logger logger;
+    private static final Logger logger = Logger.getLogger(RegisterServlet.class.getName());
 
     @Override
 public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

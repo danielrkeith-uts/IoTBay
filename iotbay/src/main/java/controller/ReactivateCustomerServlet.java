@@ -21,7 +21,7 @@ public class ReactivateCustomerServlet extends HttpServlet {
         try {
             int userId = Integer.parseInt(request.getParameter("id"));
             userDBManager.reactivateCustomer(userId); 
-            response.sendRedirect("customerlist.jsp");
+            response.sendRedirect("CustomerListServlet");
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("error.jsp");

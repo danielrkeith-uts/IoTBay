@@ -13,7 +13,7 @@ public class UserDBManager {
 
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
     private static final String ADD_CUSTOMER_STMT = "INSERT INTO Customer (UserId, Type) VALUES (?, ?);";
-    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId) VALUES (?, ?);";
+    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId, Admin) VALUES (?, ?, ?);";
     private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
@@ -69,6 +69,7 @@ public class UserDBManager {
         int userId = addUser(staff);
         addStaffPs.setInt(1, userId);
         addStaffPs.setInt(2, staff.getStaffCardId());
+        addStaffPs.setBoolean(3, staff.isAdmin());
         addStaffPs.executeUpdate();
     }
 

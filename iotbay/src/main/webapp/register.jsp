@@ -10,30 +10,29 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <script>
-        function handleRoleCheckbox(role) {
-            const staffCheckbox = document.getElementById('staff-checkbox');
-            const adminCheckbox = document.getElementById('system-admin-checkbox');
-            const staffSection = document.getElementById('staff-password-section');
-            const adminSection = document.getElementById('admin-password-section');
-const customerTypeSection = document.getElementById('customer-type-section');
+    function handleRoleCheckbox(role) {
+        const staffCheckbox = document.getElementById('staff-checkbox');
+        const adminCheckbox = document.getElementById('system-admin-checkbox');
+        const staffSection = document.getElementById('staff-password-section');
+        const adminSection = document.getElementById('admin-password-section');
+        const staffIdSection = document.getElementById('staff-id-section');
+        const customerTypeSection = document.getElementById('customer-type-section');
 
-
-            if (role === 'staff') {
-                adminCheckbox.checked = false;
-            } else if (role === 'admin') {
-                staffCheckbox.checked = false;
-            }
-
-            staffSection.style.display = staffCheckbox.checked ? 'block' : 'none';
-            adminSection.style.display = adminCheckbox.checked ? 'block' : 'none';
-
-           if (staffCheckbox.checked || adminCheckbox.checked) {
-    customerTypeSection.style.display = 'none';
-} else {
-    customerTypeSection.style.display = 'block';
-}
+        if (role === 'staff') {
+            adminCheckbox.checked = false;
+        } else if (role === 'admin') {
+            staffCheckbox.checked = false;
         }
-    </script>
+
+        const isStaffChecked = staffCheckbox.checked;
+        const isAdminChecked = adminCheckbox.checked;
+
+        staffSection.style.display = isStaffChecked ? 'block' : 'none';
+        adminSection.style.display = isAdminChecked ? 'block' : 'none';
+        staffIdSection.style.display = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
+        customerTypeSection.style.display = (isStaffChecked || isAdminChecked) ? 'none' : 'block';
+    }
+</script>
 </head>
 <body>
 <div class="banner">
@@ -81,10 +80,10 @@ const customerTypeSection = document.getElementById('customer-type-section');
             <label for="system-admin-checkbox" class="form-check-label">Register as system admin</label>
         </div>
 
-        <div class="mb-3">
-            <label for="staffCardId" class="form-label">Staff Card ID</label>
-            <input type="text" name="staffCardId" id="staffCardId" class="form-control" />
-        </div>
+        <div class="mb-3" id="staff-id-section" style="display: none;">
+    <label for="staffCardId" class="form-label">Staff Card ID</label>
+    <input type="text" name="staffCardId" id="staffCardId" class="form-control" />
+</div>
 
         <div id="staff-password-section" style="display: none;">
             <div class="mb-3">
