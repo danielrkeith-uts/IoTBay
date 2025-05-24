@@ -106,7 +106,8 @@ public class LoginServlet extends HttpServlet {
             }
 
             session.removeAttribute("cart");
-            request.getRequestDispatcher("welcome.jsp").include(request, response);
         }
+
+        request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
 }
