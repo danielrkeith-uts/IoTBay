@@ -108,10 +108,11 @@ public class OrderDBManager {
         }
     }
 
-    public void cancelOrder(int orderId) throws SQLException {
-        String sql = "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = ?";
+    public void cancelOrder(int OrderId) throws SQLException{       
+        String sql = "UPDATE `Order` SET OrderStatus = ? WHERE OrderId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, orderId);
+            ps.setString(1, "CANCELLED");
+            ps.setInt(2, OrderId);
             ps.executeUpdate();
         }
     }

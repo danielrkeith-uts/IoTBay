@@ -64,8 +64,8 @@ CREATE TABLE Delivery (
     Courier VARCHAR(30) NOT NULL,
     CourierDeliveryId INTEGER NOT NULL,
     FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
-    FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId),
-    FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId)
+    FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId) ON DELETE CASCADE,
+    FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId) ON DELETE CASCADE
 );
 
 CREATE TABLE Address (
@@ -79,13 +79,12 @@ CREATE TABLE Address (
 
 CREATE TABLE Payment (
     PaymentId INTEGER PRIMARY KEY,
+    UserId INTEGER,
     CardId INTEGER,
     Amount DECIMAL(10, 2) NOT NULL,
-    PaymentStatus INTEGER NOT NULL DEFAULT 'PENDING',
-    PaymentDate DATE NOT NULL,
-    UserId INTEGER NOT NULL,
-    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
-    FOREIGN KEY (CardId) REFERENCES Card(CardId)
+    PaymentStatus INTEGER NOT NULL,
+    FOREIGN KEY (CardId) REFERENCES Card(CardId) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
 );
 
 CREATE TABLE Card (
@@ -113,5 +112,5 @@ CREATE TABLE Shipment (
     Method VARCHAR(30) NOT NULL,
     ShipmentDate DATETIME NOT NULL,
     FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
-    FOREIGN KEY (AddressId) REFERENCES Address(AddressId)
+    FOREIGN KEY (AddressId) REFERENCES Address(AddressId) ON DELETE CASCADE
 );

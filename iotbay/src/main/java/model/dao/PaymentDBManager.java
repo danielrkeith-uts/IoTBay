@@ -1,252 +1,229 @@
 package model.dao;
 
-import model.*;
+import model.Payment;
+import model.Card;
 import model.Enums.PaymentStatus;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
+import org.sqlite.SQLiteDataSource;
 
 public class PaymentDBManager {
+    private static final String URL = "jdbc:sqlite:database.db";
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM");
+    private static DataSource dataSource;
 
-    private final Connection conn;
-    private DBConnector dbConnector;
+    private final Connection externalConnection;
 
-    public PaymentDBManager() throws ClassNotFoundException, SQLException {
-        this.dbConnector = new DBConnector();
-        this.conn = dbConnector.openConnection();
+    static {
+        try {
+            SQLiteDataSource ds = new SQLiteDataSource();
+            ds.setUrl(URL);
+            dataSource = ds;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public PaymentDBManager(Connection connection) {
-        this.conn = connection;
+    public PaymentDBManager() {
+        this.externalConnection = null;
     }
 
-    public int addPayment(Payment payment) throws SQLException {
-        String sql = "INSERT INTO Payment (Amount, CardId, PaymentStatus, PaymentDate, UserId) VALUES (?, ?, ?, ?, ?)";
+    public PaymentDBManager(Connection conn) {
+        this.externalConnection = conn;
+    }
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setDouble(1, payment.getAmount());
-            stmt.setInt(2, payment.getCard().getCardId());
-            stmt.setString(3, payment.getPaymentStatus().name());
-            stmt.setDate(4, new java.sql.Date(payment.getDate().getTime()));
-            stmt.setInt(5, payment.getUserId());
+    private Connection connect() throws SQLException {
+        if (externalConnection != null) return externalConnection;
+        return dataSource.getConnection();
+    }
 
-            int affectedRows = stmt.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("Creating payment failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                } else {
-                    throw new SQLException("Creating payment failed, no ID obtained.");
+    public void insertPayment(Payment p) throws SQLException {
+        String sql = "INSERT INTO Payment(UserId, CardId, Amount, PaymentStatus) VALUES (?, ?, ?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, p.getUserId());
+            ps.setInt(2, p.getCard().getCardId());
+            ps.setDouble(3, p.getAmount());
+            ps.setInt(4, p.getPaymentStatus().ordinal());
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    p.setPaymentId(rs.getInt(1));
                 }
             }
+        }
+    }
+
+    public int insertPaymentMethod(int userId, Card card) throws SQLException {
+        String sql = "INSERT INTO Card(UserId, Name, Number, Expiry, CVC) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, userId);
+            ps.setString(2, card.getName());
+            ps.setString(3, card.getNumber());
+            ps.setString(4, card.getExpiry().format(DATE_FORMAT));
+            ps.setString(5, card.getCvc());
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        return 0;
+    }
+
+    public Card getPaymentMethod(int cardId) throws SQLException {
+        String sql = "SELECT * FROM Card WHERE CardId = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, cardId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Card(
+                        rs.getInt("CardId"),
+                        rs.getString("Name"),
+                        rs.getString("Number"),
+                        YearMonth.parse(rs.getString("Expiry"), DATE_FORMAT),
+                        rs.getString("CVC")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<Card> getMethodsByUser(int userId) throws SQLException {
+        List<Card> methods = new ArrayList<>();
+        String sql = "SELECT * FROM Card WHERE UserId = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    methods.add(new Card(
+                        rs.getInt("CardId"),
+                        rs.getString("Name"),
+                        rs.getString("Number"),
+                        YearMonth.parse(rs.getString("Expiry"), DATE_FORMAT),
+                        rs.getString("CVC")
+                    ));
+                }
+            }
+        }
+        return methods;
+    }
+
+    public void updatePaymentMethod(Card card) throws SQLException {
+        String sql = "UPDATE Card SET Name = ?, Number = ?, Expiry = ?, CVC = ? WHERE CardId = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, card.getName());
+            ps.setString(2, card.getNumber());
+            ps.setString(3, card.getExpiry().format(DATE_FORMAT));
+            ps.setString(4, card.getCvc());
+            ps.setInt(5, card.getCardId());
+            ps.executeUpdate();
+        }
+    }
+
+    public void deletePaymentMethod(int cardId) throws SQLException {
+        String sql = "DELETE FROM Card WHERE CardId = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, cardId);
+            ps.executeUpdate();
         }
     }
 
     public Payment getPayment(int paymentId) throws SQLException {
-        String query = "SELECT * FROM Payment WHERE PaymentId = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, paymentId);
-            try (ResultSet rs = stmt.executeQuery()) {
+        String sql = "SELECT p.PaymentId, p.UserId, p.CardId, p.Amount, p.PaymentStatus, " +
+                    "c.Name, c.Number, c.Expiry, c.CVC " +
+                    "FROM Payment p " +
+                    "JOIN Card c ON p.CardId = c.CardId " +
+                    "WHERE p.PaymentId = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, paymentId);
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    int paymentIdNumber = rs.getInt("PaymentId");
-                    int cardId = rs.getInt("CardId");
-                    double amount = rs.getDouble("Amount");
-                    int statusInt = rs.getInt("PaymentStatus");
-                    PaymentStatus paymentStatus = PaymentStatus.fromInt(statusInt);
-
-                    Date date = rs.getDate("PaymentDate");
-                    int userId = rs.getInt("UserId");
-
-                    Card card = getCardById(cardId);
-                    if (card == null) {
-                        throw new SQLException("Associated card not found for CardId " + cardId);
-                    }
-
-                    return new Payment(paymentIdNumber, amount, card, paymentStatus, date, userId);
+                    Card card = new Card(
+                        rs.getInt("CardId"),
+                        rs.getString("Name"),
+                        rs.getString("Number"),
+                        YearMonth.parse(rs.getString("Expiry"), DATE_FORMAT),
+                        rs.getString("CVC")
+                    );
+                    return new Payment(
+                        rs.getInt("PaymentId"),
+                        rs.getInt("UserId"),
+                        rs.getDouble("Amount"),
+                        card,
+                        PaymentStatus.values()[rs.getInt("PaymentStatus")]
+                    );
                 }
             }
         }
         return null;
     }
 
-    public List<Payment> getAllPaymentsForUser(int userId) throws SQLException {
-        List<Payment> payments = new ArrayList<>();
-        String sql = "SELECT * FROM Payment WHERE UserId = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    int paymentId = rs.getInt("PaymentId");
-                    int cardId = rs.getInt("CardId");
-                    double amount = rs.getDouble("Amount");
-                    int statusInt = rs.getInt("PaymentStatus");
-                    PaymentStatus paymentStatus = PaymentStatus.fromInt(statusInt);
-
-                    Date paymentDate = rs.getDate("PaymentDate");
-
-                    Card card = getCardById(cardId);
-                    if (card != null) {
-                        payments.add(new Payment(paymentId, amount, card, paymentStatus, paymentDate, userId));
-                    }
-                }
+    public List<Payment> getAllPayments() throws SQLException {
+        List<Payment> list = new ArrayList<>();
+        String sql = "SELECT p.PaymentId, p.UserId, p.CardId, p.Amount, p.PaymentStatus, " +
+                    "c.Name, c.Number, c.Expiry, c.CVC " +
+                    "FROM Payment p " +
+                    "JOIN Card c ON p.CardId = c.CardId";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Card card = new Card(
+                    rs.getInt("CardId"),
+                    rs.getString("Name"),
+                    rs.getString("Number"),
+                    YearMonth.parse(rs.getString("Expiry"), DATE_FORMAT),
+                    rs.getString("CVC")
+                );
+                list.add(new Payment(
+                    rs.getInt("PaymentId"),
+                    rs.getInt("UserId"),
+                    rs.getDouble("Amount"),
+                    card,
+                    PaymentStatus.values()[rs.getInt("PaymentStatus")]
+                ));
             }
         }
-        return payments;
+        return list;
+    }
+
+    public void updatePayment(Payment p) throws SQLException {
+        String sql = "UPDATE Payment SET CardId = ?, Amount = ?, PaymentStatus = ? WHERE PaymentId = ?";
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, p.getCard().getCardId());
+            ps.setDouble(2, p.getAmount());
+            ps.setInt(3, p.getPaymentStatus().ordinal());
+            ps.setInt(4, p.getPaymentId());
+            ps.executeUpdate();
+        }
     }
 
     public void deletePayment(int paymentId) throws SQLException {
         String sql = "DELETE FROM Payment WHERE PaymentId = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, paymentId);
-            stmt.executeUpdate();
-        }
-    }
-
-    public List<Payment> searchPaymentsForUser(int userId, String statusStr, Date fromDate, Date toDate) throws SQLException {
-        List<Payment> results = new ArrayList<>();
-
-        StringBuilder sql = new StringBuilder("SELECT * FROM Payment WHERE UserId = ?");
-        List<Object> params = new ArrayList<>();
-        params.add(userId);
-
-        if (statusStr != null && !statusStr.isEmpty()) {
-            try {
-                PaymentStatus.valueOf(statusStr.toUpperCase()); 
-                sql.append(" AND PaymentStatus = ?");
-                params.add(statusStr.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                
-            }
-        }
-
-        if (fromDate != null) {
-            sql.append(" AND PaymentDate >= ?");
-            params.add(new java.sql.Date(fromDate.getTime()));
-        }
-        if (toDate != null) {
-            sql.append(" AND PaymentDate <= ?");
-            params.add(new java.sql.Date(toDate.getTime()));
-        }
-
-        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                ps.setObject(i + 1, params.get(i));
-            }
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    int paymentId = rs.getInt("PaymentId");
-                    int cardId = rs.getInt("CardId");
-                    double amount = rs.getDouble("Amount");
-                    String paymentStatusStr = rs.getString("PaymentStatus");
-                    PaymentStatus paymentStatus = PaymentStatus.valueOf(paymentStatusStr);
-                    Date paymentDate = rs.getDate("PaymentDate");
-
-                    Card card = getCardById(cardId);
-                    if (card != null) {
-                        results.add(new Payment(paymentId, amount, card, paymentStatus, paymentDate, userId));
-                    }
-                }
-            }
-        }
-        return results;
-    }
-
-    public Card getCardById(int cardId) throws SQLException {
-        String sql = "SELECT CardId, Name, Number, Expiry, CVC FROM Card WHERE CardId = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, cardId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String name = rs.getString("Name");
-                    String number = rs.getString("Number");
-                    Date expiryDate = rs.getDate("Expiry");
-                    YearMonth expiry = YearMonth.from(expiryDate.toLocalDate());
-                    String cvc = rs.getString("CVC");
-                    return new Card(cardId, name, number, expiry, cvc);
-                }
-            }
-        }
-        return null;
-    }
-
-    public int getCardOwner(int cardId) throws SQLException {
-        String sql = "SELECT UserId FROM Payment WHERE CardId = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, cardId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("UserId");
-                }
-            }
-        }
-        return -1;
-    }
-
-    public List<Card> getCardsForUser(int userId) throws SQLException {
-        List<Card> cards = new ArrayList<>();
-        String sql = "SELECT CardId, Name, Number, Expiry, CVC FROM Card WHERE UserId = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    int cardId = rs.getInt("CardId");
-                    String name = rs.getString("Name");
-                    String number = rs.getString("Number");
-                    Date expiryDate = rs.getDate("Expiry");
-                    YearMonth expiry = YearMonth.from(expiryDate.toLocalDate());
-                    String cvc = rs.getString("CVC");
-
-                    Card card = new Card(cardId, name, number, expiry, cvc);
-                    cards.add(card);
-                }
-            }
-        }
-        return cards;
-    }
-
-    public void updateCard(Card card, int userId) throws SQLException {
-        String sql = "UPDATE Card SET Name = ?, Number = ?, Expiry = ?, CVC = ? WHERE CardId = ? AND UserId = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, card.getName());
-            ps.setString(2, card.getNumber());
-            ps.setDate(3, java.sql.Date.valueOf(card.getExpiry().atDay(1))); // Store expiry as first day of month
-            ps.setString(4, card.getCvc());
-            ps.setInt(5, card.getCardId());
-            ps.setInt(6, userId);
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("No card updated, card might not exist or not belong to user.");
-            }
-        }
-    }
-
-    public void deleteCard(int cardId, int userId) throws SQLException {
-        String sql = "DELETE FROM Card WHERE CardId = ? AND UserId = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, cardId);
-            ps.setInt(2, userId);
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("No card deleted, card might not exist or not belong to user.");
-            }
-        }
-    }
-
-    public void close() throws SQLException {
-        if (dbConnector != null) {
-            dbConnector.closeConnection();
-        } else if (conn != null && !conn.isClosed()) {
-            conn.close();
+        try (Connection conn = connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, paymentId);
+            ps.executeUpdate();
         }
     }
 }

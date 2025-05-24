@@ -1,37 +1,33 @@
 package model;
 
 import java.io.Serializable;
-import java.util.Date;
 import model.Enums.PaymentStatus;
 
 public class Payment implements Serializable {
-    private final int paymentId;
-    private final double amount;
-    private final Card card;
-    private final PaymentStatus paymentStatus;
-    private final Date date;
-    private final int userId;
+    private int paymentId;
+    private int userId;
+    private double amount;
+    private Card card;
+    private PaymentStatus paymentStatus;
 
-    public Payment(double amount, Card card, PaymentStatus paymentStatus, Date date, int userId) {
-        this.paymentId = 0;
-        this.amount = amount;
-        this.card = card;
-        this.paymentStatus = paymentStatus;
-        this.date = (date == null) ? null : new Date(date.getTime());
-        this.userId = userId;
-    }
-
-    public Payment(int paymentId, double amount, Card card, PaymentStatus paymentStatus, Date date, int userId) {
+    public Payment(int paymentId, int userId, double amount, Card card, PaymentStatus paymentStatus) {
         this.paymentId = paymentId;
+        this.userId = userId;
         this.amount = amount;
         this.card = card;
         this.paymentStatus = paymentStatus;
-        this.date = (date == null) ? null : new Date(date.getTime());
-        this.userId = userId;
     }
 
     public int getPaymentId() {
         return paymentId;
+    }
+    
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public int getUserId() {
+        return userId;
     }
 
     public double getAmount() {
@@ -46,14 +42,6 @@ public class Payment implements Serializable {
         return paymentStatus;
     }
 
-    public Date getDate() {
-        return (date == null) ? null : new Date(date.getTime());
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
     @Override
     public String toString() {
         return "Payment{" +
@@ -61,7 +49,6 @@ public class Payment implements Serializable {
                 ", amount=" + amount +
                 ", card=" + card +
                 ", paymentStatus=" + paymentStatus +
-                ", date=" + date +
                 ", userId=" + userId +
                 '}';
     }

@@ -2,12 +2,14 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 
 public class CartDBManager {
     private Statement st;
     private Connection conn;
     private static final String UPDATE_CART_STMT = "UPDATE Cart SET LastUpdated = ? WHERE CartId = ?;";
     private final PreparedStatement updateCartPs;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         
     public CartDBManager(Connection conn) throws SQLException {    
         this.conn = conn;
@@ -17,7 +19,6 @@ public class CartDBManager {
 
     //Find a cart by CartId in the database   
     public Cart getCart(int cartId) throws SQLException {   
-
         //get a cart from the db
         String query = "SELECT * FROM Cart WHERE CartId = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
@@ -25,14 +26,25 @@ public class CartDBManager {
         ResultSet rs = stmt.executeQuery();
 
         if (rs.next()) {
-            Timestamp timestamp = rs.getTimestamp("LastUpdated");
-            Timestamp LastUpdated = new java.sql.Timestamp(timestamp.getTime());
+            try {
+                String timestampStr = rs.getString("LastUpdated");
+                Timestamp LastUpdated;
+                
+                // If timestamp string doesn't contain time part, append default time
+                if (timestampStr.matches("\\d{4}-\\d{2}(-\\d{2})?")) {
+                    timestampStr += timestampStr.length() == 7 ? "-01 00:00:00" : " 00:00:00";
+                }
+                
+                LastUpdated = Timestamp.valueOf(timestampStr);
 
-            Cart cart = new Cart();
-            cart.setCartId(cartId);
-            cart.setLastUpdated(LastUpdated);
+                Cart cart = new Cart();
+                cart.setCartId(cartId);
+                cart.setLastUpdated(LastUpdated);
 
-            return cart;
+                return cart;
+            } catch (IllegalArgumentException e) {
+                throw new SQLException("Error parsing timestamp: " + e.getMessage());
+            }
         } 
         return null;
     }
@@ -41,7 +53,7 @@ public class CartDBManager {
     public int addCart(Timestamp LastUpdated) throws SQLException {       
         String query = "INSERT INTO Cart (LastUpdated) VALUES (?)";
         PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        String formatted = LastUpdated.toLocalDateTime().toString().replace("T", " "); // e.g., "2026-08-20 00:00:00"
+        String formatted = DATE_FORMAT.format(LastUpdated);
         ps.setString(1, formatted);
         ps.executeUpdate();
 
@@ -55,8 +67,7 @@ public class CartDBManager {
 
     //update a cart's LastUpdated in the database   
     public void updateCart(Cart cart) throws SQLException {
-        Timestamp timestamp = new Timestamp(cart.getLastUpdated().getTime());
-        String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
+        String formatted = DATE_FORMAT.format(cart.getLastUpdated());
     
         updateCartPs.setString(1, formatted);
         updateCartPs.setInt(2, cart.getCartId());

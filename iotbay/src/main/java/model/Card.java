@@ -22,6 +22,10 @@ public class Card implements Serializable {
         return cardId;
     }
 
+    public void setCardId(int cardId) {
+        this.cardId = cardId;
+    }
+
     public String getName() {
         return name;
     }

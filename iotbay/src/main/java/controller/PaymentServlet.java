@@ -1,6 +1,12 @@
 package controller;
 
-import jakarta.servlet.RequestDispatcher;
+import model.Payment;
+import model.Card;
+import model.Cart;
+import model.User;
+import model.Enums.PaymentStatus;
+import model.dao.PaymentDBManager;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -8,237 +14,177 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import model.Card;
-import model.Payment;
-import model.User;
-import model.Enums.PaymentStatus;
-import model.dao.PaymentDBManager;
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.sql.SQLException;
 import java.time.YearMonth;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @WebServlet("/PaymentServlet")
 public class PaymentServlet extends HttpServlet {
-    private static final String ERROR_ATTR    = "paymentError";
-    private static final String FORM_PAGE     = "/paymentform.jsp";
-    private static final String HISTORY_PAGE  = "/paymenthistory.jsp";
-
-    private Logger logger;
-    private PaymentDBManager paymentDBManager;
+    private static final long serialVersionUID = 1L;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
-        logger = Logger.getLogger(PaymentServlet.class.getName());
-        try {
-            paymentDBManager = new PaymentDBManager(); 
-            getServletContext().setAttribute("paymentDBManager", paymentDBManager);
-        } catch (Exception e) {
-            throw new ServletException("Failed to initialize PaymentDBManager", e);
-        }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        if (paymentDBManager == null) {
-            throw new ServletException("PaymentDBManager not initialized.");
-        }
+        String action = req.getParameter("action");
+        HttpSession session = req.getSession(false);
         
-        HttpSession session = request.getSession();
-    
+        if (session == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
-            return;
-        }
+        Cart cart = (Cart) session.getAttribute("cart");
+        PaymentDBManager paymentDBManager = (PaymentDBManager) session.getAttribute("paymentDBManager");
 
-        String action = request.getParameter("action");
+        if (action == null) action = "showForm";
 
-        if ("deleteCard".equals(action)) {
-            String cardIdStr = request.getParameter("cardId");
-            try {
-                int cardId = Integer.parseInt(cardIdStr);
-                paymentDBManager.deleteCard(cardId, user.getUserId());
-                session.setAttribute("message", "Card deleted successfully.");
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Failed to delete card", e);
-                session.setAttribute("error", "Failed to delete card.");
-            }
-            response.sendRedirect(request.getContextPath() + "/PaymentServlet");
-            return;
-        } 
-        // Edit (Update) Card action
-        else if ("editCard".equals(action)) {
-            try {
-                int cardId = Integer.parseInt(request.getParameter("cardId"));
-                String cardName = request.getParameter("cardName");
-                String cardNumber = request.getParameter("cardNumber");
-                YearMonth cardExpiry = YearMonth.parse(request.getParameter("cardExpiry"));
-                String cardCVC = request.getParameter("cardCVC");
-
-                Card card = new Card(cardId, cardName, cardNumber, cardExpiry, cardCVC);
-                paymentDBManager.updateCard(card, user.getUserId());
-                session.setAttribute("message", "Card updated successfully.");
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Failed to update card", e);
-                session.setAttribute("error", "Failed to update card: " + e.getMessage());
-            }
-            response.sendRedirect(request.getContextPath() + "/PaymentServlet");
-            return;
-        }
-
-        // Make Payment (or add card + pay) action
         try {
-            double amount = Double.parseDouble(request.getParameter("amount"));
-            
-            String cardIdStr = request.getParameter("cardId");
-            Card card = null;
-            
-            if (cardIdStr != null && !cardIdStr.isEmpty()) {
-                // User selected a saved card
-                int cardId = Integer.parseInt(cardIdStr);
-                int cardOwnerId = paymentDBManager.getCardOwner(cardId);
-                
-                if (cardOwnerId != user.getUserId()) {
-                    throw new Exception("Invalid or unauthorized card selected.");
-                }
+            switch (action) {
+                case "showForm":
+                    if (cart == null) {
+                        resp.sendRedirect("cart.jsp");
+                        return;
+                    }
 
-                card = paymentDBManager.getCardById(cardId);
-            } else {
-                // User entered a new card on the form
-                String cardName       = request.getParameter("cardName");
-                String cardNumber     = request.getParameter("cardNumber");
-                String cardExpiryStr  = request.getParameter("cardExpiry");
-                String cardCVC        = request.getParameter("cardCVC");
+                    // Set amount from cart total
+                    req.setAttribute("amount", cart.totalCost());
 
-                // parse YearMonth (expected format: yyyy-MM)
-                YearMonth cardExpiry = YearMonth.parse(cardExpiryStr);
-                card = new Card(0, cardName, cardNumber, cardExpiry, cardCVC);
+                    // Get saved payment methods if user is logged in
+                    if (user != null) {
+                        List<Card> methods = paymentDBManager.getMethodsByUser(user.getUserId());
+                        req.setAttribute("paymentMethods", methods);
+                    }
+                    
+                    req.getRequestDispatcher("/paymentform.jsp").forward(req, resp);
+                    break;
+
+                case "viewHistory":
+                    if (user == null) {
+                        resp.sendRedirect("login.jsp");
+                        return;
+                    }
+                    List<Payment> payments = paymentDBManager.getAllPayments()
+                        .stream()
+                        .filter(p -> p.getUserId() == user.getUserId())
+                        .collect(Collectors.toList());
+                    req.setAttribute("payments", payments);
+                    req.getRequestDispatcher("paymenthistory.jsp").forward(req, resp);
+                    break;
+
+                case "editMethod":
+                    if (user == null) {
+                        resp.sendRedirect("login.jsp");
+                        return;
+                    }
+                    String cardId = req.getParameter("cardId");
+                    if (cardId != null) {
+                        Card card = paymentDBManager.getPaymentMethod(Integer.parseInt(cardId));
+                        if (card != null) {
+                            req.setAttribute("editCard", card);
+                            req.getRequestDispatcher("/paymentform.jsp").forward(req, resp);
+                            return;
+                        }
+                    }
+                    resp.sendRedirect("PaymentServlet?action=showForm");
+                    break;
+
+                case "deleteMethod":
+                    if (user == null) {
+                        resp.sendRedirect("login.jsp");
+                        return;
+                    }
+                    String deleteId = req.getParameter("cardId");
+                    if (deleteId != null) {
+                        paymentDBManager.deletePaymentMethod(Integer.parseInt(deleteId));
+                    }
+                    resp.sendRedirect("PaymentServlet?action=showForm");
+                    break;
+
+                default:
+                    resp.sendRedirect("PaymentServlet?action=showForm");
+                    break;
             }
-
-            Date date = new Date();
-            Payment payment = new Payment(
-                    amount,
-                    card,
-                    PaymentStatus.PENDING,
-                    date,
-                    user.getUserId()
-            );
-            paymentDBManager.addPayment(payment);
-
-            // Show payment history on success
-            List<Payment> payments = paymentDBManager.getAllPaymentsForUser(user.getUserId());
-            request.setAttribute("payments", payments);
-
-            session.removeAttribute(ERROR_ATTR);
-
-            RequestDispatcher rd = request.getRequestDispatcher(HISTORY_PAGE);
-            rd.forward(request, response);
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error processing payment", e);
-            session.setAttribute(ERROR_ATTR,
-                "Something went wrong: " + e.getMessage());
-            RequestDispatcher rd = request.getRequestDispatcher(FORM_PAGE);
-            rd.forward(request, response);
+        } catch (SQLException e) {
+            throw new ServletException("Database error", e);
         }
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-
-        if (paymentDBManager == null) {
-            throw new ServletException("PaymentDBManager not initialized.");
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            resp.sendRedirect("login.jsp");
+            return;
         }
 
-        HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            resp.sendRedirect("login.jsp");
             return;
         }
 
-        String action = request.getParameter("action");
-        if ("delete".equals(action)) {
-            String idStr = request.getParameter("id");
-            try {
-                int paymentId = Integer.parseInt(idStr);
-                Payment payment = paymentDBManager.getPayment(paymentId);
-                if (payment == null || payment.getUserId() != user.getUserId()) {
-                    session.setAttribute("error", "Unauthorized payment deletion attempt.");
-                } else {
-                    paymentDBManager.deletePayment(paymentId);
-                    session.setAttribute("message", "Payment deleted successfully.");
-                }
-            } catch (NumberFormatException e) {
-                session.setAttribute("error", "Invalid payment ID.");
-            } catch (Exception e) {
-                session.setAttribute("error", "Failed to delete payment.");
-            }
-            
-            response.sendRedirect(request.getContextPath() + "/PaymentServlet");
-            return;
-        }
-
-        // Load saved cards for user to show in payment form
-        try {
-            List<Card> cards = paymentDBManager.getCardsForUser(user.getUserId());
-            request.setAttribute("cards", cards);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error loading cards", e);
-            session.setAttribute(ERROR_ATTR, "Unable to load saved cards: " + e.getMessage());
-        }
-
-        // Load payments with optional filtering by status and date range
-        String status = request.getParameter("status");
-        String fromDateStr = request.getParameter("fromDate");
-        String toDateStr = request.getParameter("toDate");
-
-        Date parsedfromDate = null;
-        Date parsedtoDate = null;
+        PaymentDBManager paymentDBManager = (PaymentDBManager) session.getAttribute("paymentDBManager");
+        String action = req.getParameter("action");
 
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if (fromDateStr != null && !fromDateStr.isEmpty()) {
-                parsedfromDate = sdf.parse(fromDateStr);
-            }
-            if (toDateStr != null && !toDateStr.isEmpty()) {
-                parsedtoDate = sdf.parse(toDateStr);
+            switch (action) {
+                case "createPayment":
+                    double amount = Double.parseDouble(req.getParameter("amount"));
+                    String name = req.getParameter("name");
+                    String number = req.getParameter("cardNumber");
+                    String expiryStr = req.getParameter("expiry");
+                    YearMonth expiry = YearMonth.parse(expiryStr);
+                    String cvv = req.getParameter("cvv");
+                    boolean save = req.getParameter("saveMethod") != null;
+
+                    Card card = new Card(0, name, number, expiry, cvv);
+                    int cardId = 0;
+                    
+                    if (save) {
+                        cardId = paymentDBManager.insertPaymentMethod(user.getUserId(), card);
+                        card.setCardId(cardId);
+                    }
+
+                    Payment payment = new Payment(
+                        0,
+                        user.getUserId(),
+                        amount,
+                        card,
+                        PaymentStatus.PENDING
+                    );
+                    paymentDBManager.insertPayment(payment);
+
+                    // Clear cart after successful payment
+                    session.removeAttribute("cart");
+                    
+                    resp.sendRedirect("confirmation.jsp");
+                    break;
+
+                case "updateMethod":
+                    String updateId = req.getParameter("cardId");
+                    if (updateId != null) {
+                        Card updatedCard = new Card(
+                            Integer.parseInt(updateId),
+                            req.getParameter("name"),
+                            req.getParameter("cardNumber"),
+                            YearMonth.parse(req.getParameter("expiry")),
+                            req.getParameter("cvv")
+                        );
+                        paymentDBManager.updatePaymentMethod(updatedCard);
+                    }
+                    resp.sendRedirect("PaymentServlet?action=showForm");
+                    break;
+
+                default:
+                    resp.sendRedirect("PaymentServlet?action=showForm");
+                    break;
             }
         } catch (Exception e) {
-            session.setAttribute("error", "Invalid date format.");
-        }
-
-        final Date fromDate = parsedfromDate;
-        final Date toDate = parsedtoDate;
-
-        try {
-            List<Payment> payments = paymentDBManager.getAllPaymentsForUser(user.getUserId());
-            if ((status != null && !status.isEmpty()) || fromDate != null || toDate != null) {
-                payments = payments.stream()
-                        .filter(p -> (status == null || status.isEmpty() || p.getPaymentStatus().toString().equalsIgnoreCase(status)))
-                        .filter(p -> (fromDate == null || !p.getDate().before(fromDate)))
-                        .filter(p -> (toDate == null || !p.getDate().after(toDate)))
-                        .toList();
-            }
-
-            request.setAttribute("payments", payments);
-            RequestDispatcher rd = request.getRequestDispatcher(HISTORY_PAGE);
-            rd.forward(request, response);
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error loading payments", e);
-            session.setAttribute(ERROR_ATTR, "Unable to load payment history: " + e.getMessage());
-            RequestDispatcher rd = request.getRequestDispatcher(FORM_PAGE);
-            rd.forward(request, response);
+            throw new ServletException(e);
         }
     }
 }
