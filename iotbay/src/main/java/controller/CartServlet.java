@@ -65,8 +65,6 @@ public class CartServlet extends HttpServlet {
                 ((Customer) user).setCart(cart);
                 cart.addProduct(product, quantity);
                 productListEntryDBManager.addProduct(cartId, product.getProductId(), quantity);
-                
-                applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), new ApplicationAccessLog(ApplicationAction.ADD_TO_CART, new Date()));
             } else {
                 cart = (Cart) session.getAttribute("cart");
                 if (cart == null) {
@@ -74,6 +72,10 @@ public class CartServlet extends HttpServlet {
                     session.setAttribute("cart", cart);
                 }
                 cart.addProduct(product, quantity);
+            }
+
+            if (user != null) {
+                applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), new ApplicationAccessLog(ApplicationAction.ADD_TO_CART, new Date()));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Database error while getting cart", e);
