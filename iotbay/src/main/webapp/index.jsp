@@ -23,7 +23,7 @@
                             <a href="adminInventory.jsp">Manage Inventory</a>
                         <% } %>
                 <% if (user == null) { %>
-                    <a href="login.jsp">Login</a>
+                    <a href="LoginPageServlet">Login</a>
                 <% } else { %>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
@@ -38,7 +38,7 @@
                     </div>
                 <% } %>
                 <a href="cart.jsp" class="bi bi-cart"></a>
-                <a class="dropdown-item" href="myorders.jsp">Find an Order</a>
+                <a href="myorders.jsp">Temp MyOrders</a>
             </navbar>
         </div>
         <div class="content">

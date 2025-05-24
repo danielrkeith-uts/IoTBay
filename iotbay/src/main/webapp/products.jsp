@@ -46,7 +46,7 @@
                 
                 if (user == null) {
             %>
-                <a href="login.jsp">Login</a>
+                <a href="LoginPageServlet">Login</a>
             <%
                 } else {
             %>
@@ -68,7 +68,7 @@
                 }
             %>
             <a href="cart.jsp" class="bi bi-cart"></a>
-            <a class="dropdown-item" href="myorders.jsp">Find an Order</a>
+            <a href="myorders.jsp">Temp MyOrders</a>
         </navbar>
     </div>
 

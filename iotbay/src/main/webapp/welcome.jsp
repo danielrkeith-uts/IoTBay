@@ -38,7 +38,7 @@
                             <a href="adminInventory.jsp">Manage Inventory</a>
                         <% } %>
                 <% if (user == null) { %>
-                    <a href="login.jsp">Login</a>
+                    <a href="LoginPageServlet">Login</a>
                 <% } else { %>
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>

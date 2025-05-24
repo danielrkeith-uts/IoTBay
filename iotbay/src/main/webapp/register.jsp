@@ -20,7 +20,7 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="login.jsp">Login</a>
+                <a href="LoginPageServlet">Login</a>
                 <a href="cart.jsp" class="bi bi-cart"></a>
             </navbar>
         </div>

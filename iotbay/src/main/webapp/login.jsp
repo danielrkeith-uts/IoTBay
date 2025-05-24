@@ -1,5 +1,4 @@
 <html>
-    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         String error = (String) session.getAttribute("loginError");
         session.removeAttribute("loginError");
@@ -18,7 +17,7 @@
             <navbar>
                 <a href="index.jsp">Home</a>
                 <a href="products.jsp">Products</a>
-                <a href="login.jsp" class="active">Login</a>
+                <a href="LoginPageServlet" class="active">Login</a>
                 <a href="cart.jsp" class="bi bi-cart"></a>
             </navbar>
         </div>
