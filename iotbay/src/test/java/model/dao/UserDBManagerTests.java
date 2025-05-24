@@ -2,6 +2,7 @@ package model.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,6 +10,8 @@ import org.junit.Test;
 import model.Customer;
 import model.Staff;
 import model.User;
+import java.util.stream.Collectors;
+
 
 public class UserDBManagerTests {
     // In database
@@ -170,4 +173,72 @@ public class UserDBManagerTests {
             try { conn.rollback(); } catch (SQLException e) { System.err.println(e); }
         }
     }
+    @Test
+    public void testGetAllCustomers() {
+        try {
+            List<Customer> customers = userDBManager.getAllCustomers();
+            Assert.assertNotNull("Customer list should not be null", customers);
+            Assert.assertTrue("Customer list should contain at least one customer", customers.size() > 0);
+
+            boolean foundJohnSmith = customers.stream()
+                .anyMatch(c -> c.getUserId() == johnSmith.getUserId());
+            Assert.assertTrue("Expected to find John Smith in customer list", foundJohnSmith);
+        } catch (SQLException e) {
+        Assert.fail(e.getMessage());
+        } finally {
+            try { conn.rollback(); } catch (SQLException e) { System.err.println(e); }
+        }
+    }
+
+    @Test
+    public void testDeactivateAndReactivateCustomer() {
+        try {
+            int testUserId = johnSmith.getUserId(); 
+
+            userDBManager.setCustomerDeactivated(testUserId, true);
+            Customer deactivated = (Customer) userDBManager.getUser(testUserId);
+            Assert.assertTrue("Customer should be deactivated", deactivated.isDeactivated());
+
+            userDBManager.reactivateCustomer(testUserId);
+            Customer reactivated = (Customer) userDBManager.getUser(testUserId);
+            Assert.assertFalse("Customer should be active (not deactivated)", reactivated.isDeactivated());
+
+        } catch (SQLException e) {
+        Assert.fail("SQL error during deactivate/reactivate test: " + e.getMessage());
+            } finally {
+        try { conn.rollback(); } catch (SQLException e) { System.err.println(e); }
+        }
+    }
+
+
+    @Test
+    public void testGetCustomersByType() {
+        try {
+            List<Customer> allCustomers = userDBManager.getAllCustomers();
+            Assert.assertNotNull(allCustomers);
+            Assert.assertTrue("Expected some customers in DB", allCustomers.size() > 0);
+
+            List<Customer> individuals = allCustomers.stream()
+                .filter(c -> c.getType() == Customer.Type.INDIVIDUAL)
+                .collect(Collectors.toList());
+
+                for (Customer c : individuals) {
+                 Assert.assertEquals(Customer.Type.INDIVIDUAL, c.getType());
+         }
+
+            List<Customer> companies = allCustomers.stream()
+                .filter(c -> c.getType() == Customer.Type.COMPANY)
+                .collect(Collectors.toList());
+
+                for (Customer c : companies) {
+                    Assert.assertEquals(Customer.Type.COMPANY, c.getType());
+                }
+
+            Assert.assertEquals(allCustomers.size(), individuals.size() + companies.size());
+
+        } catch (SQLException e) {
+            Assert.fail("SQL Exception: " + e.getMessage());
+        }
+    }
+
 }
