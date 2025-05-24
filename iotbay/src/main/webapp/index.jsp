@@ -1,5 +1,6 @@
 <%@ page import="model.User, model.Staff"%>
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         User user = (User) session.getAttribute("user");
         boolean isStaff = (user != null && user instanceof Staff);

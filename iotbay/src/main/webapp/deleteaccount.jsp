@@ -1,4 +1,5 @@
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         if (session.getAttribute("user") == null) {
             response.sendRedirect("index.jsp");

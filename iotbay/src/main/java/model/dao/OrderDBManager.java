@@ -2,13 +2,11 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import model.Enums.*;
-import java.time.format.DateTimeParseException;
 
 public class OrderDBManager {
     private Statement st1;
@@ -170,28 +168,6 @@ public class OrderDBManager {
 
     //Add an order into the database   
     public int addOrder(int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
-        // String query = "INSERT INTO `Order` (UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?)";
-
-        // try (PreparedStatement pst = conn.prepareStatement(query)) {
-        //     pst.setInt(1, UserId);
-        //     pst.setInt(2, CartId);
-        //     pst.setInt(3, PaymentId);
-            
-        //     Timestamp timestamp = new Timestamp(DatePlaced.getTime());
-        //     String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
-        //     pst.setString(4, formatted);
-        //     pst.setString(5, status);
-
-        //     pst.executeUpdate();
-
-        //     try (ResultSet rs = pst.getGeneratedKeys()) {
-        //         if (rs.next()) {
-        //             return rs.getInt(1); // Return generated OrderId
-        //         } else {
-        //             throw new SQLException("Order insertion failed, no ID obtained.");
-        //         }
-        //     }
-        // }
         String query = "INSERT INTO `Order` (UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {

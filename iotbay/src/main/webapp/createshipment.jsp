@@ -1,6 +1,7 @@
 <%-- createshipment.jsp --%>
 <%@ page import="model.User, model.Customer, model.Enums.AuState"%>
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         if (!(session.getAttribute("user") instanceof Customer)) {
             response.sendRedirect("index.jsp");

@@ -56,7 +56,7 @@ public class ConfirmOrderServlet extends HttpServlet {
             expiry = YearMonth.parse(expiryString, formatter);
         } catch (DateTimeParseException e) {
             session.setAttribute("cartError", "Invalid expiry date format. Use MM/yy.");
-            response.sendRedirect("cart.jsp");
+            response.sendRedirect("login.jsp");
             return;
         }
 
@@ -65,9 +65,15 @@ public class ConfirmOrderServlet extends HttpServlet {
         Cart cart = (Cart) session.getAttribute("cart");
         OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
 
-        if (user == null || cart == null || cart.getProductList().isEmpty()) {
+        if (cart == null) {
             session.setAttribute("cartError", "Cart is empty or user is not logged in.");
-            response.sendRedirect("cart.jsp");
+            response.sendRedirect("products.jsp");
+            return;
+        }
+
+        if (cart.getProductList().isEmpty()) {
+            session.setAttribute("cartError", "Cart is empty or user is not logged in.");
+            response.sendRedirect("index.jsp");
             return;
         }
 
@@ -94,10 +100,18 @@ public class ConfirmOrderServlet extends HttpServlet {
             Payment payment = new Payment(0, total, card, PaymentStatus.PENDING);
             int paymentId = paymentDBManager.addPayment(card.getCardId(), total, payment.getPaymentStatus().ordinal());
 
-            // Add order to DB
+            // Add order to DB regardless of logged in user or not
+            Integer userId = null;
+            if (user != null) {
+                userId = user.getUserId();
+            } else {
+                // guest order, no userId or use special guest ID
+                userId = 0;  // or null if DB supports
+            }
+
             Timestamp datePlaced = new Timestamp(System.currentTimeMillis());
             int orderId = orderDBManager.addOrder(
-                user.getUserId(),
+                userId,
                 cart.getCartId(),
                 paymentId,
                 datePlaced,

@@ -2,14 +2,13 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
 public class CardDBManager {
     private Statement st;
     private Connection conn;
-    private static final String UPDATE_CARD_STMT = "UPDATE Card SET Name = ?, Number = ?, Expiry = ?, CVC = ? WHERE CartId = ?;";
+    private static final String UPDATE_CARD_STMT = "UPDATE Card SET Name = ?, Number = ?, Expiry = ?, CVC = ? WHERE CardId = ?;";
     private final PreparedStatement updateCardPs;
         
     public CardDBManager(Connection conn) throws SQLException {    

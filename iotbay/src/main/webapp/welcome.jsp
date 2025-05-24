@@ -1,5 +1,6 @@
 <%@ page import="model.User, model.Customer"%>
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <%!
         public boolean isNullOrEmpty(String str) {
             return str == null || str.isEmpty();

@@ -21,6 +21,7 @@
 %>
 <!DOCTYPE html>
 <html>
+<jsp:include page="/ConnServlet" flush="true"/>
 <head>
    <title>Admin Inventory</title>
    <link rel="stylesheet" href="main.css" />

@@ -11,6 +11,7 @@ public class PaymentDBManager {
     private Statement st;
 
     public PaymentDBManager(Connection conn) throws SQLException {
+        this.conn = conn;
         this.st = conn.createStatement(); 
     }
 
@@ -41,7 +42,7 @@ public class PaymentDBManager {
         }
         return null;
     }
-    
+
     public int addPayment(int CardId, double Amount, int PaymentStatus) throws SQLException {       
         String query = "INSERT INTO Payment (CardId, Amount, PaymentStatus) VALUES (?, ?, ?)";
 

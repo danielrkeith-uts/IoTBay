@@ -63,16 +63,18 @@ public class ConnServlet extends HttpServlet {
                 session.setAttribute("shipmentDBManager", new ShipmentDBManager(conn));
                 session.setAttribute("productDBManager", new ProductDBManager(conn));
                 session.setAttribute("cartDBManager", new CartDBManager(conn));
+                session.setAttribute("cardDBManager", new CardDBManager(conn));
+                session.setAttribute("paymentDBManager", new PaymentDBManager(conn));
 
             } catch (ClassNotFoundException | SQLException e) {
                 throw new ServletException("Database connection setup failed", e);
             }
+            response.sendRedirect("index.jsp");
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 }

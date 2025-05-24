@@ -1,4 +1,5 @@
 <html>
+    <jsp:include page="/ConnServlet" flush="true"/>
     <%
         String error = (String) session.getAttribute("loginError");
         session.removeAttribute("loginError");
