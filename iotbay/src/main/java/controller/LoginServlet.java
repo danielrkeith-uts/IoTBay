@@ -33,55 +33,68 @@ public class LoginServlet extends HttpServlet {
     public void init() {
         logger = Logger.getLogger(LoginServlet.class.getName());
     }
-
+    
     @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-
+    
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
-
+    
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
-
+    
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-
+    
         if (email.isEmpty() || password.isEmpty()) {
             session.setAttribute(ERROR_ATTR, "Fill in all relevant fields");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-
+    
         User user;
         try {
             user = userDBManager.getUser(email, password);
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not get user from DB");
+            logger.log(Level.SEVERE, "Could not get user from DB", e);
+            session.setAttribute(ERROR_ATTR, "Internal server error");
+            request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-
+    
         if (user == null) {
             session.setAttribute(ERROR_ATTR, "Incorrect username and/or password");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-
+    
+        if (user instanceof model.Customer && ((model.Customer) user).isDeactivated()) {
+            session.setAttribute("deactivatedUser", user);
+            session.setAttribute(ERROR_ATTR, "Your account is deactivated.");
+            request.getRequestDispatcher(PAGE).include(request, response);
+            return;
+        }
+    
         ApplicationAccessLog appAccLog = new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
-
+    
         try {
             applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appAccLog);
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not add LOGIN log");
+            logger.log(Level.SEVERE, "Could not add LOGIN log", e);
+            session.setAttribute(ERROR_ATTR, "Login log error");
+            request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-
+    
         session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
+    
+        response.sendRedirect("welcome.jsp");  
 
         Cart sessionCart = (Cart) session.getAttribute("cart");
 

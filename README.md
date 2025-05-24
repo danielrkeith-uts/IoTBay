@@ -26,7 +26,8 @@
 
 ## Notes on pre-supplied data and navigating the web application
 - The register page is navigated to using a link located on the login page.
-- The admin password is `admin`. This is used when registering as staff.
+- The staff password is `staff123`. This is used when registering as staff.
+- The admin password is `admin123`. This is used when registering as system admin.
 - Two users can be logged in by default. *(Please don't change the account details of these customers, as this can cause tests to fail)*
   - John Smith (Customer)
     - Email: `john.smith@gmail.com`

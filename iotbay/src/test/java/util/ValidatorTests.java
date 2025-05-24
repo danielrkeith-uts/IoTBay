@@ -9,10 +9,10 @@ import model.exceptions.InvalidInputException;
 import utils.Validator;
 
 public class ValidatorTests {
-    private User userInvalidEmail = new Customer(-1, null, null, "invalidEmail", null, "validPassword1!");
-    private User userInvalidPassword = new Customer(-1, null, null, "valid@email.com", null, "invalidPassword");
-    private User userInvalidPhone = new Customer(-1, null, null, "valid@email.com", "abc", "validPassword1!");
-    private User userValid1 = new Customer(-1, null, null, "valid@email.com", "", "validPassword1!");
+    private User userInvalidEmail = new Customer(-1, null, null, "invalidEmail", null, "validPassword1!", Customer.Type.INDIVIDUAL);
+    private User userInvalidPassword = new Customer(-1, null, null, "valid@email.com", null, "invalidPassword", Customer.Type.INDIVIDUAL);
+    private User userInvalidPhone = new Customer(-1, null, null, "valid@email.com", "abc", "validPassword1!", Customer.Type.INDIVIDUAL);
+    private User userValid1 = new Customer(-1, null, null, "valid@email.com", "", "validPassword1!", Customer.Type.INDIVIDUAL);
 
     @Test
     public void testValidateUser() {
