@@ -128,6 +128,50 @@ public class OrderDBManager {
         return null;
     }
 
+    public Order getOrderByUserID(int userID) throws SQLException {       
+        //get the CartId, PaymentId, and DatePlaced from the Order table
+        String query = "SELECT * FROM `Order` WHERE UserID = '" + userID + "'"; 
+        ResultSet rs = st1.executeQuery(query); 
+
+        if (rs.next()) {
+            int orderId = rs.getInt("OrderID");
+            int CartId = rs.getInt("CartId");
+            int PaymentId = rs.getInt("PaymentId");
+
+            String dateString = rs.getString("DatePlaced");
+            LocalDateTime ldt = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
+            Timestamp timestamp = Timestamp.valueOf(ldt);
+
+            String statusString = rs.getString("OrderStatus");
+            OrderStatus status = OrderStatus.valueOf(statusString);
+            
+            //Step 1: Get all entries from ProductListEntry table with this CartId
+            String entryQuery = "SELECT * FROM ProductListEntry WHERE CartId = '" + CartId + "'"; 
+            ResultSet entryRs = st2.executeQuery(entryQuery);
+
+            List<ProductListEntry> ProductList = new ArrayList<>();
+            ProductDBManager productDBManager = new ProductDBManager(conn);
+
+            while (entryRs.next()) {
+                int ProductId = entryRs.getInt("ProductId");
+                int Quantity = entryRs.getInt("Quantity");
+
+                //Retrieves a product and creates a ProductListEntry
+                Product Product = productDBManager.getProduct(ProductId);
+                ProductListEntry Entry = new ProductListEntry(Product, Quantity);
+                ProductList.add(Entry);
+            }
+
+            //Step 3: Create Payment instance to add to Order constructor
+            PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
+            Payment Payment = paymentDBManager.getPayment(PaymentId);
+
+            Order order = new Order(orderId, ProductList, Payment, timestamp, status);
+            return order;
+        } 
+        return null;
+    }
+
     //Add an order into the database   
     public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
         String query = "INSERT INTO `Order` (OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?, ?)";

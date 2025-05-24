@@ -1,12 +1,15 @@
 package controller;
 
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,64 +43,36 @@ public class ConnServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        // Instantiate all DBManagers
-        try {
-            conn = dbConnector.openConnection();
+        if (session.getAttribute("connection") == null) {
+            try {
+                // Adjust your JDBC setup here
+                Class.forName("org.sqlite.JDBC");
+                Connection conn = DriverManager.getConnection("jdbc:sqlite:/Users/kiter/Desktop/Uni/IoTBay/IoTBay/database/database.db");
+                session.setAttribute("connection", conn);
 
-            if (session.getAttribute("userDBManager") == null) {
-                userDBManager = new UserDBManager(conn);
-                session.setAttribute("userDBManager", userDBManager);
+                // Create DBManagers using this connection
+                session.setAttribute("userDBManager", new UserDBManager(conn));
+                session.setAttribute("applicationAccessLogDBManager", new ApplicationAccessLogDBManager(conn));
+                session.setAttribute("productListEntryDBManager", new ProductListEntryDBManager(conn));
+                session.setAttribute("deliveryDBManager", new DeliveryDBManager(conn));
+                session.setAttribute("orderDBManager", new OrderDBManager(conn));
+                session.setAttribute("shipmentDBManager", new ShipmentDBManager(conn));
+                session.setAttribute("productDBManager", new ProductDBManager(conn));
+                session.setAttribute("cartDBManager", new CartDBManager(conn));
+
+            } catch (ClassNotFoundException | SQLException e) {
+                throw new ServletException("Database connection setup failed", e);
             }
-
-            if (session.getAttribute("applicationAccessLogDBManager") == null) {
-                applicationAccessLogDBManager = new ApplicationAccessLogDBManager(conn);
-                session.setAttribute("applicationAccessLogDBManager", applicationAccessLogDBManager);
-            }
-
-            if (session.getAttribute("cartDBManager") == null) {
-                cartDBManager = new CartDBManager(conn);
-                session.setAttribute("cartDBManager", cartDBManager);
-            }
-
-            if (session.getAttribute("orderDBManager") == null) {
-                orderDBManager = new OrderDBManager(conn);
-                session.setAttribute("orderDBManager", orderDBManager);
-            }
-
-            if (session.getAttribute("productDBManager") == null) {
-                productDBManager = new ProductDBManager(conn);
-                session.setAttribute("productDBManager", productDBManager);
-            }
-
-            if (session.getAttribute("productListEntryDBManager") == null) {
-                productListEntryDBManager = new ProductListEntryDBManager(conn);
-                session.setAttribute("productListEntryDBManager", productListEntryDBManager);
-            }
-
-            if (session.getAttribute("shipmentDBManager") == null) {
-                shipmentDBManager = new ShipmentDBManager(conn);
-                session.setAttribute("shipmentDBManager", shipmentDBManager);
-            }
-
-            if (session.getAttribute("deliveryDBManager") == null) {
-                deliveryDBManager = new DeliveryDBManager(conn);
-                session.setAttribute("deliveryDBManager", deliveryDBManager);
-            }
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not instantiate DBManagers", e);
         }
     }
 
     @Override
-    public void destroy() {
-        try {
-            dbConnector.closeConnection();
-        } catch (SQLException e) {
-            logger.log(Level.WARNING, "Could not close DB connection", e);
-        }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }
