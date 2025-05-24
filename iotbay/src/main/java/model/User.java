@@ -21,23 +21,15 @@ public abstract class User implements Serializable {
     private Role role;
     private List<ApplicationAccessLog> applicationAccessLogs;
 
-    public User(
-        int userId,
-        String firstName,
-        String lastName,
-        String email,
-        String phone,
-        String password,
-        Role role
-    ) {
-        this.userId                = userId;
-        this.firstName             = firstName;
-        this.lastName              = lastName;
-        this.email                 = email;
-        this.phone                 = phone;
-        this.password              = password;
-        this.deactivated           = false;
-        this.role                  = role;
+    public User(int userId, String firstName, String lastName, String email, String phone, String password, Role role) {
+        this.userId = userId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.deactivated = false;
+        this.role = role;
         this.applicationAccessLogs = new LinkedList<>();
     }
 
@@ -118,35 +110,24 @@ public abstract class User implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof User)) {
+
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        User u = (User) o;
-        return userId == u.userId
-            && deactivated == u.deactivated
-            && role == u.role
-            && firstName.equals(u.firstName)
-            && lastName.equals(u.lastName)
-            && email.equals(u.email)
-            && phone.equals(u.phone)
-            && password.equals(u.password);
-    }
 
-    @Override
-    public int hashCode() {
-        int result = Integer.hashCode(userId);
-        result = 31 * result + Boolean.hashCode(deactivated);
-        result = 31 * result + role.hashCode();
-        result = 31 * result + firstName.hashCode();
-        result = 31 * result + lastName.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + phone.hashCode();
-        result = 31 * result + password.hashCode();
-        return result;
+        User user = (User) obj;
+        return userId == user.userId
+            && deactivated == user.deactivated
+            && role == user.role
+            && firstName.equals(user.firstName)
+            && lastName.equals(user.lastName)
+            && email.equals(user.email)
+            && phone.equals(user.phone)
+            && password.equals(user.password);
     }
 }
 

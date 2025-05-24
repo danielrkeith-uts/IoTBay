@@ -8,26 +8,12 @@ public class Customer extends User {
     private List<Order> orders;
     private List<Shipment> shipments;  
 
-    public Customer(
-        int userId,
-        String firstName,
-        String lastName,
-        String email,
-        String phone,
-        String password
-    ) {
-        super(
-            userId,
-            firstName,
-            lastName,
-            email,
-            phone,
-            password,
-            Role.CUSTOMER
-        );
-        this.cart      = new Cart();
-        this.orders    = new LinkedList<>();
-        this.shipments = new LinkedList<>();
+    public Customer(int userId, String firstName, String lastName, String email, String phone, String password) {
+        super(userId, firstName, lastName, email, phone, password, Role.CUSTOMER);
+        
+        this.cart = new Cart();
+        this.orders = new LinkedList<Order>();
+        this.shipments = new LinkedList<Shipment>();
     }
 
     public Cart getCart() {

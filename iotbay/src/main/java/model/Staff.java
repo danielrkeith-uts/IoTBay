@@ -7,52 +7,12 @@ public class Staff extends User {
     private boolean isAdmin;
     private String position;
 
-    public Staff(
-        int userId,
-        String firstName,
-        String lastName,
-        String email,
-        String phone,
-        String password,
-        int staffCardId,
-        boolean isAdmin,
-        String position
-    ) {
-        super(
-            userId,
-            firstName,
-            lastName,
-            email,
-            phone,
-            password,
-            isAdmin ? Role.ADMIN : Role.STAFF
-        );
-        this.staffCardId = staffCardId;
-        this.isAdmin     = isAdmin;
-        this.position    = position;
-    }
+    public Staff(int userId, String firstName, String lastName, String email, String phone, String password, int staffCardId, boolean isAdmin, String position) {
+        super(userId, firstName, lastName, email, phone, password, isAdmin ? Role.ADMIN : Role.STAFF);
 
-    public Staff(
-        int userId,
-        String firstName,
-        String lastName,
-        String email,
-        String phone,
-        String password,
-        int staffCardId,
-        String position
-    ) {
-        this(
-            userId,
-            firstName,
-            lastName,
-            email,
-            phone,
-            password,
-            staffCardId,
-            false,
-            position
-        );
+        this.staffCardId = staffCardId;
+        this.isAdmin = isAdmin;
+        this.position = position;
     }
 
     public int getStaffCardId() {
@@ -80,30 +40,20 @@ public class Staff extends User {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (!(o instanceof Staff)) {
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
-        Staff that = (Staff) o;
-        return staffCardId == that.staffCardId
-            && isAdmin     == that.isAdmin
-            && Objects.equals(position, that.position);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-            super.hashCode(),
-            staffCardId,
-            isAdmin,
-            position
-        );
+        Staff staff = (Staff) obj;
+
+        return super.equals(staff)
+            && this.staffCardId == staff.staffCardId
+            && this.isAdmin == staff.isAdmin
+            && this.position.equals(staff.position);
     }
 }
 
