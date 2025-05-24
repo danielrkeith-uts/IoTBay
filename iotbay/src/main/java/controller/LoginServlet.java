@@ -29,17 +29,21 @@ public class LoginServlet extends HttpServlet {
     public void init() {
         logger = Logger.getLogger(LoginServlet.class.getName());
     }
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+        if (userDBManager == null) {
+            throw new ServletException("UserDBManager retrieved from session is null");
+        }
+    
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
 
         if (userDBManager == null || applicationAccessLogDBManager == null) {
             throw new ServletException("DB managers are not in session");
         }
-
+    
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
@@ -48,7 +52,7 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
-
+    
         User user;
         try {
             user = userDBManager.getUser(email, password);
@@ -58,7 +62,7 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
-
+    
         if (user == null) {
             session.setAttribute(ERROR_ATTR, "Incorrect email or password.");
             request.getRequestDispatcher(PAGE).forward(request, response);
@@ -77,9 +81,11 @@ public class LoginServlet extends HttpServlet {
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed to record login access log", e);
         }
-
+    
         session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
+    
+        response.sendRedirect("welcome.jsp");  
 
         Cart sessionCart = (Cart) session.getAttribute("cart");
         if (sessionCart != null && user instanceof Customer) {

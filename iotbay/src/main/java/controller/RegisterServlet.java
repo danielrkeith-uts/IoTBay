@@ -23,9 +23,10 @@ import utils.Validator;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
-    public static final String PAGE = "register.jsp";
+    private static final String PAGE = "register.jsp";
     private static final String ERROR_ATTR = "registerError";
-    private static final String ADMIN_PASSWORD = "admin";
+    private static final String STAFF_PASSWORD = "staff123";
+    private static final String ADMIN_PASSWORD = "admin123";
 
     private Logger logger;
 
@@ -57,53 +58,68 @@ public class RegisterServlet extends HttpServlet {
             throw new ServletException("OrderDBManager retrieved from session is null");
         }
 
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String phone = request.getParameter("phone");
-        boolean isStaff = request.getParameter("isStaff") != null;
-        String staffCardInput = request.getParameter("staffCardId");
-        String adminPassword = request.getParameter("adminPassword");
-        String position = request.getParameter("position");
+    String email = request.getParameter("email");
+    String password = request.getParameter("password");
+    String firstName = request.getParameter("firstName");
+    String lastName = request.getParameter("lastName");
+    String phone = request.getParameter("phone");
+    String type = request.getParameter("type"); // for customers
+    boolean isStaff = request.getParameter("isStaff") != null;
+    boolean isAdmin = request.getParameter("isSystemAdmin") != null;
+    String staffCardIdInput = request.getParameter("staffCardId");
+    String staffPassword = request.getParameter("staffPassword");
+    String adminPassword = request.getParameter("systemAdminPassword");
+
+    try {
+        // Check if user already exists by email
+        if (userDBManager.userExists(email)) {
+            throw new InvalidInputException("User already exists with that email");
+        }
 
         User user;
-        try {
-            if (isStaff) {
-                int staffCardId = Validator.validateStaffCardId(staffCardInput);
-                boolean makeAdmin = ADMIN_PASSWORD.equals(adminPassword);
-                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, makeAdmin, position);
+
+        if (isStaff || isAdmin) {
+            // Validate staff card id
+            int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+
+            if (isAdmin) {
+                if (adminPassword == null || !ADMIN_PASSWORD.equals(adminPassword)) {
+                    throw new InvalidInputException("Incorrect system admin password");
+                }
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
             } else {
-                user = new Customer(-1, firstName, lastName, email, phone, password);
+                if (staffPassword == null || !STAFF_PASSWORD.equals(staffPassword)) {
+                    throw new InvalidInputException("Incorrect staff password");
+                }
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, false);
             }
-
-            Validator.validateUser(user);
-
-            if (userDBManager.userExists(email)) {
-                throw new InvalidInputException("Email already in use");
+        } else {
+            // Customer registration
+            Customer.Type customerType;
+            try {
+                customerType = Customer.Type.valueOf(type);
+            } catch (IllegalArgumentException | NullPointerException e) {
+                customerType = Customer.Type.INDIVIDUAL; // default
             }
-        }
-        catch (InvalidInputException e) {
-            session.setAttribute(ERROR_ATTR, e.getMessage());
-            request.getRequestDispatcher(PAGE).include(request, response);
-            return;
-        }
-        catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error validating user", e);
-            throw new ServletException(e);
+            user = new Customer(-1, firstName, lastName, email, phone, password, customerType);
         }
 
-        try {
-            if (isStaff) {
-                userDBManager.addStaff((Staff) user);
-            } else {
-                userDBManager.addCustomer((Customer) user);
-                Customer customer = userDBManager.getCustomer(user.getUserId());
-                int userId = customer.getUserId();
-                user.setUserId(userId);
+        // Validate user fields (email format, password strength, etc.)
+        Validator.validateUser(user);
 
-                java.sql.Date now = new java.sql.Date(new Date().getTime());
-                int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
+        // Add user to DB
+        if (user instanceof Staff) {
+            userDBManager.addStaff((Staff) user);
+        } else {
+            userDBManager.addCustomer((Customer) user);
+
+            // Get inserted customer by email to retrieve userId
+            Customer customer = userDBManager.getCustomer(email, password);
+            user.setUserId(customer.getUserId());
+
+            // Create cart and save in session
+            java.sql.Date now = new java.sql.Date(new Date().getTime());
+            int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
 
                 Cart cart = new Cart();
                 cart.setCartId(cartId);
@@ -125,5 +141,11 @@ public class RegisterServlet extends HttpServlet {
         session.setAttribute("user", user);
         session.removeAttribute(ERROR_ATTR);
         request.getRequestDispatcher("welcome.jsp").include(request, response);
+
+    } catch (InvalidInputException | SQLException e) {
+        logger.log(Level.SEVERE, "Registration error", e);
+        session.setAttribute(ERROR_ATTR, e.getMessage());
+        request.getRequestDispatcher(PAGE).include(request, response);
     }
+}
 }

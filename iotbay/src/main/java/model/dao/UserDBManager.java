@@ -3,6 +3,9 @@ package model.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import model.Customer;
 import model.Staff;
@@ -47,6 +50,8 @@ public class UserDBManager {
         this.conn = conn;
 
         this.addUserPs = conn.prepareStatement(ADD_USER_STMT, Statement.RETURN_GENERATED_KEYS);
+
+        this.addUserPs = conn.prepareStatement(ADD_USER_STMT, Statement.RETURN_GENERATED_KEYS);
         this.addCustomerPs = conn.prepareStatement(ADD_CUSTOMER_STMT);
         this.addStaffPs = conn.prepareStatement(ADD_STAFF_STMT);
         this.getCustomerPsA = conn.prepareStatement(GET_CUSTOMER_STMT_A);
@@ -67,6 +72,7 @@ public class UserDBManager {
     public void addCustomer(Customer customer) throws SQLException {
         int userId = addUser(customer);
         addCustomerPs.setInt(1, userId);
+        addCustomerPs.setString(2, customer.getType().name());
         addCustomerPs.executeUpdate();
     }
 
@@ -75,16 +81,19 @@ public class UserDBManager {
         addStaffPs.setInt(1, userId);
         addStaffPs.setInt(2, staff.getStaffCardId());
         addStaffPs.setBoolean(3, staff.isAdmin());
+        addStaffPs.setBoolean(3, staff.isAdmin());
         addStaffPs.executeUpdate();
     }
 
     public User getUser(String email, String password) throws SQLException {
         User user = getCustomer(email, password);
         return (user != null) ? user : getStaff(email, password);
+        return (user != null) ? user : getStaff(email, password);
     }
 
     public User getUser(int userId) throws SQLException {
         User user = getCustomer(userId);
+        return (user != null) ? user : getStaff(userId);
         return (user != null) ? user : getStaff(userId);
     }
 
@@ -110,7 +119,8 @@ public class UserDBManager {
                     rs.getString("LastName"),
                     rs.getString("Email"),
                     rs.getString("Phone"),
-                    rs.getString("Password")
+                    rs.getString("Password"),
+                    Customer.Type.valueOf(rs.getString("Type").toUpperCase())
                 );
                 customer.setDeactivated(rs.getBoolean("Deactivated"));
                 customers.add(customer);
@@ -120,9 +130,66 @@ public class UserDBManager {
         return customers;
     }
 
+    private void updateCustomerDetails(Customer customer) throws SQLException {
+        String sql = "UPDATE Customer SET Type = ? WHERE UserId = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, customer.getType().name());
+            stmt.setInt(2, customer.getUserId());
+            stmt.executeUpdate();
+        }
+    }
+
     public void updateCustomer(Customer customer) throws SQLException {
         updateUser(customer);
+        updateCustomerDetails(customer);
     }
+
+    public List<Customer> getCustomersFiltered(String name, String type) throws SQLException {
+        List<Customer> customers = new ArrayList<>();
+
+        String sql = "SELECT User.UserId, User.FirstName, User.LastName, User.Email, " +
+                     "User.Phone, User.Password, User.Deactivated, Customer.Type " +
+                     "FROM User JOIN Customer ON User.UserId = Customer.UserId WHERE 1=1";
+        List<Object> params = new ArrayList<>();
+
+        if (name != null && !name.trim().isEmpty()) {
+            sql += " AND (LOWER(User.FirstName) LIKE ? OR LOWER(User.LastName) LIKE ?)";
+            String pattern = "%" + name.toLowerCase() + "%";
+            params.add(pattern);
+            params.add(pattern);
+        }
+
+        if (type != null && !type.trim().isEmpty()) {
+            sql += " AND Customer.Type = ?";
+            params.add(type.toUpperCase());
+        }
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Customer customer = new Customer(
+                        rs.getInt("UserId"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        rs.getString("Password"),
+                        Customer.Type.valueOf(rs.getString("Type"))
+                    );
+                    customer.setDeactivated(rs.getBoolean("Deactivated"));
+                    customers.add(customer);
+                }
+            }
+        }
+
+        return customers;
+    }
+
+   
 
     public List<Customer> getCustomersFiltered(String name, String type) throws SQLException {
         List<Customer> customers = new ArrayList<>();
@@ -182,6 +249,12 @@ public class UserDBManager {
             cancelOrders.setInt(1, userId);
             cancelOrders.executeUpdate();
         }
+        try (PreparedStatement cancelOrders = conn.prepareStatement(
+                "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE UserId = ?"
+        )) {
+            cancelOrders.setInt(1, userId);
+            cancelOrders.executeUpdate();
+        }
 
         applicationAccessLogDBManager.anonymiseApplicationAccessLogs(userId);
         deleteUserPs.setInt(1, userId);
@@ -225,11 +298,22 @@ public class UserDBManager {
             user.setUserId(userId);
             return userId;
         }
+
+        try (ResultSet rs = addUserPs.getGeneratedKeys()) {
+            if (!rs.next()) throw new SQLException("Failed to insert user");
+            int userId = rs.getInt(1);
+            user.setUserId(userId);
+            return userId;
+        }
     }
 
     public Customer getCustomer(String email, String password) throws SQLException {
+    public Customer getCustomer(String email, String password) throws SQLException {
         getCustomerPsA.setString(1, email);
         getCustomerPsA.setString(2, password);
+        try (ResultSet rs = getCustomerPsA.executeQuery()) {
+            return toCustomer(rs);
+        }
         try (ResultSet rs = getCustomerPsA.executeQuery()) {
             return toCustomer(rs);
         }
@@ -237,6 +321,9 @@ public class UserDBManager {
 
     public Customer getCustomer(int userId) throws SQLException {
         getCustomerPsB.setInt(1, userId);
+        try (ResultSet rs = getCustomerPsB.executeQuery()) {
+            return toCustomer(rs);
+        }
         try (ResultSet rs = getCustomerPsB.executeQuery()) {
             return toCustomer(rs);
         }
@@ -250,7 +337,8 @@ public class UserDBManager {
             rs.getString("LastName"),
             rs.getString("Email"),
             rs.getString("Phone"),
-            rs.getString("Password")
+            rs.getString("Password"),
+            Customer.Type.valueOf(rs.getString("Type").toUpperCase())
         );
         try {
             customer.setDeactivated(rs.getBoolean("Deactivated"));
@@ -275,8 +363,7 @@ public class UserDBManager {
 
     private Staff toStaff(ResultSet rs) throws SQLException {
         if (!rs.next()) return null;
-
-        Staff staff = new Staff(
+        return new Staff(
             rs.getInt("UserId"),
             rs.getString("FirstName"),
             rs.getString("LastName"),

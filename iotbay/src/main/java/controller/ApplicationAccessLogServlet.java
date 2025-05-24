@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
 import model.User;
+import model.User.Role;
 import model.dao.ApplicationAccessLogDBManager;
 
 @WebServlet("/ApplicationAccessLogServlet")
@@ -25,23 +27,45 @@ public class ApplicationAccessLogServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
         User user = (User) session.getAttribute("user");
 
-        List<ApplicationAccessLog> logs;
-        try {
-            logs = applicationAccessLogDBManager.getApplicationAccessLogs(user.getUserId());
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not retrieve application access logs");
+        if (user == null) {
+            response.sendRedirect("login.jsp");
             return;
         }
 
-        user.setApplicationAccessLogs(logs);
+        List<ApplicationAccessLog> logs = null;
+
+        try {
+            String customerIdParam = request.getParameter("customer_id");
+        
+            if (Role.STAFF.equals(user.getRole()) && customerIdParam != null) {
+                int customerId = Integer.parseInt(customerIdParam);
+                logs = applicationAccessLogDBManager.getApplicationAccessLogs(customerId);
+            } 
+            else if (customerIdParam != null && !Role.STAFF.equals(user.getRole())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to view other users' logs.");
+                return;
+            } 
+            else {
+                logs = applicationAccessLogDBManager.getApplicationAccessLogs(user.getUserId());
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not retrieve application access logs", e);
+            response.sendRedirect("error.jsp");
+            return;
+        }
+        
+
+        request.setAttribute("accessLogs", logs);
+        request.getRequestDispatcher("/viewAccessLogs.jsp").forward(request, response);
     }
 }

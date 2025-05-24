@@ -5,15 +5,31 @@ import java.util.List;
 
 public class Customer extends User {
     private Cart cart;
+    private Type type;
     private List<Order> orders;
     private List<Shipment> shipments;  
 
-    public Customer(int userId, String firstName, String lastName, String email, String phone, String password) {
+    public Customer(int userId, String firstName, String lastName, String email, String phone, String password, Type type) {
         super(userId, firstName, lastName, email, phone, password, Role.CUSTOMER);
        
+        this.type = type;
+
         cart = new Cart();
         orders = new LinkedList<Order>();
         shipments = new LinkedList<Shipment>(); 
+    }
+
+    public enum Type {
+        COMPANY,
+        INDIVIDUAL
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public Cart getCart() {

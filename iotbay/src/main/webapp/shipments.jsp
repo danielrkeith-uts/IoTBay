@@ -15,7 +15,7 @@
         session.removeAttribute("deleteShipmentError");
     %>
     <head>
-        <link rel="stylesheet" href="main.css" />
+        <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -24,20 +24,8 @@
     <body>
         <div class="banner">
             <h1>Internet of Things Store</h1>
-            <navbar>
-                <a href="index.jsp">Home</a>
-                <a href="products.jsp">Products</a>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
-                        <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
-                        <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                        <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
-                        <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
-                    </ul>
-                </div>
-            </navbar>
+                      <jsp:include page="navbar.jsp" />
+
         </div>
         <div class="content">
             <h2>My Shipments</h2>
@@ -45,7 +33,7 @@
             <div class="mb-4">
                 <form action="shipments.jsp" method="get" class="row g-3">
                     <div class="col-auto">
-                        <input type="text" name="searchQuery" class="form-control" placeholder="Search by ID">
+                        <input type="text" name="searchQuery" class="form-control" placeholder="Search by ID or Date">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn-green">Search</button>
@@ -69,6 +57,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Order ID</th>
+                            <th>Order Status</th>
                             <th>Method</th>
                             <th>Destination</th>
                             <th>Date</th>
@@ -80,18 +69,25 @@
                             <tr>
                                 <td><%= shipment.getShipmentId() %></td>
                                 <td><%= shipment.getOrder().getOrderId() %></td>
+                                <td><%= shipment.getOrder().getOrderStatus() %></td>
                                 <td><%= shipment.getMethod() %></td>
                                 <td>
-                                    <%= shipment.getAddress().getStreetNumber() %> 
-                                    <%= shipment.getAddress().getStreet() %>, 
-                                    <%= shipment.getAddress().getSuburb() %>, 
-                                    <%= shipment.getAddress().getState() %> 
+                                    <%= shipment.getAddress().getStreetNumber() %>
+                                    <%= shipment.getAddress().getStreet() %>,
+                                    <%= shipment.getAddress().getSuburb() %>,
+                                    <%= shipment.getAddress().getState() %>
                                     <%= shipment.getAddress().getPostcode() %>
                                 </td>
                                 <td><%= shipment.getShipmentDate() %></td>
                                 <td>
-                                    <a href="editshipment.jsp?shipmentId=<%= shipment.getShipmentId() %>" class="btn btn-sm btn-primary">Edit</a>
-                                    <a href="DeleteShipmentServlet?shipmentId=<%= shipment.getShipmentId() %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this shipment?')">Delete</a>
+                                    <%
+                                        if (!"PROCESSING".equals(shipment.getOrder().getOrderStatus().name())) {
+                                    %>
+                                        <span class="text-muted">Locked</span>
+                                    <% } else { %>
+                                        <a href="editshipment.jsp?shipmentId=<%= shipment.getShipmentId() %>" class="btn btn-sm btn-primary">Edit</a>
+                                        <a href="DeleteShipmentServlet?shipmentId=<%= shipment.getShipmentId() %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this shipment?')">Delete</a>
+                                    <% } %>
                                 </td>
                             </tr>
                         <% } %>

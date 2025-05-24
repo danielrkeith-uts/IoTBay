@@ -25,6 +25,20 @@ public class ApplicationAccessLogDBManager {
         "DELETE FROM ApplicationAccessLog WHERE AccessLogId = ?;";
 
     private final Connection conn;
+    
+    private static final String ADD_APPLICATION_ACCESS_LOG_STMT = 
+        "INSERT INTO ApplicationAccessLog (UserId, ApplicationAction, DateTime) VALUES (?, ?, ?);";
+
+    private static final String GET_APPLICATION_ACCESS_LOGS_STMT = 
+        "SELECT * FROM ApplicationAccessLog WHERE UserId = ?;";
+
+    private static final String ANONYMISE_APPLICATION_ACCESS_LOGS_STMT = 
+        "UPDATE ApplicationAccessLog SET UserId = NULL WHERE UserId = ?;";
+
+    private static final String DELETE_APPLICATION_ACCESS_LOG_STMT = 
+        "DELETE FROM ApplicationAccessLog WHERE AccessLogId = ?;";
+
+    private final Connection conn;
 
     private final PreparedStatement addApplicationAccessLogPs;
     private final PreparedStatement getApplicationAccessLogsPs;
@@ -34,14 +48,20 @@ public class ApplicationAccessLogDBManager {
     public ApplicationAccessLogDBManager(Connection conn) throws SQLException {
         this.conn = conn;
 
+        this.conn = conn;
+
         this.addApplicationAccessLogPs = conn.prepareStatement(ADD_APPLICATION_ACCESS_LOG_STMT);
         this.getApplicationAccessLogsPs = conn.prepareStatement(GET_APPLICATION_ACCESS_LOGS_STMT);
         this.anonymiseApplicationAccessLogsPs = conn.prepareStatement(ANONYMISE_APPLICATION_ACCESS_LOGS_STMT);
         this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLICATION_ACCESS_LOG_STMT);
+        this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLICATION_ACCESS_LOG_STMT);
     }
 
     public void addApplicationAccessLog(int userId, ApplicationAccessLog log3) throws SQLException {
+    public void addApplicationAccessLog(int userId, ApplicationAccessLog log3) throws SQLException {
         addApplicationAccessLogPs.setInt(1, userId);
+        addApplicationAccessLogPs.setInt(2, log3.getApplicationAction().toInt());
+        addApplicationAccessLogPs.setDate(3, new java.sql.Date(log3.getDateTime().getTime()));
         addApplicationAccessLogPs.setInt(2, log3.getApplicationAction().toInt());
         addApplicationAccessLogPs.setDate(3, new java.sql.Date(log3.getDateTime().getTime()));
 
@@ -54,8 +74,13 @@ public class ApplicationAccessLogDBManager {
         ResultSet rs = getApplicationAccessLogsPs.executeQuery();
 
         List<ApplicationAccessLog> applicationAccessLogs = new LinkedList<>();
+        List<ApplicationAccessLog> applicationAccessLogs = new LinkedList<>();
         while (rs.next()) {
             applicationAccessLogs.add(new ApplicationAccessLog(
+                rs.getInt("AccessLogId"),
+                userId,
+                rs.getTimestamp("DateTime"),
+                ApplicationAction.fromInt(rs.getInt("ApplicationAction"))
                 rs.getInt("AccessLogId"),
                 userId,
                 rs.getTimestamp("DateTime"),

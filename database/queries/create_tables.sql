@@ -6,6 +6,8 @@ CREATE TABLE User (
     Phone VARCHAR(17),
     Password VARCHAR(20),
     Deactivated INTEGER DEFAULT 0
+    Password VARCHAR(20),
+    Deactivated INTEGER DEFAULT 0
 );
 
 CREATE TABLE Staff (
@@ -19,6 +21,7 @@ CREATE TABLE Staff (
 CREATE TABLE Customer (
     UserId INTEGER PRIMARY KEY,
     CartId INTEGER,
+    Type TEXT DEFAULT 'INDIVIDUAL',
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
     FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE SET NULL
 );
