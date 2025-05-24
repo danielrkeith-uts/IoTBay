@@ -23,7 +23,7 @@ public class UserDBManagerTests {
                   "!@#$%^&*()",
                   1001,
                   true,
-                  "MANAGER");
+                  "STAFF");
 
     private static final Customer michaelJackson =
         new Customer(999, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");

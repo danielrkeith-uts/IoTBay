@@ -23,7 +23,6 @@ import model.dao.ProductListEntryDBManager;
 public class LoginServlet extends HttpServlet {
     public static final String PAGE       = "login.jsp";
     private static final String ERROR_ATTR = "loginError";
-
     private Logger logger;
 
     @Override
@@ -32,13 +31,18 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher(PAGE).forward(request, response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-
-        
         UserDBManager userDBManager =
             (UserDBManager) session.getAttribute("userDBManager");
         ApplicationAccessLogDBManager logMgr =
@@ -51,11 +55,10 @@ public class LoginServlet extends HttpServlet {
         String email    = request.getParameter("email");
         String password = request.getParameter("password");
 
-        
         if (email == null || email.isEmpty()
          || password == null || password.isEmpty()) {
             session.setAttribute(ERROR_ATTR, "Please fill in both email and password.");
-            request.getRequestDispatcher(PAGE).include(request, response);
+            request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
 
@@ -65,63 +68,60 @@ public class LoginServlet extends HttpServlet {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "DB error during login", e);
             session.setAttribute(ERROR_ATTR, "Internal error; please try again.");
-            request.getRequestDispatcher(PAGE).include(request, response);
+            request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
 
-        
         if (user == null) {
             session.setAttribute(ERROR_ATTR, "Incorrect email or password.");
-            request.getRequestDispatcher(PAGE).include(request, response);
+            request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
 
-        
         if (user.isDeactivated()) {
             session.setAttribute(ERROR_ATTR,
                 "Your account is currently deactivated. Contact an administrator.");
-            request.getRequestDispatcher(PAGE).include(request, response);
+            request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
 
-        // record login
         ApplicationAccessLog appLog =
             new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
         try {
             logMgr.addApplicationAccessLog(user.getUserId(), appLog);
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed to record login access log", e);
-            
         }
 
-        
         session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
 
         Cart sessionCart = (Cart) session.getAttribute("cart");
-
         if (sessionCart != null && user instanceof Customer) {
-            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
-
-            if (productListEntryDBManager == null) {
-                throw new ServletException("ProductListEntryDBManager retrieved from session is null");
+            ProductListEntryDBManager pleMgr =
+                (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+            if (pleMgr == null) {
+                throw new ServletException("ProductListEntryDBManager missing from session");
             }
 
-            Customer customer = (Customer) user;
-            Cart dbCart = customer.getCart(); 
-
+            Customer cust = (Customer) user;
+            Cart dbCart = cust.getCart();
             for (ProductListEntry entry : sessionCart.getProductList()) {
                 dbCart.addProduct(entry.getProduct(), entry.getQuantity());
-
                 try {
-                    productListEntryDBManager.addProduct(user.getUserId(), entry.getProduct().getProductId(), entry.getQuantity());
-                } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "Failed to merge cart item to DB", e);
+                    pleMgr.addProduct(
+                        user.getUserId(),
+                        entry.getProduct().getProductId(),
+                        entry.getQuantity()
+                    );
+                } catch (SQLException sqle) {
+                    logger.log(Level.SEVERE, "Could not merge cart item", sqle);
                 }
             }
-
             session.removeAttribute("cart");
-            request.getRequestDispatcher("welcome.jsp").include(request, response);
         }
+
+        response.sendRedirect("welcome.jsp");
     }
 }
+
