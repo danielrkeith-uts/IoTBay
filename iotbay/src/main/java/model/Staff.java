@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Objects;
-
 public class Staff extends User {
     private int staffCardId;
     private boolean isAdmin;
