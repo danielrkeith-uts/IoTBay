@@ -102,12 +102,14 @@
                                         </button>
                                 <% } %> 
                                 </form> --%>
-                                 <form action="CancelOrderServlet" method="post">
-                                   <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
-                                    <button type="submit" class="btn btn-primary mt-auto">
-                                        Cancel Order
-                                    </button>
-                                </form>
+                                <% if (o.getOrderStatus() == OrderStatus.SAVED) { %>
+                                    <form action="CancelOrderServlet" method="post">
+                                    <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
+                                        <button type="submit" class="btn btn-primary mt-auto">
+                                            Cancel Order
+                                        </button>
+                                    </form>
+                                <% } %>
                             </div>
                         </div>
                     <% } %>
