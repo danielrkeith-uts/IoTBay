@@ -314,8 +314,9 @@ public class UserDBManager {
 
         List<Staff> list = new ArrayList<>();
         try (ResultSet rs = searchStaffPs.executeQuery()) {
-            while (rs.next()) {
-                list.add(toStaff(rs));
+            Staff staff;
+            while ((staff = toStaff(rs)) != null) {
+                list.add(staff);
             }
         }
         return list;
@@ -324,8 +325,9 @@ public class UserDBManager {
     public List<Staff> getAllStaff() throws SQLException {
         List<Staff> list = new ArrayList<>();
         try (ResultSet rs = getAllStaffPs.executeQuery()) {
-            while (rs.next()) {
-                list.add(toStaff(rs));
+            Staff staff;
+            while ((staff = toStaff(rs)) != null) {
+                list.add(staff);
             }
         }
         return list;
