@@ -10,10 +10,10 @@ public class Customer extends User {
 
     public Customer(int userId, String firstName, String lastName, String email, String phone, String password) {
         super(userId, firstName, lastName, email, phone, password, Role.CUSTOMER);
-        
-        this.cart = new Cart();
-        this.orders = new LinkedList<Order>();
-        this.shipments = new LinkedList<Shipment>();
+       
+        cart = new Cart();
+        orders = new LinkedList<Order>();
+        shipments = new LinkedList<Shipment>(); 
     }
 
     public Cart getCart() {
@@ -25,7 +25,7 @@ public class Customer extends User {
     }
 
     public void clearCart() {
-        this.cart = new Cart();
+        cart = new Cart();
     }
 
     public List<Order> getOrders() {
@@ -33,9 +33,9 @@ public class Customer extends User {
     }
 
     public void placeOrder(Order order) {
-        this.orders.add(order);
+        orders.add(order);
     }
-
+    
     public List<Shipment> getShipments() {
         return shipments;
     }
@@ -45,7 +45,7 @@ public class Customer extends User {
     }
 
     public void addShipment(Shipment shipment) {
-        this.shipments.add(shipment);
+        shipments.add(shipment);
     }
+    
 }
-
