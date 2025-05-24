@@ -32,7 +32,7 @@ public class OrderDBManagerTests {
     static List<ProductListEntry> productList = new ArrayList<>();
     static YearMonth expirationDate = YearMonth.parse("2026-08", DateTimeFormatter.ofPattern("yyyy-MM"));
     static Card card = new Card(1, "John Smith", "123456789", expirationDate, "123");
-    static int userId = 42;  // example user id
+    static int userId = 1;
     static Timestamp timestamp = new Timestamp(datePlaced.getTime());
     static OrderStatus status = OrderStatus.PROCESSING;
     
@@ -69,8 +69,12 @@ public class OrderDBManagerTests {
         Assert.assertEquals(23.45, payment.getAmount(), 0.01);
         Assert.assertEquals(1, payment.getCard().getCardId());
         Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
-        Assert.assertEquals(new Date(1745539200), payment.getDate());
-        Assert.assertEquals(0, payment.getUserId());
+        
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+        String paymentDateFormatted = sdf2.format(payment.getDate());
+        Assert.assertEquals("2025-04-25", paymentDateFormatted);
+
+        Assert.assertEquals(1, payment.getUserId());
 
         List<String> expectedNames = Arrays.asList("Google Home Voice Controller", "Philips Hue Smart Bulbs");
         Assert.assertEquals(expectedNames.size(), productlist.size());
@@ -85,6 +89,7 @@ public class OrderDBManagerTests {
 
     @Test
     public void testUpdateOrder() {
+        int testOrderId = 99;
         Date now = new Date();
         Timestamp timestamp = new Timestamp(now.getTime());
 
@@ -100,7 +105,7 @@ public class OrderDBManagerTests {
         Payment payment = new Payment(1, 30.00, new Card(1, "John Smith", "123456789", expirationDate, "123"), PaymentStatus.ACCEPTED, new Date(), userId);
 
         Order updatedOrder = new Order(
-            order.getOrderId(),
+            testOrderId,
             testPLE,
             payment,
             timestamp,
@@ -108,27 +113,30 @@ public class OrderDBManagerTests {
         );
 
         try {
-            orderDBManager.updateOrder(updatedOrder);
-            Order result = orderDBManager.getOrder(updatedOrder.getOrderId());
+            int cartId = 1;
+            orderDBManager.addOrder(testOrderId, userId, cartId, payment.getPaymentId(), timestamp, status.name());
+            conn.createStatement().executeUpdate("DELETE FROM ProductListEntry WHERE CartId = 1");
 
-            Assert.assertEquals(updatedOrder.getOrderId(), result.getOrderId());
-            Assert.assertEquals(updatedOrder.getPayment().getPaymentId(), result.getPayment().getPaymentId());
+            orderDBManager.updateOrder(updatedOrder, cartId);
+            Order result = orderDBManager.getOrder(testOrderId);
+
+            Assert.assertEquals(testOrderId, result.getOrderId());
+            Assert.assertEquals(payment.getPaymentId(), result.getPayment().getPaymentId());
             Assert.assertEquals(status, result.getOrderStatus());
-
             Assert.assertEquals(timestamp.getTime(), result.getDatePlaced().getTime());
 
-            Assert.assertEquals("Google Home Voice Controller", result.getProductList().get(0).getProduct().getName());
+            Assert.assertEquals("Raspberry Pi", result.getProductList().get(0).getProduct().getName());
 
-        } catch (SQLException e) {
-            Assert.fail("SQLException: " + e.getMessage());
-        } finally {
-            try {
-                conn.rollback();
             } catch (SQLException e) {
-                System.err.println("Rollback failed: " + e.getMessage());
+            Assert.fail("SQLException: " + e.getMessage());
+            } finally {
+            try {
+            conn.rollback();
+            } catch (SQLException e) {
+            System.err.println("Rollback failed: " + e.getMessage());
             }
-        }
     }
+}
 
     @Test
     public void testAddOrder() {

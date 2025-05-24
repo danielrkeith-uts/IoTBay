@@ -62,7 +62,7 @@ public class OrderServlet extends HttpServlet {
             cart.setCartId(cartId);
 
             session.setAttribute("cart", cart);
-            response.sendRedirect("order.jsp");
+            response.sendRedirect("PaymentServlet?action=edit&id=1");
 
         } catch (SQLException e) {
             e.printStackTrace();

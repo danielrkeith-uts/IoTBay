@@ -130,19 +130,8 @@
 
             <label for="postCode">Post Code:</label><br>
             <input type="text" id="postCode" name="postCode" value="<%= postCode != null ? postCode : "" %>" required><br><br>
-        <h2>Payment Details</h2>
-            <label for="cardNumber">Card Number:</label><br>
-            <input type="text" id="cardNumber" name="cardNumber" value="<%= cardNumber %>" required><br><br>
 
-            <label for="cardName">Card Name:</label><br>
-            <input type="text" id="cardName" name="cardName" value="<%= cardName %>" required><br><br>
-
-            <label for="expiry">Expiration Date:</label><br>
-            <input type="text" id="expiry" name="expiry" value="<%=expiry != null ? expiry.toString() : "" %>" required><br><br>
-
-            <label for="cvc">CVC:</label><br>
-            <input type="text" id="cvc" name="cvc" value="<%= cvc %>" required><br><br>
-            <button type="submit" class="btn btn-success">Confirm Order</button>
-        </form>
+            <button type="submit" class="btn btn-success">Confirm Details and Proceed to Payment</button>
+            </form>
     </body>
 </html>

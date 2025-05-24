@@ -55,16 +55,14 @@ public class CartDBManager {
 
     //update a cart's LastUpdated in the database   
     public void updateCart(Cart cart) throws SQLException {
-        String query = "SELECT * FROM Cart WHERE CartId = " + cart.getCartId(); 
-        ResultSet rs = st.executeQuery(query); 
         Timestamp timestamp = new Timestamp(cart.getLastUpdated().getTime());
-
-        updateCartPs.setInt(1, rs.getInt("CartId"));
         String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
-        updateCartPs.setString(2, formatted);
-
+    
+        updateCartPs.setString(1, formatted);
+        updateCartPs.setInt(2, cart.getCartId());
+    
         updateCartPs.executeUpdate();
-    } 
+    }
 
     //delete a cart from the database   
     public void deleteCart(int CartId) throws SQLException{       

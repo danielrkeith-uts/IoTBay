@@ -61,6 +61,7 @@ public class PaymentServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
+        // Delete Card action
         if ("deleteCard".equals(action)) {
             String cardIdStr = request.getParameter("cardId");
             try {
@@ -68,11 +69,13 @@ public class PaymentServlet extends HttpServlet {
                 paymentDBManager.deleteCard(cardId, user.getUserId());
                 session.setAttribute("message", "Card deleted successfully.");
             } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to delete card", e);
                 session.setAttribute("error", "Failed to delete card.");
             }
             response.sendRedirect(request.getContextPath() + "/PaymentServlet");
             return;
         } 
+        // Edit (Update) Card action
         else if ("editCard".equals(action)) {
             try {
                 int cardId = Integer.parseInt(request.getParameter("cardId"));
@@ -85,12 +88,14 @@ public class PaymentServlet extends HttpServlet {
                 paymentDBManager.updateCard(card, user.getUserId());
                 session.setAttribute("message", "Card updated successfully.");
             } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to update card", e);
                 session.setAttribute("error", "Failed to update card: " + e.getMessage());
             }
             response.sendRedirect(request.getContextPath() + "/PaymentServlet");
             return;
         }
 
+        // Make Payment (or add card + pay) action
         try {
             double amount = Double.parseDouble(request.getParameter("amount"));
             
@@ -98,6 +103,7 @@ public class PaymentServlet extends HttpServlet {
             Card card = null;
             
             if (cardIdStr != null && !cardIdStr.isEmpty()) {
+                // User selected a saved card
                 int cardId = Integer.parseInt(cardIdStr);
                 int cardOwnerId = paymentDBManager.getCardOwner(cardId);
                 
@@ -105,13 +111,15 @@ public class PaymentServlet extends HttpServlet {
                     throw new Exception("Invalid or unauthorized card selected.");
                 }
 
-    card = paymentDBManager.getCardById(cardId);
+                card = paymentDBManager.getCardById(cardId);
             } else {
+                // User entered a new card on the form
                 String cardName       = request.getParameter("cardName");
                 String cardNumber     = request.getParameter("cardNumber");
                 String cardExpiryStr  = request.getParameter("cardExpiry");
                 String cardCVC        = request.getParameter("cardCVC");
 
+                // parse YearMonth (expected format: yyyy-MM)
                 YearMonth cardExpiry = YearMonth.parse(cardExpiryStr);
                 card = new Card(0, cardName, cardNumber, cardExpiry, cardCVC);
             }
@@ -126,8 +134,8 @@ public class PaymentServlet extends HttpServlet {
             );
             paymentDBManager.addPayment(payment);
 
-            List<Payment> payments =
-                paymentDBManager.getAllPaymentsForUser(user.getUserId());
+            // Show payment history on success
+            List<Payment> payments = paymentDBManager.getAllPaymentsForUser(user.getUserId());
             request.setAttribute("payments", payments);
 
             session.removeAttribute(ERROR_ATTR);
@@ -181,6 +189,7 @@ public class PaymentServlet extends HttpServlet {
             return;
         }
 
+        // Load saved cards for user to show in payment form
         try {
             List<Card> cards = paymentDBManager.getCardsForUser(user.getUserId());
             request.setAttribute("cards", cards);
@@ -189,6 +198,7 @@ public class PaymentServlet extends HttpServlet {
             session.setAttribute(ERROR_ATTR, "Unable to load saved cards: " + e.getMessage());
         }
 
+        // Load payments with optional filtering by status and date range
         String status = request.getParameter("status");
         String fromDateStr = request.getParameter("fromDate");
         String toDateStr = request.getParameter("toDate");

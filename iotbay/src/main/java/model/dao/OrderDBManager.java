@@ -2,8 +2,6 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import model.Enums.*;
@@ -32,10 +30,7 @@ public class OrderDBManager {
             int orderId = rs.getInt("OrderID");
             int CartId = rs.getInt("CartId");
             int PaymentId = rs.getInt("PaymentId");
-
-            String dateString = rs.getString("DatePlaced");
-            LocalDateTime ldt = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-            Timestamp timestamp = Timestamp.valueOf(ldt);
+            Timestamp timestamp = rs.getTimestamp("DatePlaced");
 
             String statusString = rs.getString("OrderStatus");
             OrderStatus status = OrderStatus.valueOf(statusString);
@@ -76,10 +71,7 @@ public class OrderDBManager {
             pst.setInt(2, UserId);
             pst.setInt(3, CartId);
             pst.setInt(4, PaymentId);
-            
-            Timestamp timestamp = new Timestamp(DatePlaced.getTime());
-            String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
-            pst.setString(5, formatted);
+            pst.setTimestamp(5, DatePlaced);
             pst.setString(6, status);
 
             pst.executeUpdate();
@@ -87,25 +79,40 @@ public class OrderDBManager {
     }
 
     //update an order's details in the database   
-    public void updateOrder(Order order) throws SQLException {
-        String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
-        ResultSet rs = st1.executeQuery(query); 
-
-        updateOrderPs.setInt(1, rs.getInt("UserId"));
-        updateOrderPs.setInt(2, rs.getInt("CartId"));
-        updateOrderPs.setInt(3, rs.getInt("PaymentId"));
-
-        String formattedDate = order.getDatePlaced().toLocalDateTime().toString().replace("T", " ");
-        updateOrderPs.setString(4, formattedDate);
-
-        updateOrderPs.setString(5, rs.getString("OrderStatus"));
-        updateOrderPs.setInt(6, rs.getInt("OrderId"));
-
+    public void updateOrder(Order order, int cartId) throws SQLException {
+        int userId = order.getPayment().getUserId();
+        int paymentId = order.getPayment().getPaymentId();
+    
+        updateOrderPs.setInt(1, userId);
+        updateOrderPs.setInt(2, cartId);
+        updateOrderPs.setInt(3, paymentId);
+        updateOrderPs.setTimestamp(4, order.getDatePlaced());
+        updateOrderPs.setString(5, order.getOrderStatus().name());
+        updateOrderPs.setInt(6, order.getOrderId());
         updateOrderPs.executeUpdate();
-    } 
+    
+        try (PreparedStatement deleteProductsPs = conn.prepareStatement("DELETE FROM ProductListEntry WHERE CartId = ?")) {
+            deleteProductsPs.setInt(1, cartId);
+            deleteProductsPs.executeUpdate();
+        }
+    
+        String insertProductSql = "INSERT INTO ProductListEntry (CartId, ProductId, Quantity) VALUES (?, ?, ?)";
+        try (PreparedStatement insertProductPs = conn.prepareStatement(insertProductSql)) {
+            for (ProductListEntry ple : order.getProductList()) {
+                insertProductPs.setInt(1, cartId);
+                insertProductPs.setInt(2, ple.getProduct().getProductId());
+                insertProductPs.setInt(3, ple.getQuantity());
+                insertProductPs.addBatch();
+            }
+            insertProductPs.executeBatch();
+        }
+    }
 
-    //orders can't be deleted, only set to cancelled  
-    public void cancelOrder(int OrderId) throws SQLException{       
-        st1.executeUpdate("UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = " + OrderId); 
+    public void cancelOrder(int orderId) throws SQLException {
+        String sql = "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE OrderId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.executeUpdate();
+        }
     }
 }
