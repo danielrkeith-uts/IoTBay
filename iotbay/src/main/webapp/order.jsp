@@ -123,7 +123,7 @@
             <input type="text" id="cardName" name="cardName" value="<%= cardName %>" required><br><br>
 
             <label for="expiry">Expiration Date:</label><br>
-            <input type="text" id="expiry" name="expiry" value="<%=expiry != null ? expiry.toString() : "" %>" required><br><br>
+            <input type="text" id="expiry" name="expiry" value="<%= expiry != null ? expiry.format(DateTimeFormatter.ofPattern("MM/yy")) : "" %>" required><br><br>
 
             <label for="cvc">CVC:</label><br>
             <input type="text" id="cvc" name="cvc" value="<%= cvc %>" required><br><br>

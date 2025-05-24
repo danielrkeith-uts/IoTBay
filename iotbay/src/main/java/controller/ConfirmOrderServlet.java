@@ -18,9 +18,7 @@ import java.time.format.DateTimeParseException;
 
 import model.dao.*;
 import model.*;
-import model.Enums.AuState;
-import model.Enums.OrderStatus;
-import model.Enums.PaymentStatus;
+import model.Enums.*;
 
 @WebServlet("/ConfirmOrderServlet")
 public class ConfirmOrderServlet extends HttpServlet {
@@ -35,16 +33,16 @@ public class ConfirmOrderServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         // Get and store form data
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        String email = request.getParameter("email");
-        String phone = request.getParameter("phone");
+        // String firstName = request.getParameter("firstName");
+        // String lastName = request.getParameter("lastName");
+        // String email = request.getParameter("email");
+        // String phone = request.getParameter("phone");
 
-        String streetNumberStr = request.getParameter("streetNumber");
-        String streetName = request.getParameter("streetName");
-        String suburb = request.getParameter("suburb");
-        String stateStr = request.getParameter("state");
-        String postCode = request.getParameter("postCode");
+        // String streetNumberStr = request.getParameter("streetNumber");
+        // String streetName = request.getParameter("streetName");
+        // String suburb = request.getParameter("suburb");
+        // String stateStr = request.getParameter("state");
+        // String postCode = request.getParameter("postCode");
 
         String cardNumber = request.getParameter("cardNumber");
         String cardName = request.getParameter("cardName");
@@ -105,6 +103,9 @@ public class ConfirmOrderServlet extends HttpServlet {
                 datePlaced,
                 OrderStatus.PLACED.toString()
             );
+            if (orderId <= 0) {
+                throw new SQLException("Order insert failed or returned invalid ID.");
+            }
 
             // Clear cart after order is placed
             session.removeAttribute("cart");
@@ -116,24 +117,25 @@ public class ConfirmOrderServlet extends HttpServlet {
             e.printStackTrace();
             session.setAttribute("cartError", "Failed to place order.");
             response.sendRedirect("cart.jsp");
+            logger.log(Level.SEVERE, "Order placement failed", e);
         }
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+    // protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    //     HttpSession session = request.getSession();
 
-        DeliveryDBManager deliveryDBManager = (DeliveryDBManager) session.getAttribute("deliveryDBManager");
-        if (deliveryDBManager == null) {
-            throw new ServletException("DeliveryDBManager retrieved from session is null");
-        }
+    //     DeliveryDBManager deliveryDBManager = (DeliveryDBManager) session.getAttribute("deliveryDBManager");
+    //     if (deliveryDBManager == null) {
+    //         throw new ServletException("DeliveryDBManager retrieved from session is null");
+    //     }
 
-        try {
-            Delivery delivery = deliveryDBManager.getDelivery(0);
-            Address address = delivery.getDestination();
-            session.setAttribute("address", address);
-            return;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error setting address", e);
-        }
-    }
+    //     try {
+    //         Delivery delivery = deliveryDBManager.getDelivery(0);
+    //         Address address = delivery.getDestination();
+    //         session.setAttribute("address", address);
+    //         return;
+    //     } catch (SQLException e) {
+    //         logger.log(Level.SEVERE, "Error setting address", e);
+    //     }
+    // }
 }

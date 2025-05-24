@@ -124,18 +124,24 @@ public class OrderDBManagerTests {
     @Test
     public void testAddOrder() {
         try {
-            int OrderId = 999;
             int UserId = 1;
             int CartId = 1;
             int PaymentId = 1;
-            Date DatePlaced = new Date();
+            Timestamp DatePlaced = new Timestamp(System.currentTimeMillis());
             String statusString = "PROCESSING";
             
-            orderDBManager.addOrder(UserId, CartId, PaymentId, new java.sql.Timestamp(DatePlaced.getTime()), statusString);
-            
-            Order order = orderDBManager.getOrder(OrderId);
+            // Get the generated OrderId from the insert
+            int generatedOrderId = orderDBManager.addOrder(
+                UserId, 
+                CartId, 
+                PaymentId, 
+                new java.sql.Timestamp(DatePlaced.getTime()), 
+                statusString
+            );
+
+            Order order = orderDBManager.getOrder(generatedOrderId); // Use returned ID
             Assert.assertNotNull(order);
-            Assert.assertEquals(OrderId, order.getOrderId());
+            Assert.assertEquals(generatedOrderId, order.getOrderId());
 
         } catch (SQLException e) {
             Assert.fail(e.getMessage());

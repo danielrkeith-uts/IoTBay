@@ -2,6 +2,7 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
@@ -17,7 +18,7 @@ public class CardDBManager {
         this.updateCardPs = conn.prepareStatement(UPDATE_CARD_STMT);  
     }
 
-    //Find a cart by CarDId in the database   
+    //Find a card by CardId in the database   
     public Card getCard(int cardId) throws SQLException {   
 
         //get a cart from the db
@@ -41,16 +42,28 @@ public class CardDBManager {
     }
 
     //Add a card to the database   
-    public int addCard(String name, String number, YearMonth expiry, String cvc) throws SQLException {       
+    public int addCard(String name, String number, YearMonth expiry, String cvc) throws SQLException {   
         String query = "INSERT INTO Card (Name, Number, Expiry, CVC) VALUES (?, ?, ?, ?)";
-        PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        ps.executeUpdate();
 
-        ResultSet rs = ps.getGeneratedKeys();
-        if (rs.next()) {
-            return rs.getInt(1); // generated cardId
-        } else {
-            throw new SQLException("Card ID not generated.");
+        try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setString(1, name);
+            pst.setString(2, number);
+
+            // Convert YearMonth to java.sql.Date as the first day of the month
+            java.sql.Date sqlExpiry = java.sql.Date.valueOf(expiry.atDay(1));
+            pst.setDate(3, sqlExpiry);
+
+            pst.setString(4, cvc);
+
+            pst.executeUpdate();
+
+            try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1); // Return generated CardId
+                } else {
+                    throw new SQLException("Creating card failed, no ID obtained.");
+                }
+            }
         }
     }
 }

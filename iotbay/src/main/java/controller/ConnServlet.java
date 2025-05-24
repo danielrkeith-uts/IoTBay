@@ -21,15 +21,15 @@ public class ConnServlet extends HttpServlet {
     private Logger logger;
 
     private DBConnector dbConnector;
-    private Connection conn;
-    private UserDBManager userDBManager;
-    private ProductDBManager productDBManager;
-    private ProductListEntryDBManager productListEntryDBManager;
-    private CartDBManager cartDBManager;
-    private OrderDBManager orderDBManager;
-    private ShipmentDBManager shipmentDBManager;
-    private DeliveryDBManager deliveryDBManager;
-    private ApplicationAccessLogDBManager applicationAccessLogDBManager;
+    // private Connection conn;
+    // private UserDBManager userDBManager;
+    // private ProductDBManager productDBManager;
+    // private ProductListEntryDBManager productListEntryDBManager;
+    // private CartDBManager cartDBManager;
+    // private OrderDBManager orderDBManager;
+    // private ShipmentDBManager shipmentDBManager;
+    // private DeliveryDBManager deliveryDBManager;
+    // private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     @Override
     public void init() {
