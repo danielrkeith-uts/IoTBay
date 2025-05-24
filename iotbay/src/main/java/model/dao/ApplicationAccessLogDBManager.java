@@ -1,7 +1,9 @@
 package model.dao;
 
-import java.sql.*;
-import java.util.Date;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,88 +11,95 @@ import model.ApplicationAccessLog;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLogDBManager {
-    private static final String ADD_SQL =
+    
+    private static final String ADD_APPLICATION_ACCESS_LOG_STMT = 
         "INSERT INTO ApplicationAccessLog (UserId, ApplicationAction, DateTime) VALUES (?, ?, ?);";
-    private static final String GET_BY_USER_SQL =
-        "SELECT AccessLogId, UserId, ApplicationAction, DateTime FROM ApplicationAccessLog WHERE UserId = ?;";
-    private static final String GET_BY_ID_SQL =
-        "SELECT AccessLogId, UserId, ApplicationAction, DateTime FROM ApplicationAccessLog WHERE AccessLogId = ?;";
-    private static final String DELETE_SQL =
-        "DELETE FROM ApplicationAccessLog WHERE AccessLogId = ?;";
-    private static final String ANONYMIZE_SQL =
+
+    private static final String GET_APPLICATION_ACCESS_LOGS_STMT = 
+        "SELECT * FROM ApplicationAccessLog WHERE UserId = ?;";
+
+    private static final String ANONYMISE_APPLICATION_ACCESS_LOGS_STMT = 
         "UPDATE ApplicationAccessLog SET UserId = NULL WHERE UserId = ?;";
 
-    private final PreparedStatement addPs;
-    private final PreparedStatement getByUserPs;
-    private final PreparedStatement getByIdPs;
-    private final PreparedStatement deletePs;
-    private final PreparedStatement anonymizePs;
+    private static final String DELETE_APPLICATION_ACCESS_LOG_STMT = 
+        "DELETE FROM ApplicationAccessLog WHERE AccessLogId = ?;";
+
+    private final Connection conn;
+
+    private final PreparedStatement addApplicationAccessLogPs;
+    private final PreparedStatement getApplicationAccessLogsPs;
+    private final PreparedStatement anonymiseApplicationAccessLogsPs;
+    private final PreparedStatement deleteApplicationAccessLogPs;
 
     public ApplicationAccessLogDBManager(Connection conn) throws SQLException {
-        this.addPs         = conn.prepareStatement(ADD_SQL, Statement.RETURN_GENERATED_KEYS);
-        this.getByUserPs   = conn.prepareStatement(GET_BY_USER_SQL);
-        this.getByIdPs     = conn.prepareStatement(GET_BY_ID_SQL);
-        this.deletePs      = conn.prepareStatement(DELETE_SQL);
-        this.anonymizePs   = conn.prepareStatement(ANONYMIZE_SQL);
+        this.conn = conn;
+
+        this.addApplicationAccessLogPs = conn.prepareStatement(ADD_APPLICATION_ACCESS_LOG_STMT);
+        this.getApplicationAccessLogsPs = conn.prepareStatement(GET_APPLICATION_ACCESS_LOGS_STMT);
+        this.anonymiseApplicationAccessLogsPs = conn.prepareStatement(ANONYMISE_APPLICATION_ACCESS_LOGS_STMT);
+        this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLICATION_ACCESS_LOG_STMT);
     }
 
-    public void addApplicationAccessLog(int userId, ApplicationAccessLog log) throws SQLException {
-        addPs.setInt(1, userId);
-        addPs.setInt(2, log.getApplicationAction().toInt());
-        addPs.setTimestamp(3, new Timestamp(log.getDateTime().getTime()));
-        addPs.executeUpdate();
+    public void addApplicationAccessLog(int userId, ApplicationAccessLog log3) throws SQLException {
+        addApplicationAccessLogPs.setInt(1, userId);
+        addApplicationAccessLogPs.setInt(2, log3.getApplicationAction().toInt());
+        addApplicationAccessLogPs.setDate(3, new java.sql.Date(log3.getDateTime().getTime()));
 
-        try (ResultSet keys = addPs.getGeneratedKeys()) {
-            if (keys.next()) {
-                log.setAccessLogId(keys.getInt(1));   // now matches AccessLogId
-                log.setUserId(userId);
-            }
-        }
+        addApplicationAccessLogPs.executeUpdate();
     }
 
     public List<ApplicationAccessLog> getApplicationAccessLogs(int userId) throws SQLException {
-        getByUserPs.setInt(1, userId);
-        try (ResultSet rs = getByUserPs.executeQuery()) {
-            List<ApplicationAccessLog> logs = new LinkedList<>();
-            while (rs.next()) {
-                logs.add(new ApplicationAccessLog(
-                    rs.getInt("AccessLogId"),                // renamed
-                    rs.getInt("UserId"),
-                    new Date(rs.getTimestamp("DateTime").getTime()),
-                    ApplicationAction.fromInt(rs.getInt("ApplicationAction"))
-                ));
-            }
-            return logs;
-        }
-    }
+        getApplicationAccessLogsPs.setInt(1, userId);
 
-    public ApplicationAccessLog getApplicationAccessLogById(int logId) throws SQLException {
-        getByIdPs.setInt(1, logId);
-        try (ResultSet rs = getByIdPs.executeQuery()) {
-            if (rs.next()) {
-                return new ApplicationAccessLog(
-                    rs.getInt("AccessLogId"),                // renamed
-                    rs.getInt("UserId"),
-                    new Date(rs.getTimestamp("DateTime").getTime()),
-                    ApplicationAction.fromInt(rs.getInt("ApplicationAction"))
-                );
-            }
-            return null;
-        }
-    }
+        ResultSet rs = getApplicationAccessLogsPs.executeQuery();
 
-    public void deleteApplicationAccessLog(int logId) throws SQLException {
-        deletePs.setInt(1, logId);
-        deletePs.executeUpdate();
+        List<ApplicationAccessLog> applicationAccessLogs = new LinkedList<>();
+        while (rs.next()) {
+            applicationAccessLogs.add(new ApplicationAccessLog(
+                rs.getInt("AccessLogId"),
+                userId,
+                rs.getTimestamp("DateTime"),
+                ApplicationAction.fromInt(rs.getInt("ApplicationAction"))
+            ));
+        }
+
+        return applicationAccessLogs;
     }
 
     public void anonymiseApplicationAccessLogs(int userId) throws SQLException {
-        anonymizePs.setInt(1, userId);
-        anonymizePs.executeUpdate();
+        anonymiseApplicationAccessLogsPs.setInt(1, userId);
+        anonymiseApplicationAccessLogsPs.executeUpdate();
+    }
+
+    public void deleteApplicationAccessLog(int accessLogId) throws SQLException {
+        deleteApplicationAccessLogPs.setInt(1, accessLogId);
+        deleteApplicationAccessLogPs.executeUpdate();
+    }
+
+    public ApplicationAccessLog getApplicationAccessLogById(int logId) throws SQLException {
+        String sql = "SELECT * FROM ApplicationAccessLog WHERE AccessLogId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, logId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new ApplicationAccessLog(
+                        rs.getInt("AccessLogId"),
+                        rs.getInt("UserId"),
+                        rs.getTimestamp("DateTime"),
+                        ApplicationAction.fromInt(rs.getInt("ApplicationAction"))
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    public void updateApplicationAccessLog(int logId, ApplicationAction newAction) throws SQLException {
+        String sql = "UPDATE ApplicationAccessLog SET ApplicationAction = ? WHERE AccessLogId = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, newAction.toInt());
+            ps.setInt(2, logId);
+            ps.executeUpdate();
+        }
     }
 }
-
-
-
-
-
