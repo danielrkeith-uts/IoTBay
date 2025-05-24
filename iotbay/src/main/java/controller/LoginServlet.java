@@ -38,7 +38,7 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
-        // grab our DAOs from the session
+        
         UserDBManager userDBManager =
             (UserDBManager) session.getAttribute("userDBManager");
         ApplicationAccessLogDBManager logMgr =
@@ -51,7 +51,7 @@ public class LoginServlet extends HttpServlet {
         String email    = request.getParameter("email");
         String password = request.getParameter("password");
 
-        // simple presence check
+        
         if (email == null || email.isEmpty()
          || password == null || password.isEmpty()) {
             session.setAttribute(ERROR_ATTR, "Please fill in both email and password.");
@@ -64,20 +64,19 @@ public class LoginServlet extends HttpServlet {
             user = userDBManager.getUser(email, password);
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "DB error during login", e);
-            // optionally show a generic error:
             session.setAttribute(ERROR_ATTR, "Internal error; please try again.");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
 
-        // wrong credentials?
+        
         if (user == null) {
             session.setAttribute(ERROR_ATTR, "Incorrect email or password.");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
 
-        // **NEW**: reject deactivated accounts
+        
         if (user.isDeactivated()) {
             session.setAttribute(ERROR_ATTR,
                 "Your account is currently deactivated. Contact an administrator.");
@@ -92,10 +91,10 @@ public class LoginServlet extends HttpServlet {
             logMgr.addApplicationAccessLog(user.getUserId(), appLog);
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed to record login access log", e);
-            // we won't block login if logging fails
+            
         }
 
-        // success!
+        
         session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
 

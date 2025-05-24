@@ -8,13 +8,6 @@ import model.Customer;
 import model.Staff;
 import model.User;
 
-/**
- * Data access manager for User, Customer, and Staff entities.
- * Assumes your Staff table now has columns:
- *   • StaffCardId   INTEGER
- *   • Admin         BOOLEAN
- *   • Position      TEXT
- */
 public class UserDBManager {
     private final Connection conn;
 
@@ -107,7 +100,7 @@ public class UserDBManager {
 
     // — Public API —
 
-    /** Does an email already exist? */
+    
     public boolean userExists(String email) throws SQLException {
         userExistsPs.setString(1, email);
         try (ResultSet rs = userExistsPs.executeQuery()) {
@@ -115,14 +108,14 @@ public class UserDBManager {
         }
     }
 
-    /** Insert a new customer (auto-sets generated ID). */
+    
     public void addCustomer(Customer c) throws SQLException {
         int uid = insertUser(c);
         addCustomerPs.setInt(1, uid);
         addCustomerPs.executeUpdate();
     }
 
-    /** Insert a new staff (auto-sets ID, admin flag, position). */
+    
     public void addStaff(Staff s) throws SQLException {
         int uid = insertUser(s);
         addStaffPs.setInt(1, uid);
@@ -132,24 +125,24 @@ public class UserDBManager {
         addStaffPs.executeUpdate();
     }
 
-    /** Fetch by credentials, preferring Customer then Staff. */
+    
     public User getUser(String email, String password) throws SQLException {
         Customer c = getCustomerByCreds(email, password);
         return (c != null) ? c : getStaffByCreds(email, password);
     }
 
-    /** Fetch by ID, preferring Customer then Staff. */
+    
     public User getUser(int userId) throws SQLException {
         Customer c = getCustomerById(userId);
         return (c != null) ? c : getStaffById(userId);
     }
 
-    /** Update a customer’s basic fields. */
+    
     public void updateCustomer(Customer c) throws SQLException {
         updateUser(c);
     }
 
-    /** Update staff’s fields + cardId/admin/position. */
+    
     public void updateStaff(Staff s) throws SQLException {
         updateUser(s);
         updateStaffPs.setInt(1,    s.getStaffCardId());
@@ -159,9 +152,9 @@ public class UserDBManager {
         updateStaffPs.executeUpdate();
     }
 
-    /** Fully delete a user (annonymise their logs first). */
+    
     public void deleteUser(int userId) throws SQLException {
-        // Cancel all orders from this user
+        
         PreparedStatement cancelOrders = conn.prepareStatement(
             "UPDATE `Order` SET OrderStatus = 'CANCELLED' WHERE UserId = ?"
         );
@@ -173,7 +166,7 @@ public class UserDBManager {
         deleteUserPs.executeUpdate();
     }
 
-    /** Soft-deactivate a staff so they can’t log in. */
+    
     public void deactivateStaff(int userId) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(
              "UPDATE User SET Deactivated=1 WHERE UserId=?;")) {
@@ -182,7 +175,7 @@ public class UserDBManager {
         }
     }
 
-    /** Reverse soft-delete on a staff. */
+    
     public void reactivateStaff(int userId) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(
              "UPDATE User SET Deactivated=0 WHERE UserId=?;")) {
@@ -191,7 +184,7 @@ public class UserDBManager {
         }
     }
 
-    /** Return every staff row. */
+    
     public List<Staff> getAllStaff() throws SQLException {
         List<Staff> list = new ArrayList<>();
         try (ResultSet rs = getAllStaffPs.executeQuery()) {
@@ -202,9 +195,7 @@ public class UserDBManager {
         return list;
     }
 
-    /**
-     * Search by full name (LIKE %q%) and position (exact or “ALL” for no filter).
-     */
+    
     public List<Staff> searchStaff(String q, String position) throws SQLException {
         String namePattern = (q == null || q.trim().isEmpty())
                              ? "%" : "%" + q.trim() + "%";
@@ -223,10 +214,12 @@ public class UserDBManager {
         }
         return list;
     }
+        public Customer getCustomer(int userId) throws SQLException {
+        return getCustomerById(userId);
+    }
 
-    // — Private helpers —
 
-    /** Inserts into User table, returns generated key (and sets u.userId). */
+   
     private int insertUser(User u) throws SQLException {
         addUserPs.setString(1, u.getFirstName());
         addUserPs.setString(2, u.getLastName());
@@ -311,7 +304,7 @@ public class UserDBManager {
         return s;
     }
 
-    /** Common update of the User side (name/email/phone/password). */
+   
     private void updateUser(User u) throws SQLException {
         updateUserPs.setString(1, u.getFirstName());
         updateUserPs.setString(2, u.getLastName());

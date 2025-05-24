@@ -63,7 +63,7 @@
     </c:if>
 
     <div class="mb-3 text-end">
-      <!-- now directly to addstaff.jsp -->
+      
       <a href="addstaff.jsp" class="btn btn-success">
         <i class="fas fa-user-plus"></i> Add New Staff
       </a>
@@ -105,7 +105,7 @@
               <a href="LoadEditStaffServlet?userId=${s.userId}"
                  class="btn btn-sm btn-info">Edit</a>
 
-              <!-- restored exactly as you had it -->
+              
               <a href="DeleteStaffServlet?id=${s.userId}"
                  class="btn btn-sm btn-danger"
                  onclick="return confirm('Delete ${s.firstName} ${s.lastName}?')">

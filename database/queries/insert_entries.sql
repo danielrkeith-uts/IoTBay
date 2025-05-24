@@ -209,32 +209,34 @@ VALUES
     (19, 19),
     (20, 20);
 
+
 -- Staff
-INSERT INTO Staff (UserId, StaffCardId, Admin)
+INSERT INTO Staff (UserId, StaffCardId, Admin, Position)
 VALUES 
-    (21, 1001, TRUE),
-    (22, 1002),
-    (23, 1003),
-    (24, 1004),
-    (25, 1005),
-    (26, 1006),
-    (27, 1007),
-    (28, 1008),
-    (29, 1009),
-    (30, 1010),
-    (31, 1011),
-    (32, 1012),
-    (33, 1013),
-    (34, 1014),
-    (35, 1015),
-    (36, 1016),
-    (37, 1017),
-    (38, 1018),
-    (39, 1019),
-    (40, 1020);
+    (21, 1001, TRUE,  'STAFF'),
+    (22, 1002, FALSE, 'TECH'),
+    (23, 1003, FALSE, 'SALES'),
+    (24, 1004, TRUE,  'MANAGER'),
+    (25, 1005, FALSE, 'TECH'),
+    (26, 1006, FALSE, 'SALES'),
+    (27, 1007, TRUE,  'MANAGER'),
+    (28, 1008, FALSE, 'TECH'),
+    (29, 1009, FALSE, 'SALES'),
+    (30, 1010, TRUE,  'MANAGER'),
+    (31, 1011, FALSE, 'TECH'),
+    (32, 1012, FALSE, 'SALES'),
+    (33, 1013, TRUE,  'MANAGER'),
+    (34, 1014, FALSE, 'TECH'),
+    (35, 1015, FALSE, 'SALES'),
+    (36, 1016, TRUE,  'MANAGER'),
+    (37, 1017, FALSE, 'TECH'),
+    (38, 1018, FALSE, 'SALES'),
+    (39, 1019, TRUE,  'MANAGER'),
+    (40, 1020, FALSE, 'TECH');
+
 
 -- ApplicationAccessLog
-INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
+INSERT INTO ApplicationAccessLog (AccessLogId, UserId, ApplicationAction, DateTime)
 VALUES 
     (1, 1, 0, 1745632800000),
     (2, 1, 1, 1745633100000),

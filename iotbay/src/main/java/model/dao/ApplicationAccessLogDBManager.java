@@ -34,7 +34,7 @@ public class ApplicationAccessLogDBManager {
         this.anonymizePs   = conn.prepareStatement(ANONYMIZE_SQL);
     }
 
-    /** Inserts a new log, then populates its ID and userId on the passed-in object */
+    
     public void addApplicationAccessLog(int userId, ApplicationAccessLog log) throws SQLException {
         addPs.setInt(1, userId);
         addPs.setInt(2, log.getApplicationAction().toInt());
@@ -49,7 +49,7 @@ public class ApplicationAccessLogDBManager {
         }
     }
 
-    /** Retrieves all logs for a given staff member */
+    
     public List<ApplicationAccessLog> getApplicationAccessLogs(int userId) throws SQLException {
         getByUserPs.setInt(1, userId);
         try (ResultSet rs = getByUserPs.executeQuery()) {
@@ -66,7 +66,7 @@ public class ApplicationAccessLogDBManager {
         }
     }
 
-    /** Optionally retrieve a single log by its ID */
+   
     public ApplicationAccessLog getApplicationAccessLogById(int logId) throws SQLException {
         getByIdPs.setInt(1, logId);
         try (ResultSet rs = getByIdPs.executeQuery()) {
@@ -82,13 +82,13 @@ public class ApplicationAccessLogDBManager {
         }
     }
 
-    /** Deletes a log entry by its ID */
+    
     public void deleteApplicationAccessLog(int logId) throws SQLException {
         deletePs.setInt(1, logId);
         deletePs.executeUpdate();
     }
 
-    /** Anonymizes all logs for a user (sets UserId to NULL) */
+    
     public void anonymiseApplicationAccessLogs(int userId) throws SQLException {
         anonymizePs.setInt(1, userId);
         anonymizePs.executeUpdate();

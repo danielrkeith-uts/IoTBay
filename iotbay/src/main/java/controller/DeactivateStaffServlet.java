@@ -20,7 +20,7 @@ public class DeactivateStaffServlet extends HttpServlet {
         UserDBManager mgr = (UserDBManager) session.getAttribute("userDBManager");
         String userIdParam = req.getParameter("userId");
 
-        // if we don't have a manager or no ID, go back to list
+        
         if (mgr == null || userIdParam == null) {
             resp.sendRedirect("StaffListServlet");
             return;
@@ -30,11 +30,10 @@ public class DeactivateStaffServlet extends HttpServlet {
             int userId = Integer.parseInt(userIdParam);
             mgr.deactivateStaff(userId);
         } catch (NumberFormatException | SQLException e) {
-            // you might log this or set a flash message in session
-            // e.g. session.setAttribute("errorMessage", "Could not deactivate staff.");
+            
         }
 
-        // always redirect back so the list refreshes
+       
         resp.sendRedirect("StaffListServlet");
     }
 }

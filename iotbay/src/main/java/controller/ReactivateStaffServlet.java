@@ -29,8 +29,7 @@ public class ReactivateStaffServlet extends HttpServlet {
             int userId = Integer.parseInt(userIdParam);
             mgr.reactivateStaff(userId);
         } catch (NumberFormatException | SQLException e) {
-            // optionally log or flash message:
-            // session.setAttribute("errorMessage", "Could not reactivate staff.");
+            
         }
 
         resp.sendRedirect("StaffListServlet");

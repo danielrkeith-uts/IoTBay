@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import model.Customer;
@@ -11,18 +12,10 @@ import model.Staff;
 import model.User;
 
 public class UserDBManagerTests {
-    // In database
     private static final Customer johnSmith =
-        new Customer(0,
-                     "John",
-                     "Smith",
-                     "john.smith@gmail.com",
-                     "+61412345678",
-                     "johnsPassword");
-
-    // ← Added "ADMIN" as the position for our single built-in admin staff
+        new Customer(1, "John", "Smith", "john.smith@gmail.com", "+61412345678", "johnsPassword");
     private static final Staff gregoryStafferson =
-        new Staff(1,
+        new Staff(21,
                   "Gregory",
                   "Stafferson",
                   "gregory.stafferson@iotbay.com",
@@ -30,151 +23,118 @@ public class UserDBManagerTests {
                   "!@#$%^&*()",
                   1001,
                   true,
-                  "STAFF");
+                  "MANAGER");
 
-    // Not in database
     private static final Customer michaelJackson =
-        new Customer(999,
-                     "Michael",
-                     "Jackson",
-                     "michael.jackson@bad.com",
-                     "+61 111 111 111",
-                     "smooth-criminal");
+        new Customer(999, "Michael", "Jackson", "michael.jackson@bad.com", "+61 111 111 111", "smooth-criminal");
 
-    private final Connection conn;
-    private final UserDBManager userDBManager;
+    private Connection conn;
+    private UserDBManager mgr;
 
-    public UserDBManagerTests() throws ClassNotFoundException, SQLException {
-        this.conn           = new DBConnector().openConnection();
-        this.conn.setAutoCommit(false);
-        this.userDBManager  = new UserDBManager(conn);
+    @Before
+    public void setUp() throws ClassNotFoundException, SQLException {
+        conn = new DBConnector().openConnection();
+        conn.setAutoCommit(false);
+        mgr = new UserDBManager(conn);
+    }
+
+    private void assertCustomerEquals(Customer expected, Customer actual) {
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected.getUserId(),   actual.getUserId());
+        Assert.assertEquals(expected.getFirstName(),actual.getFirstName());
+        Assert.assertEquals(expected.getLastName(), actual.getLastName());
+        Assert.assertEquals(expected.getEmail(),    actual.getEmail());
+        Assert.assertEquals(expected.getPhone(),    actual.getPhone());
+        Assert.assertEquals(expected.getPassword(), actual.getPassword());
+    }
+
+    private void assertStaffEquals(Staff expected, Staff actual) {
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(expected.getUserId(),     actual.getUserId());
+        Assert.assertEquals(expected.getFirstName(),  actual.getFirstName());
+        Assert.assertEquals(expected.getLastName(),   actual.getLastName());
+        Assert.assertEquals(expected.getEmail(),      actual.getEmail());
+        Assert.assertEquals(expected.getPhone(),      actual.getPhone());
+        Assert.assertEquals(expected.getPassword(),   actual.getPassword());
+        Assert.assertEquals(expected.getStaffCardId(),actual.getStaffCardId());
+        Assert.assertEquals(expected.isAdmin(),       actual.isAdmin());
+        Assert.assertEquals(expected.getPosition(),   actual.getPosition());
     }
 
     @Test
-    public void testAddCustomer() {
-        try {
-            userDBManager.addCustomer(michaelJackson);
-
-            Customer mjResult = (Customer) userDBManager.getUser(michaelJackson.getUserId());
-            Assert.assertEquals(michaelJackson, mjResult);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        } finally {
-            try { conn.rollback(); }
-            catch (SQLException ignore) {}
-        }
+    public void testAddCustomer() throws SQLException {
+        mgr.addCustomer(michaelJackson);
+        Customer result = (Customer) mgr.getUser(michaelJackson.getUserId());
+        assertCustomerEquals(michaelJackson, result);
+        conn.rollback();
     }
 
     @Test
-    public void testGetCustomerA() {
-        try {
-            Customer jsResult = (Customer) userDBManager.getUser(
-                johnSmith.getEmail(),
-                johnSmith.getPassword()
-            );
-            Assert.assertEquals(johnSmith, jsResult);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        }
+    public void testGetCustomerByCred() throws SQLException {
+        Customer result = (Customer) mgr.getUser(johnSmith.getEmail(), johnSmith.getPassword());
+        assertCustomerEquals(johnSmith, result);
     }
 
     @Test
-    public void testGetCustomerB() {
-        try {
-            jsResult = (Customer) userDBManager.getUser(1);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        }
+    public void testGetCustomerById() throws SQLException {
+        Customer result = (Customer) mgr.getUser(johnSmith.getUserId());
+        assertCustomerEquals(johnSmith, result);
     }
 
     @Test
-    public void testGetStaffA() {
-        try {
-            Staff gsResult = (Staff) userDBManager.getUser(
-                gregoryStafferson.getEmail(),
-                gregoryStafferson.getPassword()
-            );
-            Assert.assertEquals(gregoryStafferson, gsResult);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        }
+    public void testGetStaffByCred() throws SQLException {
+        Staff result = (Staff) mgr.getUser(gregoryStafferson.getEmail(), gregoryStafferson.getPassword());
+        assertStaffEquals(gregoryStafferson, result);
     }
 
     @Test
-    public void testGetStaffB() {
-        try {
-            gsResult = (Staff) userDBManager.getUser(21);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        }
+    public void testGetStaffById() throws SQLException {
+        User u = mgr.getUser(gregoryStafferson.getUserId());
+        Assert.assertTrue(u instanceof Staff);
+        assertStaffEquals(gregoryStafferson, (Staff)u);
     }
 
     @Test
-    public void testUpdateCustomer() {
-        Customer newJohnSmith = new Customer(
+    public void testUpdateCustomer() throws SQLException {
+        Customer modified = new Customer(
             johnSmith.getUserId(),
-            johnSmith.getFirstName() + "1",
-            johnSmith.getLastName()  + "2",
-            johnSmith.getEmail()     + "3",
-            johnSmith.getPhone()     + "4",
-            johnSmith.getPassword()  + "5"
+            johnSmith.getFirstName() + "X",
+            johnSmith.getLastName()  + "Y",
+            johnSmith.getEmail()     + "Z",
+            johnSmith.getPhone()     + "0",
+            johnSmith.getPassword()  + "!"
         );
-
-        try {
-            userDBManager.updateCustomer(newJohnSmith);
-            Customer newJsResult = (Customer) userDBManager.getUser(johnSmith.getUserId());
-            Assert.assertEquals(newJohnSmith, newJsResult);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        } finally {
-            try { conn.rollback(); }
-            catch (SQLException ignore) {}
-        }
+        mgr.updateCustomer(modified);
+        Customer result = (Customer) mgr.getUser(johnSmith.getUserId());
+        assertCustomerEquals(modified, result);
+        conn.rollback();
     }
 
     @Test
-    public void testUpdateStaff() {
-        // include same position, only staffCardId and names/etc change
-        Staff newGregoryStafferson = new Staff(
+    public void testUpdateStaff() throws SQLException {
+        Staff modified = new Staff(
             gregoryStafferson.getUserId(),
-            gregoryStafferson.getFirstName() + "1",
-            gregoryStafferson.getLastName()  + "2",
-            gregoryStafferson.getEmail()     + "3",
-            gregoryStafferson.getPhone()     + "4",
-            gregoryStafferson.getPassword()  + "5",
-            gregoryStafferson.getStaffCardId() + 6,
+            gregoryStafferson.getFirstName() + "X",
+            gregoryStafferson.getLastName()  + "Y",
+            gregoryStafferson.getEmail()     + "Z",
+            gregoryStafferson.getPhone()     + "0",
+            gregoryStafferson.getPassword()  + "!",
+            gregoryStafferson.getStaffCardId() + 1,
             gregoryStafferson.isAdmin(),
             gregoryStafferson.getPosition()
         );
-
-        try {
-            userDBManager.updateStaff(newGregoryStafferson);
-            Staff newGsResult = (Staff) userDBManager.getUser(gregoryStafferson.getUserId());
-            Assert.assertEquals(newGregoryStafferson, newGsResult);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        } finally {
-            try { conn.rollback(); }
-            catch (SQLException ignore) {}
-        }
+        mgr.updateStaff(modified);
+        User u = mgr.getUser(modified.getUserId());
+        Assert.assertTrue(u instanceof Staff);
+        assertStaffEquals(modified, (Staff)u);
+        conn.rollback();
     }
 
     @Test
-    public void testDeleteUser() {
-        try {
-            userDBManager.deleteUser(0);
-            User deletedUser = userDBManager.getUser(0);
-            Assert.assertNull(deletedUser);
-        } catch (SQLException e) {
-            Assert.fail(e.getMessage());
-        } finally {
-            try { conn.rollback(); }
-            catch (SQLException ignore) {}
-        }
+    public void testDeleteUser() throws SQLException {
+        mgr.deleteUser(johnSmith.getUserId());
+        User u = mgr.getUser(johnSmith.getUserId());
+        Assert.assertNull(u);
+        conn.rollback();
     }
 }
-
-
-
-
-

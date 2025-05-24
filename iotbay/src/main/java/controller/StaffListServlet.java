@@ -22,7 +22,7 @@ public class StaffListServlet extends HttpServlet {
         UserDBManager mgr = (UserDBManager) session.getAttribute("userDBManager");
         User current     = (User) session.getAttribute("user");
 
-        // guard rails
+       
         if (mgr == null) {
             req.setAttribute("errorMessage", "Database unavailable.");
             req.getRequestDispatcher("/error.jsp")
@@ -34,21 +34,21 @@ public class StaffListServlet extends HttpServlet {
             return;
         }
 
-        // optional search/filter inputs
-        String q        = req.getParameter("q");         // name query
-        String position = req.getParameter("position");  // position filter
+        
+        String q        = req.getParameter("q");         
+        String position = req.getParameter("position");  
 
         try {
             List<Staff> staffList;
             if ((q != null && !q.trim().isEmpty())
              || (position != null && !"ALL".equals(position))) {
-                // new searchStaff(name, position) API
+                
                 staffList = mgr.searchStaff(q, position);
             } else {
                 staffList = mgr.getAllStaff();
             }
 
-            // echo back to JSP
+            
             req.setAttribute("q",         q);
             req.setAttribute("position",  position);
             req.setAttribute("staffList", staffList);

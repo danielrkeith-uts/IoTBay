@@ -26,20 +26,17 @@ public class AddStaffServlet extends HttpServlet {
         String phone              = req.getParameter("phone");
         String password           = req.getParameter("password");
         String staffCardIdParam   = req.getParameter("staffCardId");
-        String position           = req.getParameter("position");  // new field
-        boolean isAdmin           = false;                           // default for new staff
+        String position           = req.getParameter("position");
+        boolean isAdmin           = false;                           
 
         try {
-            // parse & validate staff-card
             int staffCardId = Validator.validateStaffCardId(staffCardIdParam);
 
-            // validate email / phone / password
             Validator.validateUser(new Staff(
                 -1, firstName, lastName, email, phone, password,
                 staffCardId, isAdmin, position
             ));
 
-            // build staff object (userId = -1 so the DB manager assigns it)
             Staff staff = new Staff(
                 -1, firstName, lastName, email, phone, password,
                 staffCardId, isAdmin, position

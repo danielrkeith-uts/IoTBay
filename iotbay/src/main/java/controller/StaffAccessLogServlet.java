@@ -23,7 +23,7 @@ public class StaffAccessLogServlet extends HttpServlet {
             (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         String userIdParam = req.getParameter("userId");
 
-        // missing manager or param? go back to list
+        
         if (logMgr == null || userIdParam == null) {
             resp.sendRedirect("StaffListServlet");
             return;
@@ -35,11 +35,11 @@ public class StaffAccessLogServlet extends HttpServlet {
             req.setAttribute("logs", logs);
             req.setAttribute("staffId", userId);
         } catch (NumberFormatException | SQLException e) {
-            // in case of parse or SQL error, show an inline error
+            
             req.setAttribute("errorMessage", "Could not load access logs.");
         }
 
-        // forward into JSP to render the table (or the error message)
+        
         req.getRequestDispatcher("/stafflogs.jsp").forward(req, resp);
     }
 }
