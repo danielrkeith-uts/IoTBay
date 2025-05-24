@@ -21,7 +21,7 @@ public class ApplicationAccessLogServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(LoginServlet.class.getName());
+        logger = Logger.getLogger(ApplicationAccessLogServlet.class.getName());
     }
 
     @Override

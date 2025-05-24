@@ -28,7 +28,7 @@ public class AccountDetailsServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(LoginServlet.class.getName());
+        logger = Logger.getLogger(AccountDetailsServlet.class.getName());
     }
 
     @Override

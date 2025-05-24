@@ -35,10 +35,7 @@ public class RegisterServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
@@ -50,8 +47,7 @@ public class RegisterServlet extends HttpServlet {
             throw new ServletException("CartDBManager retrieved from session is null");
         }
 
-        ApplicationAccessLogDBManager applicationAccessLogDBManager =
-            (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
@@ -61,34 +57,24 @@ public class RegisterServlet extends HttpServlet {
             throw new ServletException("OrderDBManager retrieved from session is null");
         }
 
-        String email         = request.getParameter("email");
-        String password      = request.getParameter("password");
-        String firstName     = request.getParameter("firstName");
-        String lastName      = request.getParameter("lastName");
-        String phone         = request.getParameter("phone");
-        boolean isStaff      = request.getParameter("isStaff") != null;
-        String staffCardRaw  = request.getParameter("staffCardId");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String phone = request.getParameter("phone");
+        boolean isStaff = request.getParameter("isStaff") != null;
+        String staffCardInput = request.getParameter("staffCardId");
         String adminPassword = request.getParameter("adminPassword");
-        String position      = request.getParameter("position");
-        if (position == null || position.trim().isEmpty()) {
-            position = "STAFF";
-        }
+        String position = request.getParameter("position");
 
         User user;
         try {
             if (isStaff) {
-                int staffCardId = Validator.validateStaffCardId(staffCardRaw);
+                int staffCardId = Validator.validateStaffCardId(staffCardInput);
                 boolean makeAdmin = ADMIN_PASSWORD.equals(adminPassword);
-                user = new Staff(
-                    -1,
-                    firstName, lastName, email, phone, password,
-                    staffCardId, makeAdmin, position
-                );
+                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, makeAdmin, position);
             } else {
-                user = new Customer(
-                    -1,
-                    firstName, lastName, email, phone, password
-                );
+                user = new Customer(-1, firstName, lastName, email, phone, password);
             }
 
             Validator.validateUser(user);
@@ -102,13 +88,13 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
-        catch (SQLException sqle) {
-            logger.log(Level.SEVERE, "Error checking userExists", sqle);
-            throw new ServletException(sqle);
+        catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error validating user", e);
+            throw new ServletException(e);
         }
 
         try {
-            if (user instanceof Staff) {
+            if (isStaff) {
                 userDBManager.addStaff((Staff) user);
             } else {
                 userDBManager.addCustomer((Customer) user);
@@ -124,17 +110,14 @@ public class RegisterServlet extends HttpServlet {
                 session.setAttribute("cart", cart);
                 customer.setCart(cart);
             }
-        } catch (SQLException sqle) {
-            logger.log(Level.SEVERE, "Error inserting new user", sqle);
-            throw new ServletException(sqle);
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error inserting new user and cart", e);
+            throw new ServletException(e);
         }
 
-        ApplicationAccessLog appLog = new ApplicationAccessLog(
-            ApplicationAction.REGISTER, new Date()
-        );
+        ApplicationAccessLog appLog = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
         try {
-            applicationAccessLogDBManager
-                .addApplicationAccessLog(user.getUserId(), appLog);
+            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appLog);
         } catch (SQLException sqle) {
             logger.log(Level.WARNING, "Could not log registration", sqle);
         }

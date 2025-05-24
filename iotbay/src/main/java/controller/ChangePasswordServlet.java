@@ -27,7 +27,7 @@ public class ChangePasswordServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(LoginServlet.class.getName());
+        logger = Logger.getLogger(ChangePasswordServlet.class.getName());
     }
 
     @Override

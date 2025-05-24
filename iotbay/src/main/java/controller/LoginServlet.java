@@ -31,32 +31,19 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher(PAGE).forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request,
-                          HttpServletResponse response)
-            throws ServletException, IOException {
-
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        UserDBManager userDBManager =
-            (UserDBManager) session.getAttribute("userDBManager");
-        ApplicationAccessLogDBManager logMgr =
-            (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
 
-        if (userDBManager == null || logMgr == null) {
-            throw new ServletException("Data managers are not in session");
+        if (userDBManager == null || applicationAccessLogDBManager == null) {
+            throw new ServletException("DB managers are not in session");
         }
 
-        String email    = request.getParameter("email");
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (email == null || email.isEmpty()
-         || password == null || password.isEmpty()) {
+        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
             session.setAttribute(ERROR_ATTR, "Please fill in both email and password.");
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
@@ -79,16 +66,14 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (user.isDeactivated()) {
-            session.setAttribute(ERROR_ATTR,
-                "Your account is currently deactivated. Contact an administrator.");
+            session.setAttribute(ERROR_ATTR, "Your account is currently deactivated. Contact an administrator.");
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
 
-        ApplicationAccessLog appLog =
-            new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
+        ApplicationAccessLog log = new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
         try {
-            logMgr.addApplicationAccessLog(user.getUserId(), appLog);
+            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), log);
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed to record login access log", e);
         }
@@ -98,9 +83,8 @@ public class LoginServlet extends HttpServlet {
 
         Cart sessionCart = (Cart) session.getAttribute("cart");
         if (sessionCart != null && user instanceof Customer) {
-            ProductListEntryDBManager pleMgr =
-                (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
-            if (pleMgr == null) {
+            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+            if (productListEntryDBManager == null) {
                 throw new ServletException("ProductListEntryDBManager missing from session");
             }
 
@@ -109,7 +93,7 @@ public class LoginServlet extends HttpServlet {
             for (ProductListEntry entry : sessionCart.getProductList()) {
                 dbCart.addProduct(entry.getProduct(), entry.getQuantity());
                 try {
-                    pleMgr.addProduct(
+                    productListEntryDBManager.addProduct(
                         user.getUserId(),
                         entry.getProduct().getProductId(),
                         entry.getQuantity()
