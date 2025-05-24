@@ -17,6 +17,7 @@ import model.Customer;
 import model.User;
 import model.dao.UserDBManager;
 
+
 @WebServlet("/CustomerListServlet")
 public class CustomerListServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(CustomerListServlet.class.getName());
