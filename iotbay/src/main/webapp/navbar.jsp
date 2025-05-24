@@ -31,9 +31,9 @@
             </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item <%= currentPage.equals("account.jsp") ? "active" : "" %>" href="account.jsp">Account Details</a></li>
-                <% if (!isStaff) { %>
-                    <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
-                <% } %>
+               <% if (!isStaff || !isLoggedIn) { %>
+    <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
+<% } %>
                 <li><a class="dropdown-item <%= currentPage.equals("applicationaccesslogs.jsp") ? "active" : "" %>" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                 <li><a class="dropdown-item <%= currentPage.equals("logout.jsp") ? "active" : "" %>" href="logout.jsp">Logout</a></li>
                 <li><a class="dropdown-item text-danger <%= currentPage.equals("deleteaccount.jsp") ? "active" : "" %>" href="deleteaccount.jsp">Delete Account</a></li>
