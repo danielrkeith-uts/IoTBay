@@ -24,9 +24,7 @@ public class OrderDBManager {
         this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
-    //Find an order by OrderId in the database   
     public Order getOrder(int inputOrderId) throws SQLException {       
-        //get the CartId, PaymentId, and DatePlaced from the Order table
         String query = "SELECT * FROM `Order` WHERE OrderID = '" + inputOrderId + "'"; 
         ResultSet rs = st1.executeQuery(query); 
 
@@ -128,12 +126,12 @@ public class OrderDBManager {
         return null;
     }
 
-    public Order getOrderByUserID(int userID) throws SQLException {       
-        //get the CartId, PaymentId, and DatePlaced from the Order table
+    public List<Order> getAllCustomerOrders(int userID) throws SQLException {
+        List<Order> orders = new ArrayList<Order>();       
         String query = "SELECT * FROM `Order` WHERE UserID = '" + userID + "'"; 
         ResultSet rs = st1.executeQuery(query); 
 
-        if (rs.next()) {
+        while (rs.next()) {
             int orderId = rs.getInt("OrderID");
             int CartId = rs.getInt("CartId");
             int PaymentId = rs.getInt("PaymentId");
@@ -167,9 +165,9 @@ public class OrderDBManager {
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
             Order order = new Order(orderId, ProductList, Payment, timestamp, status);
-            return order;
+            orders.add(order);
         } 
-        return null;
+        return orders;
     }
 
     //Add an order into the database   

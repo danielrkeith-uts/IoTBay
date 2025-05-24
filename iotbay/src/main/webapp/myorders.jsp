@@ -2,7 +2,7 @@
 <%@ page import="java.util.List"%>
 <%@ page import="model.Enums.*"%>
 <%@ page import="model.*"%>
-<%@ page import="model.dao.OrderDBManager"%>
+<%@ page import="model.dao.*"%>
 
 <html>
     <jsp:include page="/ConnServlet" flush="true"/>
@@ -18,16 +18,17 @@
             return;
         }
 
+        List<Order> orders = orderDBManager.getAllCustomerOrders(user.getUserId());
+
         String query = request.getParameter("query");
         if (query != null && !query.trim().isEmpty()) {
             try {
-                int orderId = Integer.parseInt(query.trim());
-                order = orderDBManager.getOrder(orderId);
-                if (order == null) {
-                    orderError = "No order found with that ID.";
-                }
+                int searchId = Integer.parseInt(query.trim());
+                orders = orders.stream()
+                    .filter(o -> o.getOrderId() == searchId)
+                    .collect(java.util.stream.Collectors.toList());
             } catch (NumberFormatException e) {
-                orderError = "Please enter a valid numeric Order ID.";
+                request.setAttribute("orderError", "Invalid order ID.");
             }
         }
     %>
@@ -56,7 +57,7 @@
                             <li><a class="dropdown-item" href="myorders.jsp">My Orders</a></li>
                             <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
                             <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                            <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                            <li><a class="dropdown-item" href="LogoutServlet">Logout</a></li>
                             <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
                         </ul>
                     </div>
@@ -70,42 +71,38 @@
                 <button type="submit" class="btn btn-outline-secondary">Search</button>
             </div>
         </form>
-        <% if (order == null) { %>
+        <% if (orders.isEmpty()) { %>
             <div class="alert alert-secondary" role="alert">
                 No matching order found. Please try a different OrderId.
             </div>
         <% } else { %>
-            <h5>OrderID: <%= order.getOrderId() %></h5>
-            <p>
-                <strong>Products:</strong><br/>
-                <ul>
-                    <%
-                        for (ProductListEntry entry : order.getProductList()) {
-                    %>
-                        <li><%= entry.getProduct().toString() %></li>
-                    <%
-                        }
-                    %>
-                </ul>
-            </p>
-            <p class="card-text">
-                <strong>Payment Status:</strong> 
-                <%= order.getPayment().getPaymentStatus() %>
-            </p>
-            <p class="card-text">
-                <strong>Date Placed:</strong> 
-                <%= order.getDatePlaced() %>
-            </p>
-            <p class="card-text">
-                <strong>Order Status:</strong> 
-                <%= order.getOrderStatus() %>
-            </p>
-            <%-- <form action="CartServlet" method="post"> --%>
-                <%-- <input type="hidden" name="orderId" value="<%= order.getOrderId() != 0%>" />
-                <button type="submit" class="btn btn-primary mt-auto">
-                    Cancel Order
-                </button>
-            </form> --%>
+            <% if (orders.isEmpty()) { %>
+                <div class="alert alert-warning">No orders found.</div>
+            <% } else { %>
+                <div class="order-list">
+                    <% for (Order o : orders) { %>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Order #<%= o.getOrderId() %></h5>
+                                <p><strong>Date:</strong> <%= o.getDatePlaced() %></p>
+                                <p><strong>Status:</strong> <%= o.getOrderStatus() %></p>
+                                <p><strong>Products:</strong></p>
+                                <ul>
+                                    <% for (ProductListEntry entry : o.getProductList()) { %>
+                                        <li><%= entry.getProduct().getName() %> × <%= entry.getQuantity() %></li>
+                                    <% } %>
+                                </ul>
+                                <%-- <form action="CartServlet" method="post"> --%>
+                                    <%-- <input type="hidden" name="orderId" value="<%= order.getOrderId() != 0%>" />
+                                    <button type="submit" class="btn btn-primary mt-auto">
+                                        Cancel Order
+                                    </button>
+                                </form> --%>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            <% } %>
         <% } %> 
     </body>
 </html>
