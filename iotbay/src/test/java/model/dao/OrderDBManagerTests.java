@@ -39,23 +39,46 @@ public class OrderDBManagerTests {
     static OrderStatus status = OrderStatus.valueOf(statusString);
 
     private static Order order = new Order(1, productList, payment, timestamp, status);
-    OrderDBManager orderDBManager;
-    private final Connection conn;
+    private OrderDBManager orderDBManager;
+    private Connection conn;
 
-    public OrderDBManagerTests() throws ClassNotFoundException, SQLException {
-        this.conn = new DBConnector().openConnection();
-        conn.setAutoCommit(false);
-        orderDBManager = new OrderDBManager(conn);
+    public OrderDBManagerTests() {
+        try {
+            this.conn = new DBConnector().openConnection();
+            if (this.conn != null) {
+                this.conn.setAutoCommit(false);
+                this.orderDBManager = new OrderDBManager(this.conn);
+            } else {
+                throw new SQLException("Failed to establish database connection");
+            }
+        } catch (Exception e) {
+            System.err.println("Error initializing OrderDBManagerTests: " + e.getMessage());
+            if (this.conn != null) {
+                try {
+                    this.conn.close();
+                } catch (SQLException se) {
+                    System.err.println("Error closing connection: " + se.getMessage());
+                }
+            }
+        }
     }
 
     @Test
     public void testGetOrder() {
+        if (conn == null || orderDBManager == null) {
+            Assert.fail("Database connection not initialized");
+            return;
+        }
+
         Order order = null;
         try {
             order = orderDBManager.getOrder(1);
+            Assert.assertNotNull("Order should not be null", order);
             
             Payment payment = order.getPayment();
             List<ProductListEntry> productlist = order.getProductList();
+            Assert.assertNotNull("Payment should not be null", payment);
+            Assert.assertNotNull("Product list should not be null", productlist);
             
             //Testing the DatePlaced field
             String formatted = DATE_FORMAT.format(order.getDatePlaced());
@@ -66,6 +89,7 @@ public class OrderDBManagerTests {
             Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
             Assert.assertEquals(1, payment.getUserId());
 
+            Assert.assertTrue("Product list should not be empty", productlist.size() > 0);
             Assert.assertEquals("Raspberry Pi", productlist.get(0).getProduct().getName());
             Assert.assertEquals(OrderStatus.PROCESSING, order.getOrderStatus());
             
@@ -85,6 +109,11 @@ public class OrderDBManagerTests {
 
     @Test
     public void testUpdateOrder() {
+        if (conn == null || orderDBManager == null) {
+            Assert.fail("Database connection not initialized");
+            return;
+        }
+
         try {
             Date now = new Date();
             Timestamp timestamp = new Timestamp(now.getTime());
@@ -125,7 +154,9 @@ public class OrderDBManagerTests {
             Assert.fail("SQLException: " + e.getMessage());
         } finally {
             try {
-                conn.rollback();
+                if (conn != null) {
+                    conn.rollback();
+                }
             } catch (SQLException e) {
                 System.err.println("Rollback failed: " + e.getMessage());
             }
@@ -134,6 +165,11 @@ public class OrderDBManagerTests {
 
     @Test
     public void testAddOrder() {
+        if (conn == null || orderDBManager == null) {
+            Assert.fail("Database connection not initialized");
+            return;
+        }
+
         try {
             int OrderId = 999;
             int UserId = 1;
@@ -153,15 +189,22 @@ public class OrderDBManagerTests {
             Assert.fail(e.getMessage());
         } finally {
             try {
-                conn.rollback();
+                if (conn != null) {
+                    conn.rollback();
+                }
             } catch (SQLException e) {
-                System.err.println(e);
+                System.err.println("Rollback failed: " + e.getMessage());
             }
         }
     }
 
     @Test
     public void testCancelOrder() {
+        if (conn == null || orderDBManager == null) {
+            Assert.fail("Database connection not initialized");
+            return;
+        }
+
         try {
             orderDBManager.cancelOrder(1);
             Order updatedOrder = orderDBManager.getOrder(1);
@@ -171,9 +214,11 @@ public class OrderDBManagerTests {
             Assert.fail(e.getMessage());
         } finally {
             try {
-                conn.rollback(); 
+                if (conn != null) {
+                    conn.rollback();
+                }
             } catch (SQLException e) {
-                System.err.println(e);
+                System.err.println("Rollback failed: " + e.getMessage());
             }
         }
     }

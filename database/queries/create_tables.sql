@@ -1,3 +1,4 @@
+-- First, create tables with no foreign key dependencies
 CREATE TABLE User (
     UserId INTEGER PRIMARY KEY AUTOINCREMENT,
     FirstName VARCHAR(30),
@@ -8,19 +9,9 @@ CREATE TABLE User (
     Deactivated INTEGER DEFAULT 0
 );
 
-CREATE TABLE Staff (
-    UserId INTEGER PRIMARY KEY,
-    StaffCardId INTEGER NOT NULL,
-    Admin BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
-);
-
-CREATE TABLE Customer (
-    UserId INTEGER PRIMARY KEY,
-    CartId INTEGER,
-    Type TEXT DEFAULT 'INDIVIDUAL',
-    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
-    FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE SET NULL
+CREATE TABLE Cart (
+    CartId INTEGER PRIMARY KEY AUTOINCREMENT,
+    LastUpdated TEXT
 );
 
 CREATE TABLE Product (
@@ -33,44 +24,6 @@ CREATE TABLE Product (
     ImageUrl VARCHAR(500)
 );
 
-CREATE TABLE ProductListEntry (
-    CartId INTEGER,
-    ProductId INTEGER,
-    Quantity INTEGER NOT NULL,
-    PRIMARY KEY (CartId, ProductId),
-    FOREIGN KEY (ProductId) REFERENCES Product(ProductId) ON DELETE CASCADE
-);
-
-CREATE TABLE Cart (
-    CartId INTEGER PRIMARY KEY AUTOINCREMENT,
-    LastUpdated TEXT
-);
-
-CREATE TABLE `Order` (
-    OrderId INTEGER PRIMARY KEY,
-    UserId INTEGER,
-    CartId INTEGER,
-    PaymentId INTEGER,
-    DeliveryId INTEGER,
-    DatePlaced DATETIME NOT NULL,
-    OrderStatus VARCHAR(50),
-    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
-    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
-    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
-);
-
-CREATE TABLE Delivery (
-    DeliveryId INTEGER PRIMARY KEY,
-    OrderId INTEGER NOT NULL,
-    SourceAddressId INTEGER,
-    DestinationAddressId INTEGER,
-    Courier VARCHAR(30) NOT NULL,
-    CourierDeliveryId INTEGER NOT NULL,
-    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
-    FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId) ON DELETE CASCADE,
-    FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId) ON DELETE CASCADE
-);
-
 CREATE TABLE Address (
     AddressId INTEGER PRIMARY KEY,
     StreetNumber VARCHAR(5),
@@ -80,13 +33,11 @@ CREATE TABLE Address (
     Postcode INTEGER NOT NULL
 );
 
-CREATE TABLE Payment (
-    PaymentId INTEGER PRIMARY KEY,
-    UserId INTEGER,
-    CardId INTEGER,
-    Amount DECIMAL(10, 2) NOT NULL,
-    PaymentStatus INTEGER NOT NULL,
-    FOREIGN KEY (CardId) REFERENCES Card(CardId) ON DELETE CASCADE,
+-- Then create tables that depend on User
+CREATE TABLE Staff (
+    UserId INTEGER PRIMARY KEY,
+    StaffCardId INTEGER NOT NULL,
+    Admin BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
 );
 
@@ -106,6 +57,61 @@ CREATE TABLE ApplicationAccessLog (
     ApplicationAction INTEGER NOT NULL,
     DateTime DATETIME NOT NULL,
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
+);
+
+-- Then create tables that depend on Cart and Card
+CREATE TABLE Customer (
+    UserId INTEGER PRIMARY KEY,
+    CartId INTEGER,
+    Type TEXT DEFAULT 'INDIVIDUAL',
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
+    FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE SET NULL
+);
+
+CREATE TABLE Payment (
+    PaymentId INTEGER PRIMARY KEY,
+    UserId INTEGER,
+    CardId INTEGER,
+    Amount DECIMAL(10, 2) NOT NULL,
+    PaymentStatus INTEGER NOT NULL,
+    FOREIGN KEY (CardId) REFERENCES Card(CardId) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
+);
+
+CREATE TABLE ProductListEntry (
+    CartId INTEGER,
+    ProductId INTEGER,
+    Quantity INTEGER NOT NULL,
+    PRIMARY KEY (CartId, ProductId),
+    FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE CASCADE,
+    FOREIGN KEY (ProductId) REFERENCES Product(ProductId) ON DELETE CASCADE
+);
+
+-- Finally create tables that depend on Payment and Address
+CREATE TABLE `Order` (
+    OrderId INTEGER PRIMARY KEY,
+    UserId INTEGER,
+    CartId INTEGER,
+    PaymentId INTEGER,
+    DeliveryId INTEGER,
+    DatePlaced DATETIME NOT NULL,
+    OrderStatus VARCHAR(50),
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
+    FOREIGN KEY (CartId) REFERENCES Cart(CartId) ON DELETE SET NULL,
+    FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId) ON DELETE SET NULL,
+    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
+);
+
+CREATE TABLE Delivery (
+    DeliveryId INTEGER PRIMARY KEY,
+    OrderId INTEGER NOT NULL,
+    SourceAddressId INTEGER,
+    DestinationAddressId INTEGER,
+    Courier VARCHAR(30) NOT NULL,
+    CourierDeliveryId INTEGER NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES `Order`(OrderId) ON DELETE CASCADE,
+    FOREIGN KEY (SourceAddressId) REFERENCES Address(AddressId) ON DELETE CASCADE,
+    FOREIGN KEY (DestinationAddressId) REFERENCES Address(AddressId) ON DELETE CASCADE
 );
 
 CREATE TABLE Shipment (

@@ -19,19 +19,16 @@ import java.sql.SQLException;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @WebServlet("/PaymentServlet")
 public class PaymentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = Logger.getLogger(PaymentServlet.class.getName());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String action = req.getParameter("action");
-        HttpSession session = req.getSession(true); // Always create session for cart
+        HttpSession session = req.getSession(true);
         
         User user = (User) session.getAttribute("user");
         Cart cart = (Cart) session.getAttribute("cart");
@@ -41,7 +38,6 @@ public class PaymentServlet extends HttpServlet {
             throw new ServletException("PaymentDBManager not found in session");
         }
 
-        // For actions that require login, redirect to login page
         if (user == null && (action != null && !action.equals("showForm"))) {
             session.setAttribute("redirectAfterLogin", "PaymentServlet?action=" + action);
             resp.sendRedirect("login.jsp");
@@ -58,10 +54,8 @@ public class PaymentServlet extends HttpServlet {
                         return;
                     }
 
-                    // Set amount from cart total
                     req.setAttribute("amount", cart.totalCost());
 
-                    // Get saved payment methods only if user is logged in
                     if (user != null) {
                         List<Card> methods = paymentDBManager.getMethodsByUser(user.getUserId());
                         req.setAttribute("paymentMethods", methods);
@@ -131,7 +125,6 @@ public class PaymentServlet extends HttpServlet {
                     Card card = new Card(0, name, number, expiry, cvv);
                     int cardId = 0;
                     
-                    // Only save payment method if user is logged in and requested to save
                     if (user != null && save) {
                         cardId = paymentDBManager.insertPaymentMethod(user.getUserId(), card);
                         card.setCardId(cardId);
@@ -139,14 +132,13 @@ public class PaymentServlet extends HttpServlet {
 
                     Payment payment = new Payment(
                         0,
-                        user != null ? user.getUserId() : 0, // Use 0 for guest payments
+                        user != null ? user.getUserId() : 0,
                         amount,
                         card,
                         PaymentStatus.PENDING
                     );
                     paymentDBManager.insertPayment(payment);
 
-                    // Clear cart after successful payment
                     session.removeAttribute("cart");
                     
                     resp.sendRedirect("confirmation.jsp");
