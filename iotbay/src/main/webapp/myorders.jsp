@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.List"%>
 <%@ page import="model.Enums.*"%>
@@ -92,12 +94,20 @@
                                         <li><%= entry.getProduct().getName() %> × <%= entry.getQuantity() %></li>
                                     <% } %>
                                 </ul>
-                                <%-- <form action="CartServlet" method="post"> --%>
-                                    <%-- <input type="hidden" name="orderId" value="<%= order.getOrderId() != 0%>" />
+                                <% if (order.getStatus() == OrderStatus.SAVED) { %>
+                                    <form action="UpdateOrderServlet" method="post">
+                                    <input type="hidden" name="orderId" value="<%= order.getOrderId() %>" />
+                                        <button type="submit" class="btn btn-primary mt-auto">
+                                            Update Order
+                                        </button>
+                                <% } %>
+                                </form>
+                                <form action="CancelOrderServlet" method="post">
+                                   <input type="hidden" name="orderId" value="<%= order.getOrderId() %>" />
                                     <button type="submit" class="btn btn-primary mt-auto">
                                         Cancel Order
                                     </button>
-                                </form> --%>
+                                </form>
                             </div>
                         </div>
                     <% } %>

@@ -52,7 +52,7 @@ CREATE TABLE `Order` (
     OrderStatus VARCHAR(50),
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE SET NULL,
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
-    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
+    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE', 'SAVED')) 
 );
 
 CREATE TABLE Delivery (

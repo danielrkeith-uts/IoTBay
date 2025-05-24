@@ -78,4 +78,8 @@ public class ProductListEntryDBManager {
         }
 
     }
+
+    public void clearCart(int cartId) {
+
+    }
 }

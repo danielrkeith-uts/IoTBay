@@ -9,13 +9,10 @@
 <html>
    <jsp:include page="/ConnServlet" flush="true"/>
     <%
-        // Retrieve session attributes
         String error = (String) session.getAttribute("cartError");
         session.removeAttribute("cartError"); 
 
         User user = (User) session.getAttribute("user");
-
-        // Ensure cart exists in session
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
@@ -79,9 +76,30 @@
             <p><strong>Total: $<%= df.format(cart.totalCost()) %></strong></p>
             <div class="cart-card">
                 <a href="products.jsp" class="btn-green">Return to Products</a>
-                <form action="OrderServlet" method="post">
-                    <button type="submit" class="btn-green">Buy Now</button>
-                </form>
+                <%
+                    Integer editingOrderId = (Integer) session.getAttribute("editingOrderId");
+                    boolean isEditingOrder = editingOrderId != null;
+                %>
+                <% if (isEditingOrder) { %>
+                    <form action="FinaliseOrderServlet" method="post">
+                        <input type="hidden" name="orderId" value="<%= order.getOrderId() %>" />
+                        <label>Card ID:</label>
+                        <input type="number" name="cardId" required />
+                        <label>Amount:</label>
+                        <input type="text" name="amount" required />
+                        <input type="hidden" name="paymentstatus" value="PENDING" />
+                        <button type="submit">Finalise Order</button>
+                    </form>
+                <% } else { %>
+                    <form action="OrderServlet" method="post">
+                        <button type="submit" class="btn-green">Buy Now</button>
+                    </form>
+                <% } %>
+                <% if (user != null) { %>
+                    <form action="SaveCartServlet" method="post">
+                        <button type="submit" class="btn-green">Save Cart</button>
+                    </form>
+                <% } %>
             </div>
         <% } %>
     </body>

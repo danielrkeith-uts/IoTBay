@@ -130,12 +130,7 @@ public class OrderDBManager {
         while (rs.next()) {
             int orderId = rs.getInt("OrderID");
             int CartId = rs.getInt("CartId");
-            int PaymentId = rs.getInt("PaymentId");
-
-            String dateString = rs.getString("DatePlaced");
-            LocalDateTime ldt = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-            Timestamp timestamp = Timestamp.valueOf(ldt);
-
+            Timestamp timestamp = rs.getTimestamp("DatePlaced");
             String statusString = rs.getString("OrderStatus");
             OrderStatus status = OrderStatus.valueOf(statusString);
             
@@ -156,11 +151,14 @@ public class OrderDBManager {
                 ProductList.add(Entry);
             }
 
-            //Step 3: Create Payment instance to add to Order constructor
-            PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
-            Payment Payment = paymentDBManager.getPayment(PaymentId);
+            int paymentId = rs.getInt("PaymentId");
+            Payment payment = null;
+            if (!rs.wasNull()) {
+                PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
+                payment = paymentDBManager.getPayment(paymentId);
+            }
 
-            Order order = new Order(orderId, ProductList, Payment, timestamp, status);
+            Order order = new Order(orderId, ProductList, payment, timestamp, status);
             orders.add(order);
         } 
         return orders;
@@ -179,6 +177,31 @@ public class OrderDBManager {
             String formatted = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(DatePlaced);
             pst.setString(4, formatted);
             pst.setString(5, status);
+
+            pst.executeUpdate();
+
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return generated OrderId
+                } else {
+                    throw new SQLException("Order insertion failed, no ID obtained.");
+                }
+            }
+        }
+    }
+
+    public int addOrderAsSavedCart(int UserId, int CartId, java.sql.Timestamp DatePlaced) throws SQLException {       
+        String query = "INSERT INTO `Order` (UserId, CartId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?)";
+        String status = "SAVED";
+
+        try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, UserId);
+            pst.setInt(2, CartId);
+
+            // Format DatePlaced to string in yyyy-MM-dd HH:mm:ss format
+            String formatted = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(DatePlaced);
+            pst.setString(3, formatted);
+            pst.setString(4, status);
 
             pst.executeUpdate();
 
