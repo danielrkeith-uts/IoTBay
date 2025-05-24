@@ -48,16 +48,10 @@ CREATE TABLE `Order` (
     UserId INTEGER,
     CartId INTEGER,
     PaymentId INTEGER,
-<<<<<<< HEAD
     DeliveryId INTEGER,
     DatePlaced DATETIME NOT NULL,
-    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
-    
-=======
-    DatePlaced TEXT NOT NULL,
     OrderStatus VARCHAR(50),
-    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE SET NULL,
->>>>>>> origin/main
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE,
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
     CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
 );
@@ -109,7 +103,7 @@ CREATE TABLE ApplicationAccessLog (
     UserId INTEGER,
     ApplicationAction INTEGER NOT NULL,
     DateTime DATETIME NOT NULL,
-    FOREIGN KEY (UserId) REFERENCES User(UserId)
+    FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE CASCADE
 );
 
 CREATE TABLE Shipment (
