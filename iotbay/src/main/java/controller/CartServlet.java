@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.*;
+import model.Enums.ApplicationAction;
 import model.dao.*;
 
 @WebServlet("/CartServlet")
@@ -42,6 +44,11 @@ public class CartServlet extends HttpServlet {
             throw new ServletException("ProductDBManager retrieved from session is null");
         }
 
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        if (applicationAccessLogDBManager == null) {
+            throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
+        }
+
         String productName = request.getParameter("productName");
         String productType = request.getParameter("productType");
         double price = Double.parseDouble(request.getParameter("price"));
@@ -58,6 +65,8 @@ public class CartServlet extends HttpServlet {
                 ((Customer) user).setCart(cart);
                 cart.addProduct(product, quantity);
                 productListEntryDBManager.addProduct(cartId, product.getProductId(), quantity);
+                
+                applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), new ApplicationAccessLog(ApplicationAction.ADD_TO_CART, new Date()));
             } else {
                 cart = (Cart) session.getAttribute("cart");
                 if (cart == null) {
