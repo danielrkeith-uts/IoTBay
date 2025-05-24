@@ -63,4 +63,13 @@ public class Validator {
     private static boolean validate(String pattern, String input) {
         return Pattern.compile(pattern).matcher(input).matches();
     }
+
+    public static void validateName(String name, String fieldName) throws InvalidInputException {
+        if (name == null || name.trim().isEmpty()) {
+            throw new InvalidInputException(fieldName + " cannot be empty");
+        }
+        if (!name.matches("^[a-zA-Z\\s'-]+$")) {
+            throw new InvalidInputException("Invalid " + fieldName);
+        }
+    }
 }
