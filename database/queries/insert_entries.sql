@@ -210,31 +210,31 @@ VALUES
     (20, 20);
 
 -- Staff
-INSERT INTO Staff (UserId, StaffCardId)
+INSERT INTO Staff (UserId, StaffCardId, Admin)
 VALUES 
-    (21, 1001),
-    (22, 1002),
-    (23, 1003),
-    (24, 1004),
-    (25, 1005),
-    (26, 1006),
-    (27, 1007),
-    (28, 1008),
-    (29, 1009),
-    (30, 1010),
-    (31, 1011),
-    (32, 1012),
-    (33, 1013),
-    (34, 1014),
-    (35, 1015),
-    (36, 1016),
-    (37, 1017),
-    (38, 1018),
-    (39, 1019),
-    (40, 1020);
+    (21, 1001, true),   
+    (22, 1002, false),
+    (23, 1003, false),
+    (24, 1004, false),
+    (25, 1005, true),  
+    (26, 1006, false),
+    (27, 1007, false),
+    (28, 1008, true),  
+    (29, 1009, false),
+    (30, 1010, false),
+    (31, 1011, true),   
+    (32, 1012, false),
+    (33, 1013, false),
+    (34, 1014, false),
+    (35, 1015, true), 
+    (36, 1016, false),
+    (37, 1017, false),
+    (38, 1018, false),
+    (39, 1019, false),
+    (40, 1020, false);
 
 -- ApplicationAccessLog
-INSERT INTO ApplicationAccessLog (AppAccLogId, UserId, ApplicationAction, DateTime)
+INSERT INTO ApplicationAccessLog (AccessLogId, UserId, ApplicationAction, DateTime)
 VALUES 
     (1, 1, 0, 1745632800000),
     (2, 1, 1, 1745633100000),

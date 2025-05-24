@@ -11,17 +11,42 @@ public abstract class User implements Serializable {
     private String email;
     private String phone;
     private String password;
+    private boolean deactivated;
     private List<ApplicationAccessLog> applicationAccessLogs;
+    private Role role; 
 
-    public User(int userId, String firstName, String lastName, String email, String phone, String password) {
+    public User(int userId, String firstName, String lastName, String email, String phone, String password, Role role) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.password = password;
-
+        this.deactivated = false;
+        this.role = role;
         this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
+    }
+
+    public enum Role {
+        ADMIN,
+        STAFF,
+        CUSTOMER
+    }
+
+    public Role getRole() {
+        return this.role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
     }
 
     public int getUserId() {
@@ -100,6 +125,8 @@ public abstract class User implements Serializable {
             && this.lastName.equals(user.lastName)
             && this.email.equals(user.email)
             && this.phone.equals(user.phone)
-            && this.password.equals(user.password);
+            && this.password.equals(user.password)
+            && this.deactivated == user.deactivated
+           && this.role == user.role;
     }
 }

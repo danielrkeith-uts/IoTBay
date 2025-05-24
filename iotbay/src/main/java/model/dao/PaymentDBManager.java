@@ -182,18 +182,22 @@ public class PaymentDBManager {
         String sql = "SELECT p.PaymentId, p.UserId, p.CardId, p.Amount, p.PaymentStatus, " +
                     "c.Name, c.Number, c.Expiry, c.CVC " +
                     "FROM Payment p " +
-                    "JOIN Card c ON p.CardId = c.CardId";
+                    "LEFT JOIN Card c ON p.CardId = c.CardId";
         try (Connection conn = connect();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Card card = new Card(
-                    rs.getInt("CardId"),
-                    rs.getString("Name"),
-                    rs.getString("Number"),
-                    YearMonth.parse(rs.getString("Expiry"), DATE_FORMAT),
-                    rs.getString("CVC")
-                );
+                Card card = null;
+                String cardName = rs.getString("Name");
+                if (cardName != null) {
+                    card = new Card(
+                        rs.getInt("CardId"),
+                        cardName,
+                        rs.getString("Number"),
+                        YearMonth.parse(rs.getString("Expiry"), DATE_FORMAT),
+                        rs.getString("CVC")
+                    );
+                }
                 list.add(new Payment(
                     rs.getInt("PaymentId"),
                     rs.getInt("UserId"),

@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="model.User, model.Staff, model.Payment, java.util.List" %>
-<jsp:include page="/ConnServlet" flush="true"/>
 <%
     User user = (User) session.getAttribute("user");
     if (user == null) {
@@ -169,7 +168,13 @@
                 <tr>
                   <td><%= payment.getPaymentId() %></td>
                   <td>$<%= String.format("%.2f", payment.getAmount()) %></td>
-                  <td><%= payment.getCard().getNumber().replaceAll("\\d(?=\\d{4})", "*") %></td>
+                  <td>
+                    <% if (payment.getCard() != null) { %>
+                      <%= payment.getCard().getNumber().replaceAll("\\d(?=\\d{4})", "*") %>
+                    <% } else { %>
+                      Guest Payment
+                    <% } %>
+                  </td>
                   <td><%= payment.getPaymentStatus() %></td>
                 </tr>
               <% } %>

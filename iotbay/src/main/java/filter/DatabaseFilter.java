@@ -25,6 +25,7 @@ public class DatabaseFilter implements Filter {
         try {
             SQLiteDataSource ds = new SQLiteDataSource();
             ds.setUrl("jdbc:sqlite:database.db");
+            ds.setEnforceForeignKeys(true);
             dataSource = ds;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error initializing database connection pool", e);
@@ -36,11 +37,15 @@ public class DatabaseFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpSession session = httpRequest.getSession();
+        Connection conn = null;
 
         try {
             // Get a connection from the pool
-            Connection conn = dataSource.getConnection();
+            conn = dataSource.getConnection();
             conn.setAutoCommit(true);
+
+            // Store the connection in request for this request cycle
+            request.setAttribute("dbConnection", conn);
 
             // Initialize DB managers if they don't exist in session
             if (session.getAttribute("userDBManager") == null) {
@@ -77,6 +82,15 @@ public class DatabaseFilter implements Filter {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Database error in filter", e);
             throw new ServletException("Database error", e);
+        } finally {
+            // Always close the connection after the request is complete
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    logger.log(Level.WARNING, "Error closing database connection", e);
+                }
+            }
         }
     }
 

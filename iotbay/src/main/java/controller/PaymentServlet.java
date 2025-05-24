@@ -19,25 +19,34 @@ import java.sql.SQLException;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/PaymentServlet")
 public class PaymentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger logger = Logger.getLogger(PaymentServlet.class.getName());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String action = req.getParameter("action");
-        HttpSession session = req.getSession(false);
+        HttpSession session = req.getSession(true); // Always create session for cart
         
-        if (session == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
         User user = (User) session.getAttribute("user");
         Cart cart = (Cart) session.getAttribute("cart");
         PaymentDBManager paymentDBManager = (PaymentDBManager) session.getAttribute("paymentDBManager");
+
+        if (paymentDBManager == null) {
+            throw new ServletException("PaymentDBManager not found in session");
+        }
+
+        // For actions that require login, redirect to login page
+        if (user == null && (action != null && !action.equals("showForm"))) {
+            session.setAttribute("redirectAfterLogin", "PaymentServlet?action=" + action);
+            resp.sendRedirect("login.jsp");
+            return;
+        }
 
         if (action == null) action = "showForm";
 
@@ -52,7 +61,7 @@ public class PaymentServlet extends HttpServlet {
                     // Set amount from cart total
                     req.setAttribute("amount", cart.totalCost());
 
-                    // Get saved payment methods if user is logged in
+                    // Get saved payment methods only if user is logged in
                     if (user != null) {
                         List<Card> methods = paymentDBManager.getMethodsByUser(user.getUserId());
                         req.setAttribute("paymentMethods", methods);
@@ -62,10 +71,6 @@ public class PaymentServlet extends HttpServlet {
                     break;
 
                 case "viewHistory":
-                    if (user == null) {
-                        resp.sendRedirect("login.jsp");
-                        return;
-                    }
                     List<Payment> payments = paymentDBManager.getAllPayments()
                         .stream()
                         .filter(p -> p.getUserId() == user.getUserId())
@@ -75,10 +80,6 @@ public class PaymentServlet extends HttpServlet {
                     break;
 
                 case "editMethod":
-                    if (user == null) {
-                        resp.sendRedirect("login.jsp");
-                        return;
-                    }
                     String cardId = req.getParameter("cardId");
                     if (cardId != null) {
                         Card card = paymentDBManager.getPaymentMethod(Integer.parseInt(cardId));
@@ -92,10 +93,6 @@ public class PaymentServlet extends HttpServlet {
                     break;
 
                 case "deleteMethod":
-                    if (user == null) {
-                        resp.sendRedirect("login.jsp");
-                        return;
-                    }
                     String deleteId = req.getParameter("cardId");
                     if (deleteId != null) {
                         paymentDBManager.deletePaymentMethod(Integer.parseInt(deleteId));
@@ -115,18 +112,8 @@ public class PaymentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
+        HttpSession session = req.getSession(true);
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
         PaymentDBManager paymentDBManager = (PaymentDBManager) session.getAttribute("paymentDBManager");
         String action = req.getParameter("action");
 
@@ -144,14 +131,15 @@ public class PaymentServlet extends HttpServlet {
                     Card card = new Card(0, name, number, expiry, cvv);
                     int cardId = 0;
                     
-                    if (save) {
+                    // Only save payment method if user is logged in and requested to save
+                    if (user != null && save) {
                         cardId = paymentDBManager.insertPaymentMethod(user.getUserId(), card);
                         card.setCardId(cardId);
                     }
 
                     Payment payment = new Payment(
                         0,
-                        user.getUserId(),
+                        user != null ? user.getUserId() : 0, // Use 0 for guest payments
                         amount,
                         card,
                         PaymentStatus.PENDING
@@ -165,6 +153,10 @@ public class PaymentServlet extends HttpServlet {
                     break;
 
                 case "updateMethod":
+                    if (user == null) {
+                        resp.sendRedirect("login.jsp");
+                        return;
+                    }
                     String updateId = req.getParameter("cardId");
                     if (updateId != null) {
                         Card updatedCard = new Card(

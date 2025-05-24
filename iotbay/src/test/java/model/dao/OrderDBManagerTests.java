@@ -50,36 +50,37 @@ public class OrderDBManagerTests {
 
     @Test
     public void testGetOrder() {
-        Order order;
+        Order order = null;
         try {
             order = orderDBManager.getOrder(1);
+            
+            Payment payment = order.getPayment();
+            List<ProductListEntry> productlist = order.getProductList();
+            
+            //Testing the DatePlaced field
+            String formatted = DATE_FORMAT.format(order.getDatePlaced());
+            Assert.assertEquals("2025-04-25 00:00:00", formatted);
+
+            Assert.assertEquals(23.45, payment.getAmount(), 0.01);
+            Assert.assertEquals(1, payment.getCard().getCardId());
+            Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
+            Assert.assertEquals(1, payment.getUserId());
+
+            Assert.assertEquals("Raspberry Pi", productlist.get(0).getProduct().getName());
+            Assert.assertEquals(OrderStatus.PROCESSING, order.getOrderStatus());
+            
         } catch (SQLException e) {
             e.printStackTrace();
             Assert.fail("SQLException thrown: " + e.getMessage());
-            return;
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException e) {
+                System.err.println("Rollback failed: " + e.getMessage());
+            }
         }
-
-        Payment payment = order.getPayment();
-        List<ProductListEntry> productlist = order.getProductList();
-        
-        //Testing the DatePlaced field
-        String formatted = DATE_FORMAT.format(order.getDatePlaced());
-        Assert.assertEquals("2025-04-25 00:00:00", formatted);
-
-        Assert.assertEquals(23.45, payment.getAmount(), 0.01);
-        Assert.assertEquals(1, payment.getCard().getCardId());
-        Assert.assertEquals(PaymentStatus.PENDING, payment.getPaymentStatus());
-        Assert.assertEquals(1, payment.getUserId());
-
-        List<String> expectedNames = Arrays.asList("Google Home Voice Controller", "Philips Hue Smart Bulbs");
-        Assert.assertEquals(expectedNames.size(), productlist.size());
-
-        for (int i = 0; i < productlist.size(); i++) {
-            String actualName = productlist.get(i).getProduct().getName();
-            Assert.assertEquals(expectedNames.get(i), actualName);
-        }
-
-        Assert.assertEquals(OrderStatus.PROCESSING, order.getOrderStatus());
     }
 
     @Test

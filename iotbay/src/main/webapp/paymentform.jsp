@@ -5,6 +5,8 @@
     Cart cart = (Cart) session.getAttribute("cart");
     Double amount = cart != null ? cart.totalCost() : null;
     List<Card> paymentMethods = (List<Card>) request.getAttribute("paymentMethods");
+    System.out.println("User: " + (user != null ? user.getUserId() : "null"));
+    System.out.println("Payment Methods: " + (paymentMethods != null ? paymentMethods.size() : "null"));
 %>
 <html>
 <head>
@@ -13,7 +15,6 @@
   <link rel="stylesheet" href="raisedbox.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <style>
     body {
       background-color: #f5f5f5;
@@ -102,6 +103,7 @@
     }
     .saved-methods-panel.active {
       right: 0;
+      display: block !important;
     }
     .panel-overlay {
       position: fixed;
@@ -114,11 +116,21 @@
       z-index: 1040;
     }
     .panel-overlay.active {
-      display: block;
+      display: block !important;
     }
     .navigation-buttons {
       margin: 20px 0;
       text-align: right;
+    }
+    .guest-notice {
+      background-color: #f8f9fa;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+    }
+    .guest-notice p {
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -163,12 +175,21 @@
   </div>
 
   <div class="content">
-    <div class="navigation-buttons">
-      <a href="PaymentServlet?action=viewHistory" class="btn btn-primary">View Payment History</a>
-      <% if (user != null) { %>
+    <% if (user == null) { %>
+      <div class="guest-notice">
+        <p>You are checking out as a guest. <a href="login.jsp">Login</a> to:</p>
+        <ul>
+          <li>Save your payment methods for future use</li>
+          <li>Track your order history</li>
+          <li>Get faster checkout next time</li>
+        </ul>
+      </div>
+    <% } else { %>
+      <div class="navigation-buttons">
+        <a href="PaymentServlet?action=viewHistory" class="btn btn-primary">View Payment History</a>
         <button type="button" class="btn btn-secondary" onclick="toggleSavedMethods()">View Saved Methods</button>
-      <% } %>
-    </div>
+      </div>
+    <% } %>
 
     <div class="raisedbox">
       <h2>Complete Your Payment</h2>
@@ -184,70 +205,82 @@
           
           <p>Amount to pay: <strong>$<%= String.format("%.2f", amount) %></strong></p>
 
-          <% if (user != null) { %>
-            <div class="payment-form">
-              <h3>Payment Details</h3>
-              <p><label>Name on Card:<br/>
-                <input type="text" name="name" id="cardName" required />
-              </label></p>
-              <p><label>Card Number:<br/>
-                <input type="text" name="cardNumber" id="cardNumber" required pattern="[0-9]{16}" maxlength="16" />
-              </label></p>
-              <p><label>Expiry Date:<br/>
-                <input type="month" name="expiry" id="cardExpiry" required />
-              </label></p>
-              <p><label>CVV:<br/>
-                <input type="text" name="cvv" id="cardCvv" required pattern="[0-9]{3,4}" maxlength="4" />
-              </label></p>
+          <div class="payment-form">
+            <h3>Payment Details</h3>
+            <p><label>Name on Card:<br/>
+              <input type="text" name="name" id="cardName" required />
+            </label></p>
+            <p><label>Card Number:<br/>
+              <input type="text" name="cardNumber" id="cardNumber" required pattern="[0-9]{16}" maxlength="16" />
+            </label></p>
+            <p><label>Expiry Date:<br/>
+              <input type="month" name="expiry" id="cardExpiry" required />
+            </label></p>
+            <p><label>CVV:<br/>
+              <input type="text" name="cvv" id="cardCvv" required pattern="[0-9]{3,4}" maxlength="4" />
+            </label></p>
+            <% if (user != null) { %>
               <p>
                 <label>
                   <input type="checkbox" name="saveMethod" />
-                  Save this method
+                  Save this method for future use
                 </label>
               </p>
-            </div>
-          <% } else { %>
-            <p>Please <a href="login.jsp">login</a> to complete your payment.</p>
-          <% } %>
+            <% } %>
+          </div>
 
-          <% if (user != null) { %>
-            <button type="submit" class="btn-green">Pay Now</button>
-          <% } %>
+          <button type="submit" class="btn-green">Pay Now</button>
         </form>
       <% } %>
     </div>
   </div>
 
-  <!-- Saved Methods Panel -->
-  <div class="panel-overlay" onclick="toggleSavedMethods()"></div>
-  <div class="saved-methods-panel">
-    <h3>Saved Payment Methods</h3>
-    <div id="savedMethodsList">
-      <% if (paymentMethods != null && !paymentMethods.isEmpty()) { %>
-        <% for (Card method : paymentMethods) { %>
-          <div class="method-item">
-            <div class="card-info">
-              <h4>**** **** **** <%= method.getNumber().substring(method.getNumber().length() - 4) %></h4>
-              <p><%= method.getName() %></p>
-              <p>Expires: <%= method.getExpiry().toString() %></p>
+  <% if (user != null) { %>
+    <!-- Saved Methods Panel -->
+    <div class="panel-overlay" onclick="toggleSavedMethods()"></div>
+    <div class="saved-methods-panel">
+      <h3>Saved Payment Methods</h3>
+      <div id="savedMethodsList">
+        <% if (paymentMethods != null && !paymentMethods.isEmpty()) { %>
+          <% for (Card method : paymentMethods) { %>
+            <div class="method-item">
+              <div class="card-info">
+                <h4>**** **** **** <%= method.getNumber().substring(method.getNumber().length() - 4) %></h4>
+                <p><%= method.getName() %></p>
+                <p>Expires: <%= method.getExpiry().toString() %></p>
+              </div>
+              <div class="actions">
+                <button onclick="useMethod('<%= method.getNumber() %>', '<%= method.getName() %>', '<%= method.getExpiry() %>')" class="btn btn-primary btn-sm">Use</button>
+                <button onclick="editMethod(<%= method.getCardId() %>)" class="btn btn-secondary btn-sm">Edit</button>
+                <button onclick="deleteMethod(<%= method.getCardId() %>)" class="btn btn-danger btn-sm">Delete</button>
+              </div>
             </div>
-            <div class="actions">
-              <button onclick="useMethod('<%= method.getNumber() %>', '<%= method.getName() %>', '<%= method.getExpiry() %>')" class="btn btn-primary btn-sm">Use</button>
-              <button onclick="editMethod(<%= method.getCardId() %>)" class="btn btn-secondary btn-sm">Edit</button>
-              <button onclick="deleteMethod(<%= method.getCardId() %>)" class="btn btn-danger btn-sm">Delete</button>
-            </div>
-          </div>
+          <% } %>
+        <% } else { %>
+          <p>No saved payment methods.</p>
         <% } %>
-      <% } else { %>
-        <p>No saved payment methods.</p>
-      <% } %>
+      </div>
     </div>
-  </div>
+  <% } %>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const panel = document.querySelector('.saved-methods-panel');
+      const overlay = document.querySelector('.panel-overlay');
+      console.log('Saved methods panel exists:', panel !== null);
+      console.log('Panel overlay exists:', overlay !== null);
+      if (panel) {
+        console.log('Panel initial display:', window.getComputedStyle(panel).display);
+        console.log('Panel initial right:', window.getComputedStyle(panel).right);
+      }
+    });
+
     function toggleSavedMethods() {
-      document.querySelector('.saved-methods-panel').classList.toggle('active');
-      document.querySelector('.panel-overlay').classList.toggle('active');
+      const panel = document.querySelector('.saved-methods-panel');
+      const overlay = document.querySelector('.panel-overlay');
+      panel.classList.toggle('active');
+      overlay.classList.toggle('active');
     }
 
     function useMethod(number, name, expiry) {
