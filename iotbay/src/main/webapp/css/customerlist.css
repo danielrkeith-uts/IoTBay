@@ -39,10 +39,11 @@
 .customer-card .actions {
     margin-top: 20px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap;      
     gap: 15px;
+    justify-content: center; 
+    overflow-x: visible;  
 }
-
 
 .customer-card:hover {
     background-color: #dbe0d1;
@@ -54,15 +55,6 @@
     color: #333;
     margin-bottom: 20px;
     margin-top: 0;
-}
-
-.customer-card .actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-    flex-wrap: nowrap; 
-    overflow-x: auto;  
 }
 
 .customer-card button {
@@ -151,4 +143,15 @@ h1, h2 {
 .btn-custom:active {
     background-color: #b38164;
     transform: translateY(0);
+}
+
+.btn-danger {
+    background-color: #dc3545 !important; 
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    background-color: #b52a37 !important;
+    border-color: #b52a37 !important;
 }

@@ -89,7 +89,7 @@
                       <%= (isAdmin || isStaff) 
                      ? "onclick=\"window.location.href='deactivateCustomer?id=" + customer.getUserId() + "'\"" 
                     : "disabled class='btn btn-secondary'" %> 
-                     class="btn btn-danger">
+                     class="btn btn-secondary">
                       Deactivate
             </button>
         <% } %>
@@ -99,12 +99,8 @@
                     View Logs
                 </button>
             </div>
-            <form action="DeleteCustomerServlet" method="post"
-                onsubmit="return confirm('Are you sure you want to delete this customer?');"
-                style="margin-top: 15px; display: flex; justify-content: center;">
-                    <input type="hidden" name="userId" value="<%= customer.getUserId() %>" />
-                    <input type="submit" value="Delete" class="btn btn-danger" />
-            </form>
+          <button onclick="window.location.href='confirmdeletecustomer.jsp?userId=<%= customer.getUserId() %>'" class="btn btn-danger">Delete</button>
+
         </div>
     <% } %>
 </div>
