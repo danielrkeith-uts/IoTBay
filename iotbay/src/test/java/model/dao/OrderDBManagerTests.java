@@ -131,7 +131,7 @@ public class OrderDBManagerTests {
             Date DatePlaced = new Date();
             String statusString = "PROCESSING";
             
-            orderDBManager.addOrder(OrderId, UserId, CartId, PaymentId, new java.sql.Timestamp(DatePlaced.getTime()), statusString);
+            orderDBManager.addOrder(UserId, CartId, PaymentId, new java.sql.Timestamp(DatePlaced.getTime()), statusString);
             
             Order order = orderDBManager.getOrder(OrderId);
             Assert.assertNotNull(order);

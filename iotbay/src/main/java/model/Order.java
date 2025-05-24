@@ -25,6 +25,10 @@ public class Order implements Serializable {
         return orderId;
     }
 
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
     public List<ProductListEntry> getProductList() {
         return productList;
     }

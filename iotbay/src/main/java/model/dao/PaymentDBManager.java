@@ -7,10 +7,11 @@ import java.time.YearMonth;
 
 public class PaymentDBManager {
 
+    private Connection conn;
     private Statement st;
 
     public PaymentDBManager(Connection conn) throws SQLException {
-        st = conn.createStatement();
+        this.st = conn.createStatement(); 
     }
 
     public Payment getPayment(int PaymentId) throws SQLException {
@@ -39,5 +40,25 @@ public class PaymentDBManager {
             }
         }
         return null;
+    }
+    
+    public int addPayment(int CardId, double Amount, int PaymentStatus) throws SQLException {       
+        String query = "INSERT INTO Payment (CardId, Amount, PaymentStatus) VALUES (?, ?, ?)";
+
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, CardId);
+            pst.setDouble(2, Amount);
+            pst.setInt(3, PaymentStatus);
+
+            pst.executeUpdate();
+
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return generated PaymentId
+                } else {
+                    throw new SQLException("Payment insertion failed, no ID obtained.");
+                }
+            }
+        }
     }
 }

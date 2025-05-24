@@ -77,7 +77,7 @@ CREATE TABLE Address (
 );
 
 CREATE TABLE Payment (
-    PaymentId INTEGER PRIMARY KEY,
+    PaymentId INTEGER PRIMARY KEY AUTOINCREMENT,
     CardId INTEGER,
     Amount DECIMAL(10, 2) NOT NULL,
     PaymentStatus INTEGER NOT NULL,

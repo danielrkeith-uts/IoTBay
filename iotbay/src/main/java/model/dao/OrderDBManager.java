@@ -171,21 +171,28 @@ public class OrderDBManager {
     }
 
     //Add an order into the database   
-    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
-        String query = "INSERT INTO `Order` (OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?, ?)";
+    public int addOrder(int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
+        String query = "INSERT INTO `Order` (UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement pst = conn.prepareStatement(query)) {
-            pst.setInt(1, OrderId);
-            pst.setInt(2, UserId);
-            pst.setInt(3, CartId);
-            pst.setInt(4, PaymentId);
+            pst.setInt(1, UserId);
+            pst.setInt(2, CartId);
+            pst.setInt(3, PaymentId);
             
             Timestamp timestamp = new Timestamp(DatePlaced.getTime());
             String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
-            pst.setString(5, formatted);
-            pst.setString(6, status);
+            pst.setString(4, formatted);
+            pst.setString(5, status);
 
             pst.executeUpdate();
+
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return generated OrderId
+                } else {
+                    throw new SQLException("Order insertion failed, no ID obtained.");
+                }
+            }
         }
     }
 
