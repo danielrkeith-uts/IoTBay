@@ -70,4 +70,14 @@ public class CartDBManager {
     public void deleteCart(int CartId) throws SQLException{       
         st.executeUpdate("DELETE FROM Cart WHERE CartId = " + CartId); 
     }
+
+    //make it empty
+    public void clearCart(int cartId) throws SQLException {
+        String deleteQuery = "DELETE FROM ProductListEntry WHERE CartId = ?";
+        
+        try (PreparedStatement pst = conn.prepareStatement(deleteQuery)) {
+            pst.setInt(1, cartId);
+            pst.executeUpdate();
+        }
+    }
 }

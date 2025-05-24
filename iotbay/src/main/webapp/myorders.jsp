@@ -94,16 +94,16 @@
                                         <li><%= entry.getProduct().getName() %> × <%= entry.getQuantity() %></li>
                                     <% } %>
                                 </ul>
-                                <% if (order.getStatus() == OrderStatus.SAVED) { %>
+                                <%-- <% if (o.getOrderStatus() == OrderStatus.SAVED) { %>
                                     <form action="UpdateOrderServlet" method="post">
                                     <input type="hidden" name="orderId" value="<%= order.getOrderId() %>" />
                                         <button type="submit" class="btn btn-primary mt-auto">
                                             Update Order
                                         </button>
-                                <% } %>
-                                </form>
-                                <form action="CancelOrderServlet" method="post">
-                                   <input type="hidden" name="orderId" value="<%= order.getOrderId() %>" />
+                                <% } %> 
+                                </form> --%>
+                                 <form action="CancelOrderServlet" method="post">
+                                   <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
                                     <button type="submit" class="btn btn-primary mt-auto">
                                         Cancel Order
                                     </button>

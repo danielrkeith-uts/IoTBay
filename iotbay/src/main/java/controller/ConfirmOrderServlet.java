@@ -97,7 +97,7 @@ public class ConfirmOrderServlet extends HttpServlet {
             }
 
             double total = cart.totalCost();
-            Payment payment = new Payment(0, total, card, PaymentStatus.PENDING);
+            Payment payment = new Payment(total, card, PaymentStatus.PENDING);
             int paymentId = paymentDBManager.addPayment(card.getCardId(), total, payment.getPaymentStatus().ordinal());
 
             // Add order to DB regardless of logged in user or not

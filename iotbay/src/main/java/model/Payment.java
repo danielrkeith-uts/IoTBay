@@ -10,8 +10,7 @@ public class Payment implements Serializable {
     private Card card;
     private PaymentStatus paymentStatus;
 
-    public Payment(int paymentId, double amount, Card card, PaymentStatus paymentStatus) {
-        this.paymentId = paymentId;
+    public Payment(double amount, Card card, PaymentStatus paymentStatus) {
         this.amount = amount;
         this.card = card;
         this.paymentStatus = paymentStatus;
@@ -19,6 +18,10 @@ public class Payment implements Serializable {
 
     public int getPaymentId() {
         return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
     }
 
     public double getAmount() {

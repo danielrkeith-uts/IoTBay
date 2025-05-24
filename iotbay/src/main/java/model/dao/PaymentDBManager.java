@@ -20,7 +20,6 @@ public class PaymentDBManager {
         ResultSet rs = st.executeQuery(query); 
 
         if (rs.next()) {
-            int paymentId = rs.getInt("PaymentId");
             int CardId = rs.getInt("CardId");
             double Amount = rs.getDouble("Amount");
             int statusIndex = rs.getInt("PaymentStatus");
@@ -31,13 +30,16 @@ public class PaymentDBManager {
             ResultSet cardRs = st.executeQuery(cardQuery); 
             
             if (cardRs.next()) {
-                String Name = rs.getString("Name");
-                String Number = rs.getString("Number");
-                YearMonth Expiry = YearMonth.from(rs.getDate("Expiry").toLocalDate());
-                String CVC = rs.getString("CVC");
+                String Name = cardRs.getString("Name");
+                String Number = cardRs.getString("Number");
+                YearMonth Expiry = YearMonth.from(cardRs.getDate("Expiry").toLocalDate());
+                String CVC = cardRs.getString("CVC");
                 Card Card = new Card(CardId, Name, Number, Expiry, CVC);
 
-                return new Payment(paymentId, Amount, Card, paymentStatus);
+                Payment payment = new Payment(Amount, Card, paymentStatus);
+                payment.setPaymentId(PaymentId); 
+
+                return payment;
             }
         }
         return null;
@@ -46,7 +48,7 @@ public class PaymentDBManager {
     public int addPayment(int CardId, double Amount, int PaymentStatus) throws SQLException {       
         String query = "INSERT INTO Payment (CardId, Amount, PaymentStatus) VALUES (?, ?, ?)";
 
-        try (PreparedStatement pst = conn.prepareStatement(query)) {
+        try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pst.setInt(1, CardId);
             pst.setDouble(2, Amount);
             pst.setInt(3, PaymentStatus);

@@ -76,10 +76,5 @@ public class ProductListEntryDBManager {
             insertStmt.setInt(3, Quantity);
             insertStmt.executeUpdate();
         }
-
-    }
-
-    public void clearCart(int cartId) {
-
     }
 }

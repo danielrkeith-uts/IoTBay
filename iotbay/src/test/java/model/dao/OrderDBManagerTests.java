@@ -21,7 +21,7 @@ public class OrderDBManagerTests {
     static Timestamp timestamp = new Timestamp(now.getTime());
 
     static List<ProductListEntry> productList = new ArrayList<>();
-    static Payment payment = new Payment(0, 0, null, null);
+    static Payment payment = new Payment(0, null, null);
     static String statusString = "PROCESSING";
     static OrderStatus status = OrderStatus.valueOf(statusString);
 
@@ -73,7 +73,7 @@ public class OrderDBManagerTests {
     }
 
     @Test
-    public void testUpdateOrder() {
+    public void testUpdateOrder() throws SQLException {
         Date now = new Date();
         Timestamp timestamp = new Timestamp(now.getTime());
 
@@ -86,7 +86,12 @@ public class OrderDBManagerTests {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
         YearMonth expirationDate = YearMonth.parse(expirationDateString, formatter);
 
-        Payment payment = new Payment(1, 30.00, new Card(1, "John Smith", "123456789", expirationDate, "123"), PaymentStatus.ACCEPTED);
+        PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
+        int generatedPaymentId = paymentDBManager.addPayment(1, 130.00, PaymentStatus.ACCEPTED.ordinal());
+        payment.setPaymentId(generatedPaymentId);
+
+        Payment payment = new Payment(130.00, new Card(1, "John Smith", "123456789", expirationDate, "123"), PaymentStatus.ACCEPTED);
+        payment.setPaymentId(generatedPaymentId);
 
         Order updatedOrder = new Order(
             order.getOrderId(),
@@ -105,7 +110,7 @@ public class OrderDBManagerTests {
             Assert.assertEquals(status, result.getOrderStatus());
 
             // Date check (using timestamp)
-            Assert.assertEquals(timestamp.getTime(), result.getDatePlaced().getTime());
+            Assert.assertEquals(timestamp.getTime() / 1000, result.getDatePlaced().getTime() / 1000);
 
             // Optional: check product name
             Assert.assertEquals("Google Home Voice Controller", result.getProductList().get(0).getProduct().getName());

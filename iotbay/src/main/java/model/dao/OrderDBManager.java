@@ -2,7 +2,6 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,12 +21,11 @@ public class OrderDBManager {
         this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
-    public Order getOrder(int inputOrderId) throws SQLException {       
-        String query = "SELECT * FROM `Order` WHERE OrderID = '" + inputOrderId + "'"; 
+    public Order getOrder(int orderId) throws SQLException {       
+        String query = "SELECT * FROM `Order` WHERE OrderID = '" + orderId + "'"; 
         ResultSet rs = st1.executeQuery(query); 
 
         if (rs.next()) {
-            int orderId = rs.getInt("OrderID");
             int CartId = rs.getInt("CartId");
             int PaymentId = rs.getInt("PaymentId");
 
@@ -220,17 +218,20 @@ public class OrderDBManager {
         String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
         ResultSet rs = st1.executeQuery(query); 
 
-        updateOrderPs.setInt(1, rs.getInt("UserId"));
-        updateOrderPs.setInt(2, rs.getInt("CartId"));
-        updateOrderPs.setInt(3, rs.getInt("PaymentId"));
+        if (rs.next()) {
+            updateOrderPs.setInt(1, rs.getInt("UserId"));
+            updateOrderPs.setInt(2, rs.getInt("CartId"));
+            // updateOrderPs.setInt(3, rs.getInt("PaymentId"));
+            updateOrderPs.setInt(3, order.getPayment().getPaymentId());
+            String formattedDate = order.getDatePlaced().toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            updateOrderPs.setString(4, formattedDate);
+            updateOrderPs.setString(5, order.getOrderStatus().name());
+            updateOrderPs.setInt(6, rs.getInt("OrderId"));
 
-        String formattedDate = order.getDatePlaced().toLocalDateTime().toString().replace("T", " ");
-        updateOrderPs.setString(4, formattedDate);
-
-        updateOrderPs.setString(5, rs.getString("OrderStatus"));
-        updateOrderPs.setInt(6, rs.getInt("OrderId"));
-
-        updateOrderPs.executeUpdate();
+            updateOrderPs.executeUpdate();
+        } else {
+            throw new SQLException("Order not found: " + order.getOrderId());
+        }
     } 
 
     //orders can't be deleted, only set to cancelled  

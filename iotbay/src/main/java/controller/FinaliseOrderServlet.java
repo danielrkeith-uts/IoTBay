@@ -28,7 +28,8 @@ public class FinaliseOrderServlet extends HttpServlet {
         OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
         CardDBManager cardDBManager = (CardDBManager) session.getAttribute("cardDBManager");
         PaymentDBManager paymentDBManager = (PaymentDBManager) session.getAttribute("paymentDBManager");
-        ProductListEntryDBManager entryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+        CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+        ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
 
         String stringCardId = request.getParameter("cardId");
         String stringAmount = request.getParameter("amount");
@@ -54,15 +55,15 @@ public class FinaliseOrderServlet extends HttpServlet {
                 return;
             }
 
-            //NEED PAYMENT ID HERE --> WANT TO REMOVE
-            Payment payment = new Payment(0, amount, card, paymentStatus);
+            Payment payment = new Payment(amount, card, paymentStatus);
             int paymentId = paymentDBManager.addPayment(cardId, amount, paymentStatusIndex);
+            payment.setPaymentId(paymentId);
 
             // Save products to DB for this cart
             int cartId = cart.getCartId();
-            entryDBManager.clearCart(cartId); // clear old entries --> NEEDS TO BE WRITTEN
+            cartDBManager.clearCart(cartId); // clear old entries --> NEEDS TO BE WRITTEN
             for (ProductListEntry entry : cart.getProductList()) {
-                entryDBManager.addProduct(cartId, entry.getProduct().getProductId(), entry.getQuantity());
+                productListEntryDBManager.addProduct(cartId, entry.getProduct().getProductId(), entry.getQuantity());
             }
 
             // Update the existing order
