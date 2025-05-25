@@ -17,10 +17,8 @@ public class CardDBManager {
         this.updateCardPs = conn.prepareStatement(UPDATE_CARD_STMT);  
     }
 
-    //Find a card by CardId in the database   
     public Card getCard(int cardId) throws SQLException {   
 
-        //get a cart from the db
         String query = "SELECT * FROM Card WHERE CardId = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setInt(1, cardId);
@@ -39,8 +37,7 @@ public class CardDBManager {
         } 
         return null;
     }
-
-    //Add a card to the database   
+  
     public int addCard(String name, String number, YearMonth expiry, String cvc) throws SQLException {   
         String query = "INSERT INTO Card (Name, Number, Expiry, CVC) VALUES (?, ?, ?, ?)";
 
@@ -48,7 +45,6 @@ public class CardDBManager {
             pst.setString(1, name);
             pst.setString(2, number);
 
-            // Convert YearMonth to java.sql.Date as the first day of the month
             java.sql.Date sqlExpiry = java.sql.Date.valueOf(expiry.atDay(1));
             pst.setDate(3, sqlExpiry);
 

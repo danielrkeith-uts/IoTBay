@@ -49,6 +49,7 @@
                 <li><a class="dropdown-item <%= currentPage.equals("myorders.jsp") ? "active" : "" %>" href="myorders.jsp">My Orders</a></li>
                <% if (!isStaff || !isLoggedIn) { %>
     <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
+    <li><a class="dropdown-item <%= currentPage.equals("myorders.jsp") ? "active" : "" %>" href="myorders.jsp">My Orders</a></li>
 <% } %>
                 <li><a class="dropdown-item <%= currentPage.equals("applicationaccesslogs.jsp") ? "active" : "" %>" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                 <li><a class="dropdown-item <%= currentPage.equals("logout.jsp") ? "active" : "" %>" href="logout.jsp">Logout</a></li>

@@ -15,10 +15,8 @@ public class CartDBManager {
         this.updateCartPs = conn.prepareStatement(UPDATE_CART_STMT);  
     }
 
-    //Find a cart by CartId in the database   
     public Cart getCart(int cartId) throws SQLException {   
 
-        //get a cart from the db
         String query = "SELECT * FROM Cart WHERE CartId = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setInt(1, cartId);
@@ -36,8 +34,7 @@ public class CartDBManager {
         } 
         return null;
     }
-
-    //Add a cart to the database   
+  
     public int addCart(Timestamp LastUpdated) throws SQLException {       
         String query = "INSERT INTO Cart (LastUpdated) VALUES (?)";
         PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -53,7 +50,6 @@ public class CartDBManager {
         }
     }
 
-    //update a cart's LastUpdated in the database   
     public void updateCart(Cart cart) throws SQLException {
         String query = "SELECT * FROM Cart WHERE CartId = " + cart.getCartId(); 
         ResultSet rs = st.executeQuery(query); 
@@ -66,12 +62,10 @@ public class CartDBManager {
         updateCartPs.executeUpdate();
     } 
 
-    //delete a cart from the database   
     public void deleteCart(int CartId) throws SQLException{       
         st.executeUpdate("DELETE FROM Cart WHERE CartId = " + CartId); 
     }
 
-    //make it empty
     public void clearCart(int cartId) throws SQLException {
         String deleteQuery = "DELETE FROM ProductListEntry WHERE CartId = ?";
         

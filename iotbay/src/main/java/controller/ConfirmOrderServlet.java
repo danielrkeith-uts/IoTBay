@@ -134,22 +134,4 @@ public class ConfirmOrderServlet extends HttpServlet {
             logger.log(Level.SEVERE, "Order placement failed", e);
         }
     }
-
-    // protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    //     HttpSession session = request.getSession();
-
-    //     DeliveryDBManager deliveryDBManager = (DeliveryDBManager) session.getAttribute("deliveryDBManager");
-    //     if (deliveryDBManager == null) {
-    //         throw new ServletException("DeliveryDBManager retrieved from session is null");
-    //     }
-
-    //     try {
-    //         Delivery delivery = deliveryDBManager.getDelivery(0);
-    //         Address address = delivery.getDestination();
-    //         session.setAttribute("address", address);
-    //         return;
-    //     } catch (SQLException e) {
-    //         logger.log(Level.SEVERE, "Error setting address", e);
-    //     }
-    // }
 }
