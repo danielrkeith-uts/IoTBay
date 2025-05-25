@@ -32,6 +32,10 @@ public class Product implements Serializable {
         return productId;
     }
 
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

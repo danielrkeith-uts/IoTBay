@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
 
 import model.dao.*;
 import model.*;
+import model.Enums.*;
 
 @WebServlet("/UpdateOrderServlet")
 public class UpdateOrderServlet extends HttpServlet {
@@ -25,7 +26,7 @@ public class UpdateOrderServlet extends HttpServlet {
 
         try {
             Order order = orderDBManager.getOrder(orderId);
-            if (order != null && order.getOrderStatus().equals("SAVED")) {
+            if (order != null && order.getOrderStatus() == OrderStatus.SAVED) {
 
                 // Create a new cart based on the saved product list
                 Cart updatedCart = new Cart();

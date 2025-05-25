@@ -81,19 +81,26 @@
                                     <li><%= entry.getProduct().getName() %> × <%= entry.getQuantity() %></li>
                                 <% } %>
                             </ul>
+                            <p><strong>Total: $<%= String.format("%.2f", 
+                                o.getProductList().stream()
+                                    .mapToDouble(entry -> entry.getProduct().getCost() * entry.getQuantity())
+                                    .sum()
+                            ) %></strong></p>
                             <% if (o.getOrderStatus() == OrderStatus.SAVED) { %>
-                                <form action="UpdateOrderServlet" method="get">
-                                <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
-                                    <button type="submit" class="btn-green">
-                                        Update Order
-                                    </button>
-                                </form>
-                                <form action="CancelOrderServlet" method="post">
-                                <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
-                                    <button type="submit" class="btn-green">
-                                        Cancel Order
-                                    </button>
-                                </form>
+                                <div style="display: flex; gap: 10px;">
+                                    <form action="UpdateOrderServlet" method="get">
+                                    <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
+                                        <button type="submit" class="btn-green">
+                                            Update Order
+                                        </button>
+                                    </form>
+                                    <form action="CancelOrderServlet" method="post">
+                                    <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
+                                        <button type="submit" class="btn-green">
+                                            Cancel Order
+                                        </button>
+                                    </form>
+                                </div>
                             <% } %>
                         </div>
                     </div>
