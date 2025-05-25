@@ -1,5 +1,6 @@
 package model.dao;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,10 +12,13 @@ import model.Product;
 import model.Enums.ProductType;
 
 public class ProductDBManagerTests {
+    Connection conn;
     ProductDBManager productDBManager;
 
     public ProductDBManagerTests() throws ClassNotFoundException, SQLException {
-        productDBManager = new ProductDBManager(new DBConnector().openConnection());
+        conn = new DBConnector().openConnection();
+        conn.setAutoCommit(false);
+        productDBManager = new ProductDBManager(conn);
     }
 
     @Test
@@ -130,6 +134,11 @@ public class ProductDBManagerTests {
         } catch (SQLException e) {
             Assert.fail("SQLException occurred: " + e.getMessage());
         }
+        finally {
+            try {
+                conn.rollback();
+            } catch (SQLException ignore) { }
+        }
     }
 
     @Test
@@ -161,6 +170,11 @@ public class ProductDBManagerTests {
         } catch (SQLException e) {
             Assert.fail("SQLException occurred: " + e.getMessage());
         }
+        finally {
+            try {
+                conn.rollback();
+            } catch (SQLException ignore) { }
+        }
     }
 
     @Test
@@ -188,6 +202,11 @@ public class ProductDBManagerTests {
         } catch (SQLException e) {
             Assert.fail("SQLException occurred: " + e.getMessage());
         }
+        finally {
+            try {
+                conn.rollback();
+            } catch (SQLException ignore) { }
+        }
     }
 
     @Test
@@ -210,15 +229,10 @@ public class ProductDBManagerTests {
         } catch (SQLException e) {
             Assert.fail("SQLException occurred: " + e.getMessage());
         }
+        finally {
+            try {
+                conn.rollback();
+            } catch (SQLException ignore) { }
+        }
     }
-
-
-
-
-
-
-        
-
-
-
 }
