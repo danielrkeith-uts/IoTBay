@@ -5,27 +5,42 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class User implements Serializable {
+    public enum Role {
+        ADMIN,
+        STAFF,
+        CUSTOMER
+    }
+
     private int userId;
     private String firstName;
     private String lastName;
     private String email;
     private String phone;
     private String password;
+    private boolean deactivated;
+    private Role role;
     private List<ApplicationAccessLog> applicationAccessLogs;
 
-    public User(int userId, String firstName, String lastName, String email, String phone, String password) {
+    public User(int userId,
+                String firstName,
+                String lastName,
+                String email,
+                String phone,
+                String password,
+                Role role) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
         this.password = password;
-
-        this.applicationAccessLogs = new LinkedList<ApplicationAccessLog>();
+        this.deactivated = false;
+        this.role = role;
+        this.applicationAccessLogs = new LinkedList<>();
     }
 
     public int getUserId() {
-        return this.userId;
+        return userId;
     }
 
     public void setUserId(int userId) {
@@ -33,7 +48,7 @@ public abstract class User implements Serializable {
     }
 
     public String getFirstName() {
-        return this.firstName;
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
@@ -41,7 +56,7 @@ public abstract class User implements Serializable {
     }
 
     public String getLastName() {
-        return this.lastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
@@ -49,7 +64,7 @@ public abstract class User implements Serializable {
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public void setEmail(String email) {
@@ -57,7 +72,7 @@ public abstract class User implements Serializable {
     }
 
     public String getPhone() {
-        return this.phone;
+        return phone;
     }
 
     public void setPhone(String phone) {
@@ -65,41 +80,54 @@ public abstract class User implements Serializable {
     }
 
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
+    public boolean checkPassword(String candidate) {
+        return password.equals(candidate);
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
+    public boolean isDeactivated() {
+        return deactivated;
+    }
+
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public List<ApplicationAccessLog> getApplicationAccessLogs() {
         return applicationAccessLogs;
     }
 
-    public void setApplicationAccessLogs(List<ApplicationAccessLog> applicationAccessLogs) {
-        this.applicationAccessLogs = applicationAccessLogs;
+    public void setApplicationAccessLogs(List<ApplicationAccessLog> logs) {
+        this.applicationAccessLogs = logs;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
         User user = (User) obj;
-
-        return this.userId == user.userId
-            && this.firstName.equals(user.firstName)
-            && this.lastName.equals(user.lastName)
-            && this.email.equals(user.email)
-            && this.phone.equals(user.phone)
-            && this.password.equals(user.password);
+        return userId == user.userId
+            && deactivated == user.deactivated
+            && role == user.role
+            && firstName.equals(user.firstName)
+            && lastName.equals(user.lastName)
+            && email.equals(user.email)
+            && phone.equals(user.phone)
+            && password.equals(user.password);
     }
 }
+

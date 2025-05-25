@@ -25,8 +25,8 @@
 <head>
     <meta charset="UTF-8" />
     <title>Products</title>
-    <link rel="stylesheet" href="main.css" />
-    <link rel="stylesheet" href="products.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/products.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
@@ -36,40 +36,8 @@
 <body>
     <div class="banner">
         <h1>Internet of Things Store</h1>
-        <navbar>
-            <a href="index.jsp">Home</a>
-            <a href="products.jsp" class="active">Products</a>
-            
-            <%
-                model.User user = (model.User) session.getAttribute("user");
-                boolean isStaff = (user != null && user instanceof Staff);
-                
-                if (user == null) {
-            %>
-                <a href="LoginPageServlet">Login</a>
-            <%
-                } else {
-            %>
-            <% if (isStaff) { %>
-                        <a href="adminInventory.jsp">Manage Inventory</a>
-                    <% } %>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
-                        <li><a class="dropdown-item" href="myorders.jsp">My Orders</a></li>
-                        <li><a class="dropdown-item" href="shipments.jsp">My Shipments</a></li>
-                        <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-                        <li><a class="dropdown-item" href="LogoutServlet">Logout</a></li>
-                        <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
-                    </ul>
-                </div>
-            <%
-                }
-            %>
-            <a href="cart.jsp" class="bi bi-cart"></a>
-            <a href="myorders.jsp">Temp MyOrders</a>
-        </navbar>
+        <jsp:include page="navbar.jsp" />
+
     </div>
 
     <main class="container mt-5">

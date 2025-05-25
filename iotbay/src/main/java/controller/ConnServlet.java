@@ -18,16 +18,15 @@ import model.dao.*;
 
 @WebServlet("/ConnServlet")
 public class ConnServlet extends HttpServlet {
-    private Logger logger;
+    private static final Logger logger = Logger.getLogger(ConnServlet.class.getName());
 
     private DBConnector dbConnector;
 
     @Override
     public void init() {
-        logger = Logger.getLogger(ConnServlet.class.getName());
-
         try {
             dbConnector = new DBConnector();
+            logger.info("DBConnector initialized.");
         } catch (ClassNotFoundException | SQLException e) {
             logger.log(Level.SEVERE, "Cannot connect to DB", e);
         }
@@ -73,8 +72,10 @@ public class ConnServlet extends HttpServlet {
         try {
             dbConnector.closeConnection();
             logger.info("Database connection closed.");
+            logger.info("Database connection closed.");
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Could not close DB connection", e);
         }
     }
 }
+

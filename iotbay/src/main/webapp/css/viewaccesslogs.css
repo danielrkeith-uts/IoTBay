@@ -1,0 +1,112 @@
+.log-table-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 6px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th:nth-child(1), td:nth-child(1) {
+    width: 40%;
+}
+th:nth-child(2), td:nth-child(2) {
+    width: 40%;
+}
+th:nth-child(3), td:nth-child(3) {
+    width: 20%;
+    text-align: center;
+}
+
+thead th {
+    background-color: #333;
+    font-weight: bold;
+    top: 0;
+    z-index: 2;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+button.btn, a.btn {
+    background-color: #5e8c4e;
+    color: white;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+}
+
+button.btn:hover, a.btn:hover {
+    background-color: #467a39;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+button.btn:active, a.btn:active {
+    background-color: #3d6b34;
+    transform: translateY(0);
+}
+
+.text-center {
+    margin-top: 10px;
+}
+thead tr {
+    background-color: #EFBC9B; 
+    color: #333 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 15px;
+}
+
+thead tr:hover {
+    background-color: #333; 
+    color: #EFBC9B !important;
+}
+.btn-custom {
+    background-color: #6c757d !important;
+    color: white;
+}
+.btn-secondary {
+    background-color: #6c757d !important;
+    color: white;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62;
+    color: white;
+}

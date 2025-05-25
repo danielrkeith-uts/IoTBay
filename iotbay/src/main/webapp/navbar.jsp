@@ -1,25 +1,40 @@
 <%@ page import="model.User, model.Staff" %>
 <%
-    User user = (User) session.getAttribute("user");
+    User user        = (User) session.getAttribute("user");
     boolean isLoggedIn = user != null;
-    boolean isStaff = isLoggedIn && user instanceof Staff;
-    boolean isAdmin = isStaff && ((Staff) user).isAdmin();
+    boolean isStaff    = isLoggedIn && user instanceof Staff;
+    boolean isAdmin    = isStaff    && ((Staff) user).isAdmin();
 
-    String currentPage = request.getRequestURI();
-    currentPage = currentPage.substring(currentPage.lastIndexOf("/") + 1);
+    String currentPage = request.getRequestURI()
+                              .substring(request.getRequestURI().lastIndexOf("/") + 1);
 %>
-
 <navbar>
-    <a href="index.jsp" class="<%= currentPage.equals("index.jsp") ? "active" : "" %>">Home</a>
-    <a href="products.jsp" class="<%= currentPage.equals("products.jsp") ? "active" : "" %>">Products</a>
+  <a href="index.jsp"
+     class="<%= currentPage.equals("index.jsp") ? "active" : "" %>">
+    Home
+  </a>
+  <a href="products.jsp"
+     class="<%= currentPage.equals("products.jsp") ? "active" : "" %>">
+    Products
+  </a>
 
-    <% if (isStaff) { %>
-        <a href="adminInventory.jsp" class="<%= currentPage.equals("adminInventory.jsp") ? "active" : "" %>">Manage Inventory</a>
-    <% } %>
+  <% if (isStaff) { %>
+    <a href="adminInventory.jsp"
+       class="<%= currentPage.equals("adminInventory.jsp") ? "active" : "" %>">
+      Manage Inventory
+    </a>
+  <% } %>
 
-    <% if (isAdmin) { %>
-        <a href="CustomerListServlet" class="<%= currentPage.equals("CustomerListServlet") ? "active" : "" %>">Customers</a>
-    <% } %>
+  <% if (isAdmin) { %>
+    <a href="CustomerListServlet"
+       class="<%= currentPage.equals("CustomerListServlet") ? "active" : "" %>">
+      Customers
+    </a>
+    <a href="StaffListServlet"
+       class="<%= currentPage.equals("StaffListServlet") ? "active" : "" %>">
+      Staff
+    </a>
+  <% } %>
 
     <% if (!isLoggedIn) { %>
         <a href="login.jsp" class="<%= currentPage.equals("login.jsp") ? "active" : "" %>">Login</a>
@@ -42,5 +57,8 @@
         </div>
     <% } %>
 
-    <a href="cart.jsp" class="bi bi-cart <%= currentPage.equals("cart.jsp") ? "active" : "" %>"></a>
+  <a href="cart.jsp"
+     class="bi bi-cart
+            <%= currentPage.equals("cart.jsp") ? "active" : "" %>">
+  </a>
 </navbar>
