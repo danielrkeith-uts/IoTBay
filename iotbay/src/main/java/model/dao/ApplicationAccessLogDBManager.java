@@ -40,11 +40,10 @@ public class ApplicationAccessLogDBManager {
         this.deleteApplicationAccessLogPs = conn.prepareStatement(DELETE_APPLICATION_ACCESS_LOG_STMT);
     }
 
-    public void addApplicationAccessLog(int userId, ApplicationAccessLog log3) throws SQLException {
+    public void addApplicationAccessLog(int userId, ApplicationAccessLog log) throws SQLException {
         addApplicationAccessLogPs.setInt(1, userId);
-        addApplicationAccessLogPs.setInt(2, log3.getApplicationAction().toInt());
-        addApplicationAccessLogPs.setDate(3, new java.sql.Date(log3.getDateTime().getTime()));
-
+        addApplicationAccessLogPs.setInt(2, log.getApplicationAction().toInt());
+        addApplicationAccessLogPs.setDate(3, new java.sql.Date(log.getDateTime().getTime()));
         addApplicationAccessLogPs.executeUpdate();
     }
 
@@ -52,7 +51,6 @@ public class ApplicationAccessLogDBManager {
         getApplicationAccessLogsPs.setInt(1, userId);
 
         ResultSet rs = getApplicationAccessLogsPs.executeQuery();
-
         List<ApplicationAccessLog> applicationAccessLogs = new LinkedList<>();
         while (rs.next()) {
             applicationAccessLogs.add(new ApplicationAccessLog(
@@ -80,13 +78,13 @@ public class ApplicationAccessLogDBManager {
         String sql = "SELECT * FROM ApplicationAccessLog WHERE AccessLogId = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, logId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
+            try (ResultSet rs2 = ps.executeQuery()) {
+                if (rs2.next()) {
                     return new ApplicationAccessLog(
-                        rs.getInt("AccessLogId"),
-                        rs.getInt("UserId"),
-                        rs.getTimestamp("DateTime"),
-                        ApplicationAction.fromInt(rs.getInt("ApplicationAction"))
+                        rs2.getInt("AccessLogId"),
+                        rs2.getInt("UserId"),
+                        rs2.getTimestamp("DateTime"),
+                        ApplicationAction.fromInt(rs2.getInt("ApplicationAction"))
                     );
                 }
             }

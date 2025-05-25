@@ -7,13 +7,13 @@ import java.util.Date;
 import model.Enums.ApplicationAction;
 
 public class ApplicationAccessLog implements Serializable {
-    private int logId;
+    private int accessLogId;
     private int userId;
     private ApplicationAction applicationAction;
     private Date dateTime;
 
     public ApplicationAccessLog(int logId, int userId, Timestamp timestamp, ApplicationAction applicationAction) {
-        this.logId = logId;
+        this.accessLogId = logId;
         this.userId = userId;
         this.dateTime = new Date(timestamp.getTime());
         this.applicationAction = applicationAction;
@@ -24,8 +24,8 @@ public class ApplicationAccessLog implements Serializable {
         this.dateTime = dateTime;
     }
 
-    public int getLogId() {
-        return logId;
+    public int getAccessLogId() {
+        return accessLogId;
     }
 
     public int getUserId() {
@@ -52,6 +52,8 @@ public class ApplicationAccessLog implements Serializable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
         ApplicationAccessLog other = (ApplicationAccessLog) obj;
         return applicationAction == other.applicationAction && dateTime.equals(other.dateTime);
@@ -60,7 +62,7 @@ public class ApplicationAccessLog implements Serializable {
     @Override
     public String toString() {
         return "ApplicationAccessLog{" +
-                "logId=" + logId +
+                "logId=" + accessLogId +
                 ", userId=" + userId +
                 ", applicationAction=" + applicationAction +
                 ", dateTime=" + dateTime +

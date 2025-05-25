@@ -11,7 +11,7 @@
     if (logManager == null) {
         throw new ServletException("ApplicationAccessLogDBManager not found in session");
     }
-
+    boolean isAdmin = (user instanceof Staff) && ((Staff)user).isAdmin();
     List<ApplicationAccessLog> logs = logManager.getApplicationAccessLogs(user.getUserId());
 %>
     <head>
@@ -25,7 +25,27 @@
     <body>
         <div class="banner">
             <h1>Internet of Things Store</h1>
-            <jsp:include page="navbar.jsp" />
+            <navbar>
+                <a href="index.jsp">Home</a>
+                <a href="products.jsp">Products</a>
+                <% if (isStaff) { %>
+                            <a href="adminInventory.jsp">Manage Inventory</a>
+                        <% } %>
+                <% if (isAdmin) { %>
+                    <a href="StaffListServlet">Staff</a>
+                <% } %>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                        <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+                    
+                        <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                        <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
+                    </ul>
+                </div>
+                <a href="cart.jsp" class="bi bi-cart"></a>
+            </navbar>
         </div>
         <div class="content">
             <h2>Application Access Logs</h2>

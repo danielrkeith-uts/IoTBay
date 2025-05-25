@@ -209,29 +209,31 @@ VALUES
     (19, 19),
     (20, 20);
 
+
 -- Staff
-INSERT INTO Staff (UserId, StaffCardId, Admin)
+INSERT INTO Staff (UserId, StaffCardId, Admin, Position)
 VALUES 
-    (21, 1001, true),   
-    (22, 1002, false),
-    (23, 1003, false),
-    (24, 1004, false),
-    (25, 1005, true),  
-    (26, 1006, false),
-    (27, 1007, false),
-    (28, 1008, true),  
-    (29, 1009, false),
-    (30, 1010, false),
-    (31, 1011, true),   
-    (32, 1012, false),
-    (33, 1013, false),
-    (34, 1014, false),
-    (35, 1015, true), 
-    (36, 1016, false),
-    (37, 1017, false),
-    (38, 1018, false),
-    (39, 1019, false),
-    (40, 1020, false);
+    (21, 1001, TRUE,  'STAFF'),
+    (22, 1002, FALSE, 'TECH'),
+    (23, 1003, FALSE, 'SALES'),
+    (24, 1004, TRUE,  'MANAGER'),
+    (25, 1005, FALSE, 'TECH'),
+    (26, 1006, FALSE, 'SALES'),
+    (27, 1007, TRUE,  'MANAGER'),
+    (28, 1008, FALSE, 'TECH'),
+    (29, 1009, FALSE, 'SALES'),
+    (30, 1010, TRUE,  'MANAGER'),
+    (31, 1011, FALSE, 'TECH'),
+    (32, 1012, FALSE, 'SALES'),
+    (33, 1013, TRUE,  'MANAGER'),
+    (34, 1014, FALSE, 'TECH'),
+    (35, 1015, FALSE, 'SALES'),
+    (36, 1016, TRUE,  'MANAGER'),
+    (37, 1017, FALSE, 'TECH'),
+    (38, 1018, FALSE, 'SALES'),
+    (39, 1019, TRUE,  'MANAGER'),
+    (40, 1020, FALSE, 'TECH');
+
 
 -- ApplicationAccessLog
 INSERT INTO ApplicationAccessLog (AccessLogId, UserId, ApplicationAction, DateTime)

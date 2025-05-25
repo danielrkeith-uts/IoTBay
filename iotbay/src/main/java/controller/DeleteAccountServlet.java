@@ -21,7 +21,7 @@ public class DeleteAccountServlet extends HttpServlet {
 
     @Override
     public void init() {
-        logger = Logger.getLogger(LoginServlet.class.getName());
+        logger = Logger.getLogger(DeleteAccountServlet.class.getName());
     }
 
     @Override
