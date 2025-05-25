@@ -104,7 +104,7 @@ public class CreateUserServlet extends HttpServlet {
                 }
 
                 // Create staff user
-                Staff staff = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, isAdmin);
+                Staff staff = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, isAdmin, "");
                 userDBManager.addStaff(staff);
             }
 

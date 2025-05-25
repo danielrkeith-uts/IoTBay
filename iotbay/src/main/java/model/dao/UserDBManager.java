@@ -14,7 +14,7 @@ public class UserDBManager {
 
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
     private static final String ADD_CUSTOMER_STMT  = "INSERT INTO Customer (UserId) VALUES (?);";
-    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId, Admin) VALUES (?, ?, ?);";
+    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId, Admin, Position) VALUES (?, ?, ?, ?);";
     private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
@@ -152,6 +152,7 @@ public class UserDBManager {
         addStaffPs.setInt(1, id);
         addStaffPs.setInt(2, staff.getStaffCardId());
         addStaffPs.setBoolean(3, staff.isAdmin());
+        addStaffPs.setString(4, staff.getPosition());
         addStaffPs.executeUpdate();
     }
 
@@ -409,7 +410,13 @@ public class UserDBManager {
 
     public void updateExtendedUser(ExtendedUser user) throws SQLException {
         // Update base user fields
-        updateUser(user);
+        updateUserPs.setString(1, user.getFirstName());
+        updateUserPs.setString(2, user.getLastName());
+        updateUserPs.setString(3, user.getEmail());
+        updateUserPs.setString(4, user.getPhone());
+        updateUserPs.setString(5, user.getPassword());
+        updateUserPs.setInt(6, user.getUserId());
+        updateUserPs.executeUpdate();
 
         // If user is a customer, update customer details
         if (user.isCustomer()) {
@@ -424,15 +431,11 @@ public class UserDBManager {
         // If user is a staff member, update staff details
         if (user.isStaff()) {
             updateStaffPs.setInt(1, user.getStaffCardId());
-            updateStaffPs.setInt(2, user.getUserId());
+            updateStaffPs.setBoolean(2, user.isAdmin());
+            updateStaffPs.setString(3, ""); // Position is not part of ExtendedUser
+            updateStaffPs.setInt(4, user.getUserId());
             updateStaffPs.executeUpdate();
         }
     }
 }
-<<<<<<< HEAD
-    
-=======
-
-
->>>>>>> main
 
