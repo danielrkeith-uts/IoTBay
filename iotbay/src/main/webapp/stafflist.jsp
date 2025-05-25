@@ -8,9 +8,12 @@
   <meta charset="UTF-8"/>
   <title>All Staff Members</title>
   <link rel="stylesheet" href="css/main.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </head>
@@ -22,12 +25,40 @@
 
   <div class="content container py-5">
     <h2>All Staff Members</h2>
+
     <c:if test="${not empty errorMessage}">
       <div class="alert alert-danger">${errorMessage}</div>
     </c:if>
     <c:if test="${not empty success}">
       <div class="alert alert-success">${success}</div>
     </c:if>
+
+    <!-- search + filter form -->
+    <form method="get" action="StaffListServlet" class="row g-3 mb-4">
+      <div class="col-md-5">
+        <input
+          type="text"
+          name="q"
+          value="${param.q}"
+          class="form-control"
+          placeholder="Search by name…"
+        />
+      </div>
+      <div class="col-md-4">
+        <select name="position" class="form-select">
+          <option value=""  ${param.position==''    ? 'selected':''}>All Positions</option>
+          <option value="TECH"    ${param.position=='TECH'    ? 'selected':''}>Tech</option>
+          <option value="SALES"   ${param.position=='SALES'   ? 'selected':''}>Sales</option>
+          <option value="MANAGER" ${param.position=='MANAGER' ? 'selected':''}>Manager</option>
+        </select>
+      </div>
+      <div class="col-md-3 text-end">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fas fa-search"></i> Filter
+        </button>
+      </div>
+    </form>
+    <!-- end search + filter form -->
 
     <div class="mb-3 text-end">
       <a href="addstaff.jsp" class="btn btn-success">
