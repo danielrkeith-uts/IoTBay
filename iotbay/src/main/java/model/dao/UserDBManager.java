@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.ExtendedUser;
 import model.Customer;
 import model.Staff;
 import model.User;
@@ -295,4 +296,79 @@ public class UserDBManager {
         updateUserPs.setInt(6, user.getUserId());
         updateUserPs.executeUpdate();
     }
+
+    public List<ExtendedUser> getAllUsersFilteredByName(String searchTerm) throws SQLException {
+        List<ExtendedUser> users = new ArrayList<>();
+    
+        String sql = "SELECT u.UserId, u.FirstName, u.LastName, u.Email, u.Phone, u.Password, u.Deactivated, " +
+                     "c.Type as CustomerType, " +
+                     "s.StaffCardId, s.Admin as IsAdmin " +
+                     "FROM User u " +
+                     "LEFT JOIN Customer c ON u.UserId = c.UserId " +
+                     "LEFT JOIN Staff s ON u.UserId = s.UserId " +
+                     "WHERE u.FirstName LIKE ? OR u.LastName LIKE ? OR u.Email LIKE ? OR u.Phone LIKE ? " +
+                     "ORDER BY u.UserId";
+    
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String filter = "%" + searchTerm + "%";
+            stmt.setString(1, filter);
+            stmt.setString(2, filter);
+            stmt.setString(3, filter);
+            stmt.setString(4, filter);
+    
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ExtendedUser user = new ExtendedUser(
+                        rs.getInt("UserId"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        rs.getString("Password")
+                    );
+    
+                    user.setDeactivated(rs.getBoolean("Deactivated"));
+    
+                    if (rs.getString("CustomerType") != null) {
+                        user.setCustomer(true);
+                        String custType = rs.getString("CustomerType");
+                        user.setCustomerType("COMPANY".equalsIgnoreCase(custType) ? Customer.Type.COMPANY : Customer.Type.INDIVIDUAL);
+                    }
+    
+                    if (rs.getString("StaffCardId") != null) {
+                        user.setStaff(true);
+                        user.setStaffCardId(rs.getInt("StaffCardId"));
+                        user.setAdmin(rs.getBoolean("IsAdmin"));
+                    }
+    
+                    users.add(user);
+                }
+            }
+        }
+        return users;
+    }
+
+    public void updateExtendedUser(ExtendedUser user) throws SQLException {
+        // Update base user fields
+        updateUser(user);
+
+        // If user is a customer, update customer details
+        if (user.isCustomer()) {
+            String sql = "UPDATE Customer SET Type = ? WHERE UserId = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, user.getCustomerType().name());
+                stmt.setInt(2, user.getUserId());
+                stmt.executeUpdate();
+            }
+        }
+
+        // If user is a staff member, update staff details
+        if (user.isStaff()) {
+            updateStaffPs.setInt(1, user.getStaffCardId());
+            updateStaffPs.setInt(2, user.getUserId());
+            updateStaffPs.executeUpdate();
+        }
+    }
 }
+    
+

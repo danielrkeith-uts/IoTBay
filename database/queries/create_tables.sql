@@ -27,7 +27,7 @@ CREATE TABLE Product (
     ProductId INTEGER PRIMARY KEY AUTOINCREMENT,
     Name VARCHAR(30) NOT NULL,
     Description VARCHAR(30) NULL,
-    Type TEXT NOT NULL DEFAULT'OTHER',
+    Type TEXT NOT NULL DEFAULT 'OTHER',
     Cost DECIMAL(10, 2) NOT NULL,
     Stock INTEGER NOT NULL,
     ImageUrl VARCHAR(500)
@@ -43,7 +43,7 @@ CREATE TABLE ProductListEntry (
 
 CREATE TABLE Cart (
     CartId INTEGER PRIMARY KEY AUTOINCREMENT,
-    LastUpdated TEXT
+    LastUpdated DATETIME 
 );
 
 CREATE TABLE `Order` (
@@ -51,7 +51,7 @@ CREATE TABLE `Order` (
     UserId INTEGER,
     CartId INTEGER,
     PaymentId INTEGER,
-    DatePlaced TEXT NOT NULL,
+    DatePlaced DATETIME NOT NULL,  -- Changed from TEXT to DATETIME
     OrderStatus VARCHAR(50),
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE SET NULL,
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
@@ -99,7 +99,7 @@ CREATE TABLE ApplicationAccessLog (
     AccessLogId INTEGER PRIMARY KEY AUTOINCREMENT,
     UserId INTEGER,
     ApplicationAction INTEGER NOT NULL,
-    DateTime DATETIME NOT NULL,
+    DateTime DATETIME NOT NULL,  
     FOREIGN KEY (UserId) REFERENCES User(UserId)
 );
 

@@ -68,14 +68,14 @@ public class LoginServlet extends HttpServlet {
         }
     
         if (user == null) {
-            session.setAttribute(ERROR_ATTR, "Incorrect username and/or password");
+            session.setAttribute(ERROR_ATTR, "Invalid email or password");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
     
-        if (user instanceof model.Customer && ((model.Customer) user).isDeactivated()) {
+        if (user.isDeactivated()) {
             session.setAttribute("deactivatedUser", user);
-            session.setAttribute(ERROR_ATTR, "Your account is deactivated.");
+            session.setAttribute(ERROR_ATTR, "Your account is deactivated. Please contact an administrator.");
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }

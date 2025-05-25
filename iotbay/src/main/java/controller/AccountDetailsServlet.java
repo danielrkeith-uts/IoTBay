@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import model.Customer;
+import model.ExtendedUser;
 import model.Staff;
 import model.User;
 import model.dao.UserDBManager;
@@ -45,6 +47,7 @@ public class AccountDetailsServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         String phone = request.getParameter("phone");
         String staffCardIdInput = request.getParameter("staffCardId");
+        String customerType = request.getParameter("customerType");
 
         try {
             Validator.validatePhoneNumber(phone);
@@ -53,25 +56,37 @@ public class AccountDetailsServlet extends HttpServlet {
             user.setLastName(lastName);
             user.setPhone(phone);
 
-            if (user instanceof Staff) {
-                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+            if (user instanceof ExtendedUser) {
+                ExtendedUser extendedUser = (ExtendedUser) user;
                 
+                if (extendedUser.isStaff() && staffCardIdInput != null) {
+                    int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+                    extendedUser.setStaffCardId(staffCardId);
+                }
+                
+                if (extendedUser.isCustomer() && customerType != null) {
+                    extendedUser.setCustomerType(Customer.Type.valueOf(customerType.toUpperCase()));
+                }
+                
+                userDBManager.updateExtendedUser(extendedUser);
+            } else if (user instanceof Staff) {
+                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
                 ((Staff) user).setStaffCardId(staffCardId);
+                userDBManager.updateStaff((Staff) user);
+            } else if (user instanceof Customer) {
+                if (customerType != null) {
+                    ((Customer) user).setType(Customer.Type.valueOf(customerType.toUpperCase()));
+                }
+                userDBManager.updateCustomer((Customer) user);
             }
         } catch (InvalidInputException e) {
             session.setAttribute(ERROR_ATTR, e.getMessage());
             request.getRequestDispatcher(PAGE).include(request, response);
             return;
-        }
-
-        try {
-            if (user instanceof Customer) {
-                userDBManager.updateCustomer((Customer) user);
-            } else {
-                userDBManager.updateStaff((Staff) user);
-            }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not update user");
+            logger.log(Level.SEVERE, "Could not update user", e);
+            session.setAttribute(ERROR_ATTR, "Failed to update user details");
+            request.getRequestDispatcher(PAGE).include(request, response);
             return;
         }
 

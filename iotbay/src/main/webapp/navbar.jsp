@@ -18,7 +18,15 @@
     <% } %>
 
     <% if (isAdmin) { %>
-        <a href="CustomerListServlet" class="<%= currentPage.equals("CustomerListServlet") ? "active" : "" %>">Customers</a>
+        <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                Manage
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="UserListServlet">All Users</a></li>
+                <li><a class="dropdown-item" href="CustomerListServlet">Customers</a></li>
+            </ul>
+        </div>
     <% } %>
 
     <% if (!isLoggedIn) { %>
@@ -32,8 +40,8 @@
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item <%= currentPage.equals("account.jsp") ? "active" : "" %>" href="account.jsp">Account Details</a></li>
                <% if (!isStaff || !isLoggedIn) { %>
-    <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
-<% } %>
+                    <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
+                <% } %>
                 <li><a class="dropdown-item <%= currentPage.equals("applicationaccesslogs.jsp") ? "active" : "" %>" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
                 <li><a class="dropdown-item <%= currentPage.equals("logout.jsp") ? "active" : "" %>" href="logout.jsp">Logout</a></li>
                 <li><a class="dropdown-item text-danger <%= currentPage.equals("deleteaccount.jsp") ? "active" : "" %>" href="deleteaccount.jsp">Delete Account</a></li>
