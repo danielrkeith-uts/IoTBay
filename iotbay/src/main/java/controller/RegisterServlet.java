@@ -36,46 +36,41 @@ public class RegisterServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        UserDBManager userDBManager =
-            (UserDBManager) session.getAttribute("userDBManager");
+        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
 
-        CartDBManager cartDBManager =
-            (CartDBManager) session.getAttribute("cartDBManager");
+        CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
         if (cartDBManager == null) {
             throw new ServletException("CartDBManager retrieved from session is null");
         }
 
-        ApplicationAccessLogDBManager applicationAccessLogDBManager =
-            (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
-        OrderDBManager orderDBManager =
-            (OrderDBManager) session.getAttribute("orderDBManager");
+        OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
         if (orderDBManager == null) {
             throw new ServletException("OrderDBManager retrieved from session is null");
         }
 
         
-        String email    = request.getParameter("email");
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String firstName= request.getParameter("firstName");
+        String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        String phone    = request.getParameter("phone");
-        String type     = request.getParameter("type"); //customer
+        String phone = request.getParameter("phone");
+        String type = request.getParameter("type"); //customer
         boolean isStaff = request.getParameter("isStaff") != null;
         boolean isAdmin = request.getParameter("isSystemAdmin") != null;
-        String staffCardIdInput    = request.getParameter("staffCardId");
-        String staffPassword       = request.getParameter("staffPassword");
-        String adminPassword       = request.getParameter("systemAdminPassword");
-        String position            = request.getParameter("position"); //staff
+        String staffCardIdInput = request.getParameter("staffCardId");
+        String staffPassword = request.getParameter("staffPassword");
+        String adminPassword = request.getParameter("systemAdminPassword");
+        String position = request.getParameter("position"); //staff
 
         User user = null; 
 
@@ -85,7 +80,6 @@ public class RegisterServlet extends HttpServlet {
             }
 
             if (isStaff || isAdmin) {
-                // staff path
                 int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
 
                 if (isAdmin) {

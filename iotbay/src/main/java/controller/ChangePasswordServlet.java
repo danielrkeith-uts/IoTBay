@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,9 +12,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.ApplicationAccessLog;
 import model.Customer;
 import model.Staff;
 import model.User;
+import model.Enums.ApplicationAction;
+import model.dao.ApplicationAccessLogDBManager;
 import model.dao.UserDBManager;
 import model.exceptions.InvalidInputException;
 import utils.Validator;
@@ -38,6 +42,8 @@ public class ChangePasswordServlet extends HttpServlet {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
 
+        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+
         User user = (User) session.getAttribute("user");
 
         String oldPassword = request.getParameter("old-password");
@@ -54,7 +60,7 @@ public class ChangePasswordServlet extends HttpServlet {
             }
 
             if (!Validator.isSecurePassword(newPassword)) {
-                throw new InvalidInputException("Invalid password");
+                throw new InvalidInputException("Invalid new password");
             }
             
             if (!newPassword.equals(newPasswordConfirmation)) {
@@ -73,6 +79,8 @@ public class ChangePasswordServlet extends HttpServlet {
             } else {
                 userDBManager.updateStaff((Staff) user);
             }
+
+            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), new ApplicationAccessLog(ApplicationAction.CHANGED_PASSWORD, new Date()));
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not update user's password");
             user.setPassword(oldPassword);
@@ -80,6 +88,7 @@ public class ChangePasswordServlet extends HttpServlet {
         }
 
         session.removeAttribute(ERROR_ATTR);
+        session.setAttribute(AccountDetailsServlet.SUCCESS_ATTR, "Successfully changed password");
         request.getRequestDispatcher(AccountDetailsServlet.PAGE).include(request, response);
     }
 }

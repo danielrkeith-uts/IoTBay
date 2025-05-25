@@ -24,7 +24,7 @@ import utils.Validator;
 public class AccountDetailsServlet extends HttpServlet {
     public static final String PAGE = "account.jsp";
     private static final String ERROR_ATTR = "accountError";
-    private static final String SUCCESS_ATTR = "accountSuccess";
+    public static final String SUCCESS_ATTR = "accountSuccess";
 
     private Logger logger;
 
