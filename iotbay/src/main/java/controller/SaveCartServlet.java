@@ -52,6 +52,9 @@ public class SaveCartServlet extends HttpServlet {
         try {
             CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
             int newCartId = cartDBManager.addCart(new Timestamp(System.currentTimeMillis()));
+            if (newCartId <= 0) {
+                throw new ServletException("Failed to create cart found in SaveCartServlet: cartId returned was " + newCartId);
+            }
             cart.setCartId(newCartId);
 
             ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");

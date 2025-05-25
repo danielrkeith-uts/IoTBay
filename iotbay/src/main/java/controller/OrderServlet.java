@@ -60,6 +60,9 @@ public class OrderServlet extends HttpServlet {
             cart.setLastUpdated(lastUpdated);
             
             int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
+            if (cartId <= 0) {
+                throw new ServletException("Failed to create cart found in OrderServlet: cartId returned was " + cartId);
+            }
             cart.setCartId(cartId);
 
             ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");

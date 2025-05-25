@@ -29,22 +29,19 @@ public class UpdateOrderServlet extends HttpServlet {
         try {
             Order order = orderDBManager.getOrder(orderId);
             if (order != null && order.getOrderStatus() == OrderStatus.SAVED) {
-
-                CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
-
                 Cart updatedCart = new Cart();
+
                 for (ProductListEntry entry : order.getProductList()) {
                     updatedCart.addProduct(entry.getProduct(), entry.getQuantity());
                 }
-                int newCartId = cartDBManager.addCart(new Timestamp(System.currentTimeMillis()));
-                updatedCart.setCartId(newCartId);
-
-                session.setAttribute("cart", updatedCart);
-                session.setAttribute("editingOrderId", orderId);
-
-                session.setAttribute("cart", updatedCart);
-                session.setAttribute("editingOrderId", orderId); 
                 
+                System.out.println("DEBUG: orderId=" + orderId + ", order.getCartId()=" + order.getCartId());
+                updatedCart.setCartId(order.getCartId());
+
+                session.setAttribute("cart", updatedCart);
+                session.setAttribute("editingCartId", updatedCart.getCartId());
+                session.setAttribute("editingOrderId", order.getOrderId()); 
+
                 if (user instanceof Customer) {
                     ((Customer) user).setCart(updatedCart);
                 }
