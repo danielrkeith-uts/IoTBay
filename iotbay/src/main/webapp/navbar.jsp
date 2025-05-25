@@ -46,7 +46,7 @@
             </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item <%= currentPage.equals("account.jsp") ? "active" : "" %>" href="account.jsp">Account Details</a></li>
-                <li><a class="dropdown-item <%= currentPage.equals("myorders.jsp") ? "active" : "" %>" href="account.jsp">My Orders</a></li>
+                <li><a class="dropdown-item <%= currentPage.equals("myorders.jsp") ? "active" : "" %>" href="myorders.jsp">My Orders</a></li>
                <% if (!isStaff || !isLoggedIn) { %>
     <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
 <% } %>
