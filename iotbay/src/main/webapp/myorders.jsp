@@ -90,13 +90,13 @@
                                 <div style="display: flex; gap: 10px;">
                                     <form action="UpdateOrderServlet" method="get">
                                     <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
-                                        <button type="submit" class="btn-green">
-                                            Update Order
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            Edit Order
                                         </button>
                                     </form>
                                     <form action="CancelOrderServlet" method="post">
                                     <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
-                                        <button type="submit" class="btn-green">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this order?')">
                                             Cancel Order
                                         </button>
                                     </form>

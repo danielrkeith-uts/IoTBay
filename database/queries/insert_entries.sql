@@ -22,7 +22,7 @@ VALUES
     (18, 'Ecobee Smart Thermostat', 'ELECTRONICS', 249, 25, 'https://mindmajix.com/iot-devices'),
     (19, 'Arlo Pro Security Camera', 'ELECTRONICS', 299, 20, 'https://mindmajix.com/iot-devices'),
     (20, 'Tile Mate Bluetooth Tracker', 'ACCESSORY', 29, 150, 'https://mindmajix.com/iot-devices');
-
+    
 -- Delivery
 INSERT INTO Delivery(DeliveryId, OrderId, SourceAddressId, DestinationAddressId, Courier, CourierDeliveryId)
 VALUES 
