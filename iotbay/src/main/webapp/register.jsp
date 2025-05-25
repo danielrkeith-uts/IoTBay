@@ -42,9 +42,9 @@
 <div class="content">
     <h2>Register</h2>
     <form action="RegisterServlet" method="post">
-       <div class="mb-3">
+        <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="text" name="email" id="email" class="form-control" required />
+            <input type="email" name="email" id="email" class="form-control" required />
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Password</label>
@@ -52,19 +52,20 @@
             <p class="fst-italic">Must be at least 8 characters long and include a lowercase, uppercase, number, and special character</p>
         </div>
         <div class="mb-3">
-            <label for="firstName" class="form-label">First Name (optional)</label>
-            <input type="text" name="firstName" id="firstName" class="form-control" />
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" name="firstName" id="firstName" class="form-control" required />
         </div>
         <div class="mb-3">
-            <label for="lastName" class="form-label">Last Name (optional)</label>
-            <input type="text" name="lastName" id="lastName" class="form-control" />
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" name="lastName" id="lastName" class="form-control" required />
         </div>
         <div class="mb-3">
-            <label for="phone" class="form-label">Phone Number (optional)</label>
-            <input type="text" name="phone" id="phone" class="form-control" />
+            <label for="phone" class="form-label">Phone</label>
+            <input type="tel" name="phone" id="phone" class="form-control" />
         </div>
+
         <div class="mb-3" id="customer-type-section">
-            <label for="type" class="form-label">User Type</label>
+            <label for="type" class="form-label">Customer Type</label>
             <select name="type" id="type" class="form-select">
                 <option value="INDIVIDUAL">Individual</option>
                 <option value="COMPANY">Company</option>
@@ -84,6 +85,7 @@
             <label for="staffCardId" class="form-label">Staff Card ID</label>
             <input type="text" name="staffCardId" id="staffCardId" class="form-control" />
         </div>
+
         <div class="mb-3" id="position-section" style="display: none;">
             <label for="position" class="form-label">Position</label>
             <select name="position" id="position" class="form-select">
@@ -93,7 +95,6 @@
                 <option value="MANAGER">Manager</option>
             </select>
         </div>
-       
 
         <div id="staff-password-section" style="display: none;">
             <div class="mb-3">

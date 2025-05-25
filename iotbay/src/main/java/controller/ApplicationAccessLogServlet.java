@@ -47,11 +47,11 @@ public class ApplicationAccessLogServlet extends HttpServlet {
         try {
             String customerIdParam = request.getParameter("customer_id");
         
-            if (Role.STAFF.equals(user.getRole()) && customerIdParam != null) {
+            if ((Role.STAFF.equals(user.getRole()) || Role.ADMIN.equals(user.getRole())) && customerIdParam != null) {
                 int customerId = Integer.parseInt(customerIdParam);
                 logs = applicationAccessLogDBManager.getApplicationAccessLogs(customerId);
             } 
-            else if (customerIdParam != null && !Role.STAFF.equals(user.getRole())) {
+            else if (customerIdParam != null && !(Role.STAFF.equals(user.getRole()) || Role.ADMIN.equals(user.getRole()))) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to view other users' logs.");
                 return;
             } 
