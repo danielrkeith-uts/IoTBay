@@ -6,9 +6,9 @@ import java.util.List;
 
 public abstract class User implements Serializable {
     public enum Role {
-        CUSTOMER,
+        ADMIN,
         STAFF,
-        ADMIN
+        CUSTOMER
     }
 
     private int userId;
@@ -17,12 +17,17 @@ public abstract class User implements Serializable {
     private String email;
     private String phone;
     private String password;
-    private boolean deactivated = false;
+    private boolean deactivated;
     private Role role;
     private List<ApplicationAccessLog> applicationAccessLogs;
-    private Role role; 
 
-    public User(int userId, String firstName, String lastName, String email, String phone, String password, Role role) {
+    public User(int userId,
+                String firstName,
+                String lastName,
+                String email,
+                String phone,
+                String password,
+                Role role) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -32,28 +37,6 @@ public abstract class User implements Serializable {
         this.deactivated = false;
         this.role = role;
         this.applicationAccessLogs = new LinkedList<>();
-    }
-
-    public enum Role {
-        ADMIN,
-        STAFF,
-        CUSTOMER
-    }
-
-    public Role getRole() {
-        return this.role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public boolean isDeactivated() {
-        return deactivated;
-    }
-
-    public void setDeactivated(boolean deactivated) {
-        this.deactivated = deactivated;
     }
 
     public int getUserId() {
@@ -134,14 +117,8 @@ public abstract class User implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
         User user = (User) obj;
         return userId == user.userId
             && deactivated == user.deactivated

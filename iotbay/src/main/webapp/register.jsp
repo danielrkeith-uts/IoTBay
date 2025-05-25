@@ -27,12 +27,12 @@
         const isStaffChecked = staffCheckbox.checked;
         const isAdminChecked = adminCheckbox.checked;
 
-        staffSection.style.display = isStaffChecked ? 'block' : 'none';
-        adminSection.style.display = isAdminChecked ? 'block' : 'none';
-        staffIdSection.style.display = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
-        customerTypeSection.style.display = (isStaffChecked || isAdminChecked) ? 'none' : 'block';
+        staffSection.style.display        = isStaffChecked ? 'block' : 'none';
+        adminSection.style.display        = isAdminChecked ? 'block' : 'none';
+        staffIdSection.style.display      = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
+        customerTypeSection.style.display = (isStaffChecked || isAdminChecked) ? 'none'  : 'block';
     }
-</script>
+    </script>
 </head>
 <body>
 <div class="banner">
@@ -42,34 +42,7 @@
 <div class="content">
     <h2>Register</h2>
     <form action="RegisterServlet" method="post">
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="text" name="email" id="email" class="form-control" required />
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" name="password" id="password" class="form-control" required />
-            <p class="fst-italic">Must be at least 8 characters long and include a lowercase, uppercase, number, and special character</p>
-        </div>
-        <div class="mb-3">
-            <label for="firstName" class="form-label">First Name (optional)</label>
-            <input type="text" name="firstName" id="firstName" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label for="lastName" class="form-label">Last Name (optional)</label>
-            <input type="text" name="lastName" id="lastName" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label for="phone" class="form-label">Phone Number (optional)</label>
-            <input type="text" name="phone" id="phone" class="form-control" />
-        </div>
-        <div class="mb-3" id="customer-type-section">
-            <label for="type" class="form-label">User Type</label>
-            <select name="type" id="type" class="form-select">
-                <option value="INDIVIDUAL">Individual</option>
-                <option value="COMPANY">Company</option>
-            </select>
-        </div>
+        <!-- ... other fields ... -->
 
         <div class="mb-3 form-check">
             <input id="staff-checkbox" type="checkbox" name="isStaff" class="form-check-input" onclick="handleRoleCheckbox('staff')" />
@@ -81,9 +54,21 @@
         </div>
 
         <div class="mb-3" id="staff-id-section" style="display: none;">
-    <label for="staffCardId" class="form-label">Staff Card ID</label>
-    <input type="text" name="staffCardId" id="staffCardId" class="form-control" />
-</div>
+            <label for="staffCardId" class="form-label">Staff Card ID</label>
+            <input type="text" name="staffCardId" id="staffCardId" class="form-control" />
+        </div>
+
+        <!-- <<< ADDED POSITION SELECT HERE >>> -->
+        <div class="mb-3" id="position-section" style="display: none;">
+            <label for="position" class="form-label">Position</label>
+            <select name="position" id="position" class="form-select">
+                <option value="">– choose one –</option>
+                <option value="TECH">Tech</option>
+                <option value="SALES">Sales</option>
+                <option value="MANAGER">Manager</option>
+            </select>
+        </div>
+        <!-- <<< END OF ADDITION >>> -->
 
         <div id="staff-password-section" style="display: none;">
             <div class="mb-3">

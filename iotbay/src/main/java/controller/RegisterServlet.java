@@ -36,116 +36,120 @@ public class RegisterServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         HttpSession session = request.getSession();
-        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
+        UserDBManager userDBManager =
+            (UserDBManager) session.getAttribute("userDBManager");
         if (userDBManager == null) {
             throw new ServletException("UserDBManager retrieved from session is null");
         }
 
-        CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+        CartDBManager cartDBManager =
+            (CartDBManager) session.getAttribute("cartDBManager");
         if (cartDBManager == null) {
             throw new ServletException("CartDBManager retrieved from session is null");
         }
 
-        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+        ApplicationAccessLogDBManager applicationAccessLogDBManager =
+            (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
         if (applicationAccessLogDBManager == null) {
             throw new ServletException("ApplicationAccessLogDBManager retrieved from session is null");
         }
 
-        OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
+        OrderDBManager orderDBManager =
+            (OrderDBManager) session.getAttribute("orderDBManager");
         if (orderDBManager == null) {
             throw new ServletException("OrderDBManager retrieved from session is null");
         }
 
-    String email = request.getParameter("email");
-    String password = request.getParameter("password");
-    String firstName = request.getParameter("firstName");
-    String lastName = request.getParameter("lastName");
-    String phone = request.getParameter("phone");
-    String type = request.getParameter("type"); // for customers
-    boolean isStaff = request.getParameter("isStaff") != null;
-    boolean isAdmin = request.getParameter("isSystemAdmin") != null;
-    String staffCardIdInput = request.getParameter("staffCardId");
-    String staffPassword = request.getParameter("staffPassword");
-    String adminPassword = request.getParameter("systemAdminPassword");
+        
+        String email    = request.getParameter("email");
+        String password = request.getParameter("password");
+        String firstName= request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String phone    = request.getParameter("phone");
+        String type     = request.getParameter("type"); //customer
+        boolean isStaff = request.getParameter("isStaff") != null;
+        boolean isAdmin = request.getParameter("isSystemAdmin") != null;
+        String staffCardIdInput    = request.getParameter("staffCardId");
+        String staffPassword       = request.getParameter("staffPassword");
+        String adminPassword       = request.getParameter("systemAdminPassword");
+        String position            = request.getParameter("position"); //staff
 
-    try {
-        // Check if user already exists by email
-        if (userDBManager.userExists(email)) {
-            throw new InvalidInputException("User already exists with that email");
-        }
+        User user = null; 
 
-        User user;
+        try {
+            if (userDBManager.userExists(email)) {
+                throw new InvalidInputException("User already exists with that email");
+            }
 
-        if (isStaff || isAdmin) {
-            // Validate staff card id
-            int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
+            if (isStaff || isAdmin) {
+                // staff path
+                int staffCardId = Validator.validateStaffCardId(staffCardIdInput);
 
-            if (isAdmin) {
-                if (adminPassword == null || !ADMIN_PASSWORD.equals(adminPassword)) {
-                    throw new InvalidInputException("Incorrect system admin password");
+                if (isAdmin) {
+                    if (adminPassword == null || !ADMIN_PASSWORD.equals(adminPassword)) {
+                        throw new InvalidInputException("Incorrect system admin password");
+                    }
+                    user = new Staff(
+                        -1, firstName, lastName, email, phone, password,
+                        staffCardId, true, position
+                    );
+                } else {
+                    if (staffPassword == null || !STAFF_PASSWORD.equals(staffPassword)) {
+                        throw new InvalidInputException("Incorrect staff password");
+                    }
+                    user = new Staff(
+                        -1, firstName, lastName, email, phone, password,
+                        staffCardId, false, position
+                    );
                 }
-                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, true);
             } else {
-                if (staffPassword == null || !STAFF_PASSWORD.equals(staffPassword)) {
-                    throw new InvalidInputException("Incorrect staff password");
+                
+                Customer.Type customerType;
+                try {
+                    customerType = Customer.Type.valueOf(type);
+                } catch (IllegalArgumentException | NullPointerException e) {
+                    customerType = Customer.Type.INDIVIDUAL;
                 }
-                user = new Staff(-1, firstName, lastName, email, phone, password, staffCardId, false);
+                user = new Customer(
+                    -1, firstName, lastName, email, phone, password, customerType
+                );
             }
-        } else {
-            // Customer registration
-            Customer.Type customerType;
-            try {
-                customerType = Customer.Type.valueOf(type);
-            } catch (IllegalArgumentException | NullPointerException e) {
-                customerType = Customer.Type.INDIVIDUAL; // default
-            }
-            user = new Customer(-1, firstName, lastName, email, phone, password, customerType);
-        }
 
-        // Validate user fields (email format, password strength, etc.)
-        Validator.validateUser(user);
+            Validator.validateUser(user);
 
-        // Add user to DB
-        if (user instanceof Staff) {
-            userDBManager.addStaff((Staff) user);
-        } else {
-            userDBManager.addCustomer((Customer) user);
+            if (user instanceof Staff) {
+                userDBManager.addStaff((Staff) user);
+            } else {
+                userDBManager.addCustomer((Customer) user);
+                Customer customer = userDBManager.getCustomer(email, password);
+                user.setUserId(customer.getUserId());
 
-            // Get inserted customer by email to retrieve userId
-            Customer customer = userDBManager.getCustomer(email, password);
-            user.setUserId(customer.getUserId());
-
-            // Create cart and save in session
-            java.sql.Date now = new java.sql.Date(new Date().getTime());
-            int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
-
+                java.sql.Date now = new java.sql.Date(new Date().getTime());
+                int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
                 Cart cart = new Cart();
                 cart.setCartId(cartId);
                 session.setAttribute("cart", cart);
                 customer.setCart(cart);
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error inserting new user and cart", e);
-            throw new ServletException(e);
+
+            
+            ApplicationAccessLog appLog =
+                new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
+            applicationAccessLogDBManager
+                .addApplicationAccessLog(user.getUserId(), appLog);
+
+            session.setAttribute("user", user);
+            session.removeAttribute(ERROR_ATTR);
+            request.getRequestDispatcher("welcome.jsp")
+                   .include(request, response);
+
+        } catch (InvalidInputException | SQLException e) {
+            logger.log(Level.SEVERE, "Registration error", e);
+            session.setAttribute(ERROR_ATTR, e.getMessage());
+            request.getRequestDispatcher(PAGE).include(request, response);
         }
-
-        ApplicationAccessLog appLog = new ApplicationAccessLog(ApplicationAction.REGISTER, new Date());
-        try {
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), appLog);
-        } catch (SQLException sqle) {
-            logger.log(Level.WARNING, "Could not log registration", sqle);
-        }
-
-        session.setAttribute("user", user);
-        session.removeAttribute(ERROR_ATTR);
-        request.getRequestDispatcher("welcome.jsp").include(request, response);
-
-    } catch (InvalidInputException | SQLException e) {
-        logger.log(Level.SEVERE, "Registration error", e);
-        session.setAttribute(ERROR_ATTR, e.getMessage());
-        request.getRequestDispatcher(PAGE).include(request, response);
     }
-}
 }

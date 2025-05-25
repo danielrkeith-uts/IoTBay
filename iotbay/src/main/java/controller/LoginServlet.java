@@ -29,30 +29,37 @@ public class LoginServlet extends HttpServlet {
     public void init() {
         logger = Logger.getLogger(LoginServlet.class.getName());
     }
-    
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
-        if (userDBManager == null) {
-            throw new ServletException("UserDBManager retrieved from session is null");
-        }
-    
-        ApplicationAccessLogDBManager applicationAccessLogDBManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
 
-        if (userDBManager == null || applicationAccessLogDBManager == null) {
-            throw new ServletException("DB managers are not in session");
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Forward GET requests to the login page
+        request.getRequestDispatcher(PAGE).forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        UserDBManager userDBManager =
+            (UserDBManager) session.getAttribute("userDBManager");
+        ApplicationAccessLogDBManager logMgr =
+            (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
+
+        if (userDBManager == null || logMgr == null) {
+            throw new ServletException("Data managers are not in session");
         }
-    
-        String email = request.getParameter("email");
+
+        String email    = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (email == null || email.isEmpty() || password == null || password.isEmpty()) {
+        if (email == null || email.isEmpty()
+         || password == null || password.isEmpty()) {
             session.setAttribute(ERROR_ATTR, "Please fill in both email and password.");
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
-    
+
         User user;
         try {
             user = userDBManager.getUser(email, password);
@@ -62,7 +69,7 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
-    
+
         if (user == null) {
             session.setAttribute(ERROR_ATTR, "Incorrect email or password.");
             request.getRequestDispatcher(PAGE).forward(request, response);
@@ -70,32 +77,32 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (user.isDeactivated()) {
-            session.setAttribute(ERROR_ATTR, "Your account is currently deactivated. Contact an administrator.");
+            session.setAttribute(ERROR_ATTR,
+                "Your account is currently deactivated. Contact an administrator.");
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
 
-        ApplicationAccessLog log = new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
+        ApplicationAccessLog appLog =
+            new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
         try {
-            applicationAccessLogDBManager.addApplicationAccessLog(user.getUserId(), log);
+            logMgr.addApplicationAccessLog(user.getUserId(), appLog);
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed to record login access log", e);
         }
-    
+
         session.removeAttribute(ERROR_ATTR);
         session.setAttribute("user", user);
-    
-        response.sendRedirect("welcome.jsp");  
 
         Cart sessionCart = (Cart) session.getAttribute("cart");
         if (sessionCart != null && user instanceof Customer) {
-            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+            ProductListEntryDBManager productListEntryDBManager =
+                (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
             if (productListEntryDBManager == null) {
                 throw new ServletException("ProductListEntryDBManager missing from session");
             }
-
-            Customer cust = (Customer) user;
-            Cart dbCart = cust.getCart();
+            Customer customer = (Customer) user;
+            Cart dbCart = customer.getCart();
             for (ProductListEntry entry : sessionCart.getProductList()) {
                 dbCart.addProduct(entry.getProduct(), entry.getQuantity());
                 try {
@@ -104,8 +111,8 @@ public class LoginServlet extends HttpServlet {
                         entry.getProduct().getProductId(),
                         entry.getQuantity()
                     );
-                } catch (SQLException sqle) {
-                    logger.log(Level.SEVERE, "Could not merge cart item", sqle);
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE, "Failed to merge cart item to DB", e);
                 }
             }
             session.removeAttribute("cart");
@@ -114,4 +121,3 @@ public class LoginServlet extends HttpServlet {
         response.sendRedirect("welcome.jsp");
     }
 }
-

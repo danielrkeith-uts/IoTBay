@@ -1,13 +1,11 @@
 CREATE TABLE User (
-    UserId INTEGER PRIMARY KEY AUTOINCREMENT,
-    FirstName VARCHAR(30),
-    LastName VARCHAR(30),
-    Email VARCHAR(50) NOT NULL,
-    Phone VARCHAR(17),
-    Password VARCHAR(20),
-    Deactivated INTEGER DEFAULT 0
-    Password VARCHAR(20),
-    Deactivated INTEGER DEFAULT 0
+    UserId      INTEGER PRIMARY KEY AUTOINCREMENT,
+    FirstName   VARCHAR(30),
+    LastName    VARCHAR(30),
+    Email       VARCHAR(50)  NOT NULL,
+    Phone       VARCHAR(17),
+    Password    VARCHAR(20),
+    Deactivated INTEGER      DEFAULT 0
 );
 
 CREATE TABLE Staff (

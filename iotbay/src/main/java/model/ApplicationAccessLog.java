@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.sql.Timestamp;
 import java.util.Date;
 
 import model.Enums.ApplicationAction;
@@ -39,14 +38,6 @@ public class ApplicationAccessLog implements Serializable {
 
     public Date getDateTime() {
         return dateTime;
-    }
-
-    public void setApplicationAction(ApplicationAction applicationAction) {
-        this.applicationAction = applicationAction;
-    }
-
-    public void setDateTime(Date dateTime) {
-        this.dateTime = dateTime;
     }
 
     public void setApplicationAction(ApplicationAction applicationAction) {

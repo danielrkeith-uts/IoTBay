@@ -20,14 +20,14 @@ public class AddStaffServlet extends HttpServlet {
         HttpSession session       = req.getSession();
         UserDBManager mgr         = (UserDBManager) session.getAttribute("userDBManager");
 
-        String firstName          = req.getParameter("firstName");
-        String lastName           = req.getParameter("lastName");
-        String email              = req.getParameter("email");
-        String phone              = req.getParameter("phone");
-        String password           = req.getParameter("password");
-        String staffCardIdParam   = req.getParameter("staffCardId");
-        String position           = req.getParameter("position");
-        boolean isAdmin           = false;                           
+        String firstName=req.getParameter("firstName");
+        String lastName=req.getParameter("lastName");
+        String email=req.getParameter("email");
+        String phone=req.getParameter("phone");
+        String password=req.getParameter("password");
+        String staffCardIdParam=req.getParameter("staffCardId");
+        String position=req.getParameter("position");
+        boolean isAdmin=false;                           
 
         try {
             int staffCardId = Validator.validateStaffCardId(staffCardIdParam);
@@ -54,5 +54,4 @@ public class AddStaffServlet extends HttpServlet {
         req.getRequestDispatcher("addstaff.jsp").forward(req, resp);
     }
 }
-
 
