@@ -21,15 +21,6 @@ public class ConnServlet extends HttpServlet {
     private Logger logger;
 
     private DBConnector dbConnector;
-    // private Connection conn;
-    // private UserDBManager userDBManager;
-    // private ProductDBManager productDBManager;
-    // private ProductListEntryDBManager productListEntryDBManager;
-    // private CartDBManager cartDBManager;
-    // private OrderDBManager orderDBManager;
-    // private ShipmentDBManager shipmentDBManager;
-    // private DeliveryDBManager deliveryDBManager;
-    // private ApplicationAccessLogDBManager applicationAccessLogDBManager;
 
     @Override
     public void init() {
@@ -76,5 +67,14 @@ public class ConnServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
+    }
+    
+    public void destroy() {
+        try {
+            dbConnector.closeConnection();
+            logger.info("Database connection closed.");
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Could not close DB connection", e);
+        }
     }
 }
