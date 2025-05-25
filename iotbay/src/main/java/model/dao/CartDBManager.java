@@ -38,8 +38,7 @@ public class CartDBManager {
     public int addCart(Timestamp LastUpdated) throws SQLException {       
         String query = "INSERT INTO Cart (LastUpdated) VALUES (?)";
         PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        String formatted = LastUpdated.toLocalDateTime().toString().replace("T", " "); // e.g., "2026-08-20 00:00:00"
-        ps.setString(1, formatted);
+        ps.setTimestamp(1, LastUpdated);
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -63,7 +62,7 @@ public class CartDBManager {
     } 
 
     public void deleteCart(int CartId) throws SQLException{       
-        st.executeUpdate("DELETE FROM Cart WHERE CartId = " + CartId); 
+        st.executeUpdate("DELETE FROM ProductListEntry WHERE CartId = ?"); 
     }
 
     public void clearCart(int cartId) throws SQLException {

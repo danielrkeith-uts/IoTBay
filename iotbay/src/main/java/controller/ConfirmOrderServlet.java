@@ -32,18 +32,6 @@ public class ConfirmOrderServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        // Get and store form data
-        // String firstName = request.getParameter("firstName");
-        // String lastName = request.getParameter("lastName");
-        // String email = request.getParameter("email");
-        // String phone = request.getParameter("phone");
-
-        // String streetNumberStr = request.getParameter("streetNumber");
-        // String streetName = request.getParameter("streetName");
-        // String suburb = request.getParameter("suburb");
-        // String stateStr = request.getParameter("state");
-        // String postCode = request.getParameter("postCode");
-
         String cardNumber = request.getParameter("cardNumber");
         String cardName = request.getParameter("cardName");
         String cvc = request.getParameter("cvc");
@@ -60,10 +48,12 @@ public class ConfirmOrderServlet extends HttpServlet {
             return;
         }
 
-        // Get session data
         User user = (User) session.getAttribute("user");
         Cart cart = (Cart) session.getAttribute("cart");
         OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
+
+        Integer editingOrderId = (Integer) session.getAttribute("editingOrderId");
+        boolean isEditing = editingOrderId != null;
 
         if (cart == null) {
             session.setAttribute("cartError", "Cart is empty or user is not logged in.");
@@ -87,7 +77,7 @@ public class ConfirmOrderServlet extends HttpServlet {
                 throw new ServletException("CardDBManager not found in session");
             }
 
-            Card card = new Card(0, cardName, cardNumber, expiry, cvc); // CardId is 0 for autoincrement
+            Card card = new Card(0, cardName, cardNumber, expiry, cvc); // CardId = 0 is replaced below (autoincrement in db)
             int cardId = cardDBManager.addCard(card.getName(), card.getNumber(), card.getExpiry(), card.getCvc()); 
             card.setCardId(cardId); 
 
@@ -99,33 +89,112 @@ public class ConfirmOrderServlet extends HttpServlet {
             double total = cart.totalCost();
             Payment payment = new Payment(total, card, PaymentStatus.PENDING);
             int paymentId = paymentDBManager.addPayment(card.getCardId(), total, payment.getPaymentStatus().ordinal());
+            System.out.println("DEBUG: Generated paymentId = " + paymentId);
 
-            // Add order to DB regardless of logged in user or not
             Integer userId = null;
             if (user != null) {
                 userId = user.getUserId();
             } else {
-                // guest order, no userId or use special guest ID
-                userId = 0;  // or null if DB supports
+                userId = null;
+            }
+
+            CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+            if (productListEntryDBManager == null) {
+                throw new ServletException("ProductListEntryDBManager not found in session");
+            }
+
+            Integer cartId;
+            if (isEditing) {
+                cartId = (Integer) session.getAttribute("editingCartId");
+
+                System.out.println("DEBUG: session editingCartId = " + session.getAttribute("editingCartId"));
+                System.out.println("DEBUG: request editingCartId = " + request.getParameter("editingCartId"));
+                System.out.println("DEBUG: resolved editingCartId = " + cartId);
+
+                if (cartId == null || cartId <= 0) {
+                    throw new ServletException("Invalid editingCartId: " + cartId);
+                }
+
+                System.out.println("editingOrderId: " + editingOrderId);
+                System.out.println("editingCartId: " + session.getAttribute("editingCartId"));
+                System.out.println("isEditing: " + isEditing);
+                cartDBManager.clearCart(cartId); 
+            } else {
+                cartId = cartDBManager.addCart(new Timestamp(System.currentTimeMillis()));
+
+                if (cartId <= 0) {
+                    throw new ServletException("Failed to create cart found in ConfirmOrderServlet: cartId returned was " + cartId);
+                }
+            }
+            cart.setCartId(cartId);
+
+            // Save product list to new cart
+            for (ProductListEntry entry : cart.getProductList()) {
+                productListEntryDBManager.addProduct(cartId, entry.getProduct().getProductId(), entry.getQuantity());
             }
 
             Timestamp datePlaced = new Timestamp(System.currentTimeMillis());
-            int orderId = orderDBManager.addOrder(
-                userId,
-                cart.getCartId(),
-                paymentId,
-                datePlaced,
-                OrderStatus.PLACED.toString()
-            );
-            if (orderId <= 0) {
-                throw new SQLException("Order insert failed or returned invalid ID.");
+            if (isEditing) {
+                int orderId = editingOrderId;
+
+                Payment updatedPayment = new Payment(total, card, PaymentStatus.PENDING);
+                updatedPayment.setPaymentId(paymentId);
+
+                Order updatedOrder = new Order(
+                    orderId,
+                    cart.getProductList(),
+                    updatedPayment,
+                    datePlaced,
+                    OrderStatus.PLACED
+                );
+
+                updatedOrder.setCartId(cart.getCartId());
+
+                User currentUser = (User) session.getAttribute("user");
+                if (currentUser != null) {
+                    updatedOrder.setUserId(currentUser.getUserId());
+                } else {
+                    System.out.println("ERROR: No logged-in user found in session.");
+                }
+
+                orderDBManager.updateOrder(updatedOrder);
+
+                session.removeAttribute("editingOrderId");
+                session.removeAttribute("editingCartId");
+
+                session.removeAttribute("cart");
+                Cart newCart = new Cart();
+                session.setAttribute("cart", newCart);
+                if (user instanceof Customer) {
+                    ((Customer) user).setCart(newCart);
+                }
+
+                response.sendRedirect("orderconfirmation.jsp?orderId=" + orderId);
+                return;
+
+            } else {
+                int orderId = orderDBManager.addOrder(
+                    userId,
+                    cartId,
+                    paymentId,
+                    datePlaced,
+                    OrderStatus.PLACED.toString()
+                );
+                if (orderId <= 0) {
+                    throw new SQLException("Order insert failed or returned invalid ID.");
+                }
+
+                session.removeAttribute("cart");
+                Cart newCart = new Cart();
+                session.setAttribute("cart", newCart);
+                if (user instanceof Customer) {
+                    ((Customer) user).setCart(newCart);
+                }
+
+                response.sendRedirect("orderconfirmation.jsp?orderId=" + orderId);
+                return;
             }
-
-            // Clear cart after order is placed
-            session.removeAttribute("cart");
-
-            // Redirect to confirmation page
-            response.sendRedirect("orderconfirmation.jsp?orderId=" + orderId);
 
         } catch (Exception e) {
             e.printStackTrace();

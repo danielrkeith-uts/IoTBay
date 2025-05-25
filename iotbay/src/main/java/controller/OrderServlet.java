@@ -3,6 +3,7 @@ package controller;
 import model.*;
 import model.dao.CartDBManager;
 import model.dao.DBConnector;
+import model.dao.ProductListEntryDBManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -59,7 +60,15 @@ public class OrderServlet extends HttpServlet {
             cart.setLastUpdated(lastUpdated);
             
             int cartId = cartDBManager.addCart(new java.sql.Timestamp(now.getTime()));
+            if (cartId <= 0) {
+                throw new ServletException("Failed to create cart found in OrderServlet: cartId returned was " + cartId);
+            }
             cart.setCartId(cartId);
+
+            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+            for (ProductListEntry entry : cart.getProductList()) {
+                productListEntryDBManager.addProduct(cartId, entry.getProduct().getProductId(), entry.getQuantity());
+            }
 
             session.setAttribute("cart", cart);
             response.sendRedirect("order.jsp");

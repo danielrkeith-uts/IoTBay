@@ -56,6 +56,7 @@ public class OrderDBManager {
             Payment Payment = paymentDBManager.getPayment(PaymentId);
 
             Order order = new Order(orderId, ProductList, Payment, timestamp, status);
+            order.setCartId(CartId);
             return order;
         } 
         return null;
@@ -98,6 +99,9 @@ public class OrderDBManager {
             }
 
             Order order = new Order(orderId, ProductList, payment, timestamp, status);
+            order.setCartId(CartId);
+            order.setUserId(rs.getInt("UserId"));
+            order.setPaymentId(paymentId);
             orders.add(order);
         } 
         return orders;
@@ -136,10 +140,7 @@ public class OrderDBManager {
         try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pst.setInt(1, UserId);
             pst.setInt(2, CartId);
-
-            // Format DatePlaced to string in yyyy-MM-dd HH:mm:ss format
-            String formatted = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(DatePlaced);
-            pst.setString(3, formatted);
+            pst.setTimestamp(3, DatePlaced);
             pst.setString(4, status);
 
             pst.executeUpdate();
@@ -156,24 +157,57 @@ public class OrderDBManager {
 
     //update an order's details in the database   
     public void updateOrder(Order order) throws SQLException {
-        String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
-        ResultSet rs = st1.executeQuery(query); 
+        // Step 1: Fetch the order to verify it exists
+        String orderQuery = "SELECT OrderId FROM `Order` WHERE OrderId = ?";
+        try (PreparedStatement orderCheckPs = conn.prepareStatement(orderQuery)) {
+            orderCheckPs.setInt(1, order.getOrderId());
+            try (ResultSet rsOrder = orderCheckPs.executeQuery()) {
+                if (!rsOrder.next()) {
+                    throw new SQLException("Order not found: " + order.getOrderId());
+                }
+            }
+        }
 
-        if (rs.next()) {
+        // Step 2: Validate payment ID (if any)
+        Integer paymentId = (order.getPayment() != null) ? order.getPayment().getPaymentId() : null;
+        if (paymentId != null) {
+            try (PreparedStatement paymentCheckPs = conn.prepareStatement("SELECT 1 FROM Payment WHERE PaymentId = ?")) {
+                paymentCheckPs.setInt(1, paymentId);
+                try (ResultSet rsPayment = paymentCheckPs.executeQuery()) {
+                    if (!rsPayment.next()) {
+                        System.out.println("WARNING: PaymentId " + paymentId + " does not exist. Setting NULL.");
+                        paymentId = null; // override if invalid
+                    }
+                }
+            }
+        }
+
+        // Step 3: Prepare and execute update
+        String updateQuery = "UPDATE `Order` SET UserId = ?, CartId = ?, PaymentId = ?, DatePlaced = ?, OrderStatus = ? WHERE OrderId = ?";
+        try (PreparedStatement updateOrderPs = conn.prepareStatement(updateQuery)) {
             updateOrderPs.setInt(1, order.getUserId());
             updateOrderPs.setInt(2, order.getCartId());
-            // updateOrderPs.setInt(3, rs.getInt("PaymentId"));
-            updateOrderPs.setInt(3, order.getPayment().getPaymentId());
+
+            if (paymentId != null) {
+                updateOrderPs.setInt(3, paymentId);
+            } else {
+                updateOrderPs.setNull(3, java.sql.Types.INTEGER);
+            }
+
             String formattedDate = order.getDatePlaced().toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             updateOrderPs.setString(4, formattedDate);
             updateOrderPs.setString(5, order.getOrderStatus().name());
-            updateOrderPs.setInt(6, rs.getInt("OrderId"));
+            updateOrderPs.setInt(6, order.getOrderId());
+
+            System.out.println("DEBUG: Order update values:");
+            System.out.println("  UserId: " + order.getUserId());
+            System.out.println("  CartId: " + order.getCartId());
+            System.out.println("  PaymentId: " + (paymentId != null ? paymentId : "null"));
+            System.out.println("  OrderId: " + order.getOrderId());
 
             updateOrderPs.executeUpdate();
-        } else {
-            throw new SQLException("Order not found: " + order.getOrderId());
         }
-    } 
+    }
 
     //orders can't be deleted, only set to cancelled  
     public void cancelOrder(int OrderId) throws SQLException{       

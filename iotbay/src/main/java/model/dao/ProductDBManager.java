@@ -88,12 +88,16 @@ public class ProductDBManager {
 
     /** Helper to map a ResultSet row into a Product object. */
     private Product mapRowToProduct(ResultSet rs) throws SQLException {
+        int productId = rs.getInt("ProductId");
         String name        = rs.getString("Name");
         String description = rs.getString("Description");
         ProductType type   = ProductType.valueOf(rs.getString("Type"));
         double cost        = rs.getDouble("Cost");
         int stock          = rs.getInt("Stock");
         String imageUrl    = rs.getString("ImageUrl");
-        return new Product(name, description, type, cost, stock, imageUrl);
+
+        Product product = new Product(name, description, type, cost, stock, imageUrl);
+        product.setProductId(productId);
+        return product;
     }
 }

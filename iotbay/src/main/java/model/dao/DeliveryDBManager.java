@@ -73,6 +73,7 @@ public class DeliveryDBManager {
                         Payment payment = paymentDBManager.getPayment(PaymentId);
 
                         Order order = new Order(OrderId, productList, payment, DatePlaced, status);
+                        order.setCartId(CartId);
                         orders.add(order); 
                     }
                     Delivery delivery = new Delivery(DeliveryId, orders, source, destination, Courier, CourierDeliveryId);

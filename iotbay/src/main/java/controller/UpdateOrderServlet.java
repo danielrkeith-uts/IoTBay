@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 
 import model.dao.*;
 import model.*;
+import model.Enums.*;
 
 @WebServlet("/UpdateOrderServlet")
 public class UpdateOrderServlet extends HttpServlet {
@@ -19,25 +21,31 @@ public class UpdateOrderServlet extends HttpServlet {
         int orderId = Integer.parseInt(request.getParameter("orderId"));
         HttpSession session = request.getSession();
 
+        User user = (User) session.getAttribute("user");
         OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
         ProductListEntryDBManager entryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
         ProductDBManager productDBManager = (ProductDBManager) session.getAttribute("productDBManager");
 
         try {
             Order order = orderDBManager.getOrder(orderId);
-            if (order != null && order.getOrderStatus().equals("SAVED")) {
-
-                // Create a new cart based on the saved product list
+            if (order != null && order.getOrderStatus() == OrderStatus.SAVED) {
                 Cart updatedCart = new Cart();
+
                 for (ProductListEntry entry : order.getProductList()) {
                     updatedCart.addProduct(entry.getProduct(), entry.getQuantity());
                 }
+                
+                System.out.println("DEBUG: orderId=" + orderId + ", order.getCartId()=" + order.getCartId());
+                updatedCart.setCartId(order.getCartId());
 
-                // Store the cart in session for editing
                 session.setAttribute("cart", updatedCart);
-                session.setAttribute("editingOrderId", orderId); 
+                session.setAttribute("editingCartId", updatedCart.getCartId());
+                session.setAttribute("editingOrderId", order.getOrderId()); 
 
-                // Redirect to cart page for editing
+                if (user instanceof Customer) {
+                    ((Customer) user).setCart(updatedCart);
+                }
+
                 response.sendRedirect("cart.jsp");
                 return;
             }
