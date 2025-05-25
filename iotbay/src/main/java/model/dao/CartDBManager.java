@@ -59,9 +59,9 @@ public class CartDBManager {
         ResultSet rs = st.executeQuery(query); 
         Timestamp timestamp = new Timestamp(cart.getLastUpdated().getTime());
 
-        updateCartPs.setInt(1, rs.getInt("CartId"));
         String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
-        updateCartPs.setString(2, formatted);
+        updateCartPs.setString(1, formatted); // first ?
+        updateCartPs.setInt(2, cart.getCartId()); // second ?
 
         updateCartPs.executeUpdate();
     } 
