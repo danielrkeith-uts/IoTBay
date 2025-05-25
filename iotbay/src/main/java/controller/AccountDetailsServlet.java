@@ -48,6 +48,7 @@ public class AccountDetailsServlet extends HttpServlet {
         String phone = request.getParameter("phone");
         String staffCardIdInput = request.getParameter("staffCardId");
         String customerType = request.getParameter("customerType");
+        String position = request.getParameter("position");
 
         try {
             Validator.validatePhoneNumber(phone);
@@ -55,6 +56,10 @@ public class AccountDetailsServlet extends HttpServlet {
             user.setFirstName(firstName);
             user.setLastName(lastName);
             user.setPhone(phone);
+
+            if (user instanceof Staff) {
+                ((Staff) user).setPosition(position);
+            }
 
             if (user instanceof ExtendedUser) {
                 ExtendedUser extendedUser = (ExtendedUser) user;

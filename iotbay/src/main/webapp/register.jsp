@@ -16,6 +16,7 @@
         const staffSection = document.getElementById('staff-password-section');
         const adminSection = document.getElementById('admin-password-section');
         const staffIdSection = document.getElementById('staff-id-section');
+        const positionSection = document.getElementById('position-section');
         const customerTypeSection = document.getElementById('customer-type-section');
 
         if (role === 'staff') {
@@ -30,6 +31,7 @@
         staffSection.style.display = isStaffChecked ? 'block' : 'none';
         adminSection.style.display = isAdminChecked ? 'block' : 'none';
         staffIdSection.style.display = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
+        positionSection.style.display = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
         customerTypeSection.style.display = (isStaffChecked || isAdminChecked) ? 'none'  : 'block';
     }
     </script>
@@ -88,7 +90,6 @@
         <div class="mb-3" id="position-section" style="display: none;">
             <label for="position" class="form-label">Position</label>
             <select name="position" id="position" class="form-select">
-                <option value="">– choose one –</option>
                 <option value="TECH">Tech</option>
                 <option value="SALES">Sales</option>
                 <option value="MANAGER">Manager</option>
