@@ -84,8 +84,6 @@
             <label for="staffCardId" class="form-label">Staff Card ID</label>
             <input type="text" name="staffCardId" id="staffCardId" class="form-control" />
         </div>
-
-        <!-- <<< ADDED POSITION SELECT HERE >>> -->
         <div class="mb-3" id="position-section" style="display: none;">
             <label for="position" class="form-label">Position</label>
             <select name="position" id="position" class="form-select">
@@ -95,7 +93,7 @@
                 <option value="MANAGER">Manager</option>
             </select>
         </div>
-        <!-- <<< END OF ADDITION >>> -->
+       
 
         <div id="staff-password-section" style="display: none;">
             <div class="mb-3">

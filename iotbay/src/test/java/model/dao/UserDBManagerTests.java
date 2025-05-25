@@ -117,7 +117,7 @@ public class UserDBManagerTests {
     }
 
     @Test
-    public void testUpdateCustomer() {
+    public void testUpdateCustomer() throws SQLException {
         Customer modified = new Customer(
             johnSmith.getUserId(),
             johnSmith.getFirstName() + "1",
@@ -172,6 +172,7 @@ public class UserDBManagerTests {
         }
     }
 
+    //customer specific tests 
     @Test
     public void testGetAllCustomers() {
         try {
@@ -222,6 +223,68 @@ public class UserDBManagerTests {
             companies.forEach(c -> Assert.assertEquals(Customer.Type.COMPANY, c.getType()));
 
             Assert.assertEquals(all.size(), individuals.size() + companies.size());
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    //staff specific tests
+
+    @Test
+    public void testDeactivateAndReactivateStaff() {
+        try {
+            int id = gregoryStafferson.getUserId();
+            mgr.deactivateStaff(id);
+            Staff deactivated = (Staff) mgr.getUser(id);
+            Assert.assertTrue(deactivated.isDeactivated());
+
+            mgr.reactivateStaff(id);
+            Staff reactivated = (Staff) mgr.getUser(id);
+            Assert.assertFalse(reactivated.isDeactivated());
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        } finally {
+            try { conn.rollback(); } catch (SQLException ignore) {}
+        }
+    }
+
+    @Test
+    public void testGetStaffByPosition() {
+        try {
+            List<Staff> staffList = mgr.searchStaff("", "STAFF");
+            Assert.assertNotNull(staffList);
+            Assert.assertTrue(staffList.size() > 0);
+            staffList.forEach(s -> Assert.assertEquals("STAFF", s.getPosition()));
+
+            List<Staff> allStaff = mgr.getAllStaff();
+            Assert.assertEquals(allStaff.size(), mgr.searchStaff("", "ALL").size());
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetAllStaff() {
+        try {
+            List<Staff> staffList = mgr.getAllStaff();
+            Assert.assertNotNull(staffList);
+            Assert.assertTrue(staffList.size() > 0);
+
+            boolean foundGregory = staffList.stream()
+                .anyMatch(s -> s.getUserId() == gregoryStafferson.getUserId());
+            Assert.assertTrue(foundGregory);
+        } catch (SQLException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testSearchStaffByName() {
+        try {
+            List<Staff> results = mgr.searchStaff("Gregory", "ALL");
+            Assert.assertNotNull(results);
+            Assert.assertTrue(results.stream()
+                .anyMatch(s -> s.getUserId() == gregoryStafferson.getUserId()));
         } catch (SQLException e) {
             Assert.fail(e.getMessage());
         }
