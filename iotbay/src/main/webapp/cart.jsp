@@ -9,13 +9,10 @@
 <html>
    <jsp:include page="/ConnServlet" flush="true"/>
     <%
-        // Retrieve session attributes
         String error = (String) session.getAttribute("cartError");
         session.removeAttribute("cartError"); 
 
         User user = (User) session.getAttribute("user");
-
-        // Ensure cart exists in session
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
@@ -36,7 +33,6 @@
         <div class="banner">
             <h1>Place an Order</h1>
             <jsp:include page="navbar.jsp" />
-
             <%
                 List<ProductListEntry> cartItems = cart.getProductList();
             %>
@@ -63,7 +59,10 @@
                 <a href="products.jsp" class="btn-green">Return to Products</a>
                 <form action="OrderServlet" method="post">
                     <button type="submit" class="btn-green">Buy Now</button>
-                    </form>
+                </form>
+                <form action="SaveCartServlet" method="post" style="display:inline;">
+                    <button type="submit" class="btn-green">Save Cart</button>
+                </form>
             </div>
         <% } %>
     </body>

@@ -5,17 +5,11 @@
    try {
        User user = (User) session.getAttribute("user");
        ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
-
-
-       
       
        if (!(user instanceof Staff)) {
            out.println("You are not authorized to view this page.");
            return;
        }
-      // ProductDBManager productManager = (ProductDBManager) session.getAttribute("productDBManager");
-      // out.println("User: " + user);
-      // out.println("ProductDBManager: " + productManager);
       
        if (productManager == null) {
            out.println("Product manager is not available. Please ensure the database connection is initialized.");
@@ -23,11 +17,11 @@
        }
 
        List<Product> products = productManager.getAllProducts();
-       //out.println("Total products found: " + products.size() + "<br>");
        request.setAttribute("products", products);
 %>
 <!DOCTYPE html>
 <html>
+<jsp:include page="/ConnServlet" flush="true"/>
 <head>
    <title>Admin Inventory</title>
    <link rel="stylesheet" href="css/main.css" />

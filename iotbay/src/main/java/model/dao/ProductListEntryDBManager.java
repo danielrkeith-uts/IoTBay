@@ -25,7 +25,7 @@ public class ProductListEntryDBManager {
         ResultSet rs = st.executeQuery(query);
         
         if (rs.next()) {
-            int Quantity = rs.getInt("Qauntity");
+            int Quantity = rs.getInt("Quantity");
             return new ProductListEntry(Product, Quantity); 
         } else {
             //the product isn't in the cart
@@ -76,6 +76,5 @@ public class ProductListEntryDBManager {
             insertStmt.setInt(3, Quantity);
             insertStmt.executeUpdate();
         }
-
     }
 }

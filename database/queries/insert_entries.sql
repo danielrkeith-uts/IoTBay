@@ -258,7 +258,6 @@ VALUES
     (18, 12, 3, 1745637900000),
     (19, 13, 2, 1745638200000),
     (20, 14, 1, 1745638500000);
-
 -- ProductListEntry
 INSERT INTO ProductListEntry(CartId, ProductId, Quantity)
 VALUES 

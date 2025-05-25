@@ -45,5 +45,4 @@ public class ProductListEntry implements Serializable {
         return this.product.equals(productListEntry.product)
             && this.quantity == productListEntry.quantity;
     }
-    
 }

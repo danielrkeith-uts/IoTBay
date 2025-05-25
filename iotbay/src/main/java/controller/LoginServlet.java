@@ -41,6 +41,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession();
+        request.getRequestDispatcher("/ConnServlet").include(request, response);
         UserDBManager userDBManager =
             (UserDBManager) session.getAttribute("userDBManager");
         ApplicationAccessLogDBManager logMgr =
@@ -116,7 +117,6 @@ public class LoginServlet extends HttpServlet {
             }
             session.removeAttribute("cart");
         }
-
-        response.sendRedirect("welcome.jsp");
+        request.getRequestDispatcher("welcome.jsp").include(request, response);
     }
 }

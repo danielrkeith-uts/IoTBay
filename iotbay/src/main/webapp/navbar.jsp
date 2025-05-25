@@ -37,26 +37,27 @@
         </ul>
     </div>
 <% } %>
-
-<% if (!isLoggedIn) { %>
-    <a href="login.jsp" class="<%= currentPage.equals("login.jsp") ? "active" : "" %>">Login</a>
-<% } else { %>
-    <div class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle <%= currentPage.matches("account.jsp|shipments.jsp|applicationaccesslogs.jsp|deleteaccount.jsp") ? "active" : "" %>" 
-           data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-            My Account
-        </a>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item <%= currentPage.equals("account.jsp") ? "active" : "" %>" href="account.jsp">Account Details</a></li>
-            <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
-            <li><a class="dropdown-item <%= currentPage.equals("applicationaccesslogs.jsp") ? "active" : "" %>" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
-            <li><a class="dropdown-item <%= currentPage.equals("logout.jsp") ? "active" : "" %>" href="logout.jsp">Logout</a></li>
-            <li><a class="dropdown-item text-danger <%= currentPage.equals("deleteaccount.jsp") ? "active" : "" %>" href="deleteaccount.jsp">Delete Account</a></li>
-        </ul>
-    </div>
+    <% if (!isLoggedIn) { %>
+        <a href="login.jsp" class="<%= currentPage.equals("login.jsp") ? "active" : "" %>">Login</a>
+    <% } else { %>
+        <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle <%= currentPage.matches("account.jsp|shipments.jsp|applicationaccesslogs.jsp|deleteaccount.jsp") ? "active" : "" %>" 
+               data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                My Account
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item <%= currentPage.equals("account.jsp") ? "active" : "" %>" href="account.jsp">Account Details</a></li>
+                <li><a class="dropdown-item <%= currentPage.equals("myorders.jsp") ? "active" : "" %>" href="myorders.jsp">My Orders</a></li>
+               <% if (!isStaff || !isLoggedIn) { %>
+    <li><a class="dropdown-item <%= currentPage.equals("shipments.jsp") ? "active" : "" %>" href="shipments.jsp">My Shipments</a></li>
+    <li><a class="dropdown-item <%= currentPage.equals("myorders.jsp") ? "active" : "" %>" href="myorders.jsp">My Orders</a></li>
 <% } %>
-
-
+                <li><a class="dropdown-item <%= currentPage.equals("applicationaccesslogs.jsp") ? "active" : "" %>" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+                <li><a class="dropdown-item <%= currentPage.equals("logout.jsp") ? "active" : "" %>" href="logout.jsp">Logout</a></li>
+                <li><a class="dropdown-item text-danger <%= currentPage.equals("deleteaccount.jsp") ? "active" : "" %>" href="deleteaccount.jsp">Delete Account</a></li>
+            </ul>
+        </div>
+    <% } %>
   <a href="cart.jsp"
      class="bi bi-cart
             <%= currentPage.equals("cart.jsp") ? "active" : "" %>">

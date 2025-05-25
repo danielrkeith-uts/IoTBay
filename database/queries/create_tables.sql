@@ -56,7 +56,7 @@ CREATE TABLE `Order` (
     OrderStatus VARCHAR(50),
     FOREIGN KEY (UserId) REFERENCES User(UserId) ON DELETE SET NULL,
     FOREIGN KEY (PaymentId) REFERENCES Payment(PaymentId),
-    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE')) 
+    CHECK (OrderStatus IN ('PLACED', 'CANCELLED', 'PROCESSING', 'COMPLETE', 'SAVED')) 
 );
 
 CREATE TABLE Delivery (
@@ -81,7 +81,7 @@ CREATE TABLE Address (
 );
 
 CREATE TABLE Payment (
-    PaymentId INTEGER PRIMARY KEY,
+    PaymentId INTEGER PRIMARY KEY AUTOINCREMENT,
     CardId INTEGER,
     Amount DECIMAL(10, 2) NOT NULL,
     PaymentStatus INTEGER NOT NULL,

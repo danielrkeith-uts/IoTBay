@@ -65,6 +65,7 @@ public class CartServlet extends HttpServlet {
                 ((Customer) user).setCart(cart);
                 cart.addProduct(product, quantity);
                 productListEntryDBManager.addProduct(cartId, product.getProductId(), quantity);
+                session.setAttribute("cart", cart);
             } else {
                 cart = (Cart) session.getAttribute("cart");
                 if (cart == null) {

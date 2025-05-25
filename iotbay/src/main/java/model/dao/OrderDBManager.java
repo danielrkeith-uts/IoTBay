@@ -2,7 +2,6 @@ package model.dao;
 
 import model.*;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,20 +21,15 @@ public class OrderDBManager {
         this.updateOrderPs = conn.prepareStatement(UPDATE_ORDER_STMT);  
     }
 
-    //Find an order by OrderId in the database   
-    public Order getOrder(int inputOrderId) throws SQLException {       
-        //get the CartId, PaymentId, and DatePlaced from the Order table
-        String query = "SELECT * FROM `Order` WHERE OrderID = '" + inputOrderId + "'"; 
+    public Order getOrder(int orderId) throws SQLException {       
+        String query = "SELECT * FROM `Order` WHERE OrderID = '" + orderId + "'"; 
         ResultSet rs = st1.executeQuery(query); 
 
         if (rs.next()) {
-            int orderId = rs.getInt("OrderID");
             int CartId = rs.getInt("CartId");
             int PaymentId = rs.getInt("PaymentId");
 
-            String dateString = rs.getString("DatePlaced");
-            LocalDateTime ldt = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
-            Timestamp timestamp = Timestamp.valueOf(ldt);
+            Timestamp timestamp = rs.getTimestamp("DatePlaced");
 
             String statusString = rs.getString("OrderStatus");
             OrderStatus status = OrderStatus.valueOf(statusString);
@@ -67,22 +61,96 @@ public class OrderDBManager {
         return null;
     }
 
-    //Add an order into the database   
-    public void addOrder(int OrderId, int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
-        String query = "INSERT INTO `Order` (OrderId, UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?, ?)";
+    public List<Order> getAllCustomerOrders(int userID) throws SQLException {
+        List<Order> orders = new ArrayList<Order>();       
+        String query = "SELECT * FROM `Order` WHERE UserID = '" + userID + "'"; 
+        ResultSet rs = st1.executeQuery(query); 
 
-        try (PreparedStatement pst = conn.prepareStatement(query)) {
-            pst.setInt(1, OrderId);
-            pst.setInt(2, UserId);
-            pst.setInt(3, CartId);
-            pst.setInt(4, PaymentId);
+        while (rs.next()) {
+            int orderId = rs.getInt("OrderID");
+            int CartId = rs.getInt("CartId");
+            Timestamp timestamp = rs.getTimestamp("DatePlaced");
+            String statusString = rs.getString("OrderStatus");
+            OrderStatus status = OrderStatus.valueOf(statusString);
             
-            Timestamp timestamp = new Timestamp(DatePlaced.getTime());
-            String formatted = timestamp.toLocalDateTime().toString().replace("T", " ");
-            pst.setString(5, formatted);
-            pst.setString(6, status);
+            //Step 1: Get all entries from ProductListEntry table with this CartId
+            String entryQuery = "SELECT * FROM ProductListEntry WHERE CartId = '" + CartId + "'"; 
+            ResultSet entryRs = st2.executeQuery(entryQuery);
+
+            List<ProductListEntry> ProductList = new ArrayList<>();
+            ProductDBManager productDBManager = new ProductDBManager(conn);
+
+            while (entryRs.next()) {
+                int ProductId = entryRs.getInt("ProductId");
+                int Quantity = entryRs.getInt("Quantity");
+
+                //Retrieves a product and creates a ProductListEntry
+                Product Product = productDBManager.getProduct(ProductId);
+                ProductListEntry Entry = new ProductListEntry(Product, Quantity);
+                ProductList.add(Entry);
+            }
+
+            int paymentId = rs.getInt("PaymentId");
+            Payment payment = null;
+            if (!rs.wasNull()) {
+                PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
+                payment = paymentDBManager.getPayment(paymentId);
+            }
+
+            Order order = new Order(orderId, ProductList, payment, timestamp, status);
+            orders.add(order);
+        } 
+        return orders;
+    }
+
+    //Add an order into the database   
+    public int addOrder(int UserId, int CartId, int PaymentId, java.sql.Timestamp DatePlaced, String status) throws SQLException {       
+        String query = "INSERT INTO `Order` (UserId, CartId, PaymentId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, UserId);
+            pst.setInt(2, CartId);
+            pst.setInt(3, PaymentId);
+
+            // Format DatePlaced to string in yyyy-MM-dd HH:mm:ss format
+            String formatted = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(DatePlaced);
+            pst.setString(4, formatted);
+            pst.setString(5, status);
 
             pst.executeUpdate();
+
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return generated OrderId
+                } else {
+                    throw new SQLException("Order insertion failed, no ID obtained.");
+                }
+            }
+        }
+    }
+
+    public int addOrderAsSavedCart(int UserId, int CartId, java.sql.Timestamp DatePlaced) throws SQLException {       
+        String query = "INSERT INTO `Order` (UserId, CartId, DatePlaced, OrderStatus) VALUES (?, ?, ?, ?)";
+        String status = "SAVED";
+
+        try (PreparedStatement pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, UserId);
+            pst.setInt(2, CartId);
+
+            // Format DatePlaced to string in yyyy-MM-dd HH:mm:ss format
+            String formatted = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(DatePlaced);
+            pst.setString(3, formatted);
+            pst.setString(4, status);
+
+            pst.executeUpdate();
+
+            try (ResultSet rs = pst.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return generated OrderId
+                } else {
+                    throw new SQLException("Order insertion failed, no ID obtained.");
+                }
+            }
         }
     }
 
@@ -91,17 +159,20 @@ public class OrderDBManager {
         String query = "SELECT UserId, CartId, PaymentId, DatePlaced, OrderStatus, OrderId FROM `Order` WHERE OrderID = '" + order.getOrderId() + "'"; 
         ResultSet rs = st1.executeQuery(query); 
 
-        updateOrderPs.setInt(1, rs.getInt("UserId"));
-        updateOrderPs.setInt(2, rs.getInt("CartId"));
-        updateOrderPs.setInt(3, rs.getInt("PaymentId"));
+        if (rs.next()) {
+            updateOrderPs.setInt(1, order.getUserId());
+            updateOrderPs.setInt(2, order.getCartId());
+            // updateOrderPs.setInt(3, rs.getInt("PaymentId"));
+            updateOrderPs.setInt(3, order.getPayment().getPaymentId());
+            String formattedDate = order.getDatePlaced().toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            updateOrderPs.setString(4, formattedDate);
+            updateOrderPs.setString(5, order.getOrderStatus().name());
+            updateOrderPs.setInt(6, rs.getInt("OrderId"));
 
-        String formattedDate = order.getDatePlaced().toLocalDateTime().toString().replace("T", " ");
-        updateOrderPs.setString(4, formattedDate);
-
-        updateOrderPs.setString(5, rs.getString("OrderStatus"));
-        updateOrderPs.setInt(6, rs.getInt("OrderId"));
-
-        updateOrderPs.executeUpdate();
+            updateOrderPs.executeUpdate();
+        } else {
+            throw new SQLException("Order not found: " + order.getOrderId());
+        }
     } 
 
     //orders can't be deleted, only set to cancelled  

@@ -12,6 +12,9 @@ public class Order implements Serializable {
     private Payment payment;
     private Timestamp datePlaced;
     private OrderStatus status;
+    private int userId;
+    private int cartId;
+    private int paymentId;
 
     public Order(int orderId, List<ProductListEntry> productList, Payment payment, Timestamp datePlaced, OrderStatus status) {
         this.orderId = orderId;
@@ -21,25 +24,32 @@ public class Order implements Serializable {
         this.status = status;
     }
 
-    public int getOrderId() {
-        return orderId;
-    }
+    public int getOrderId() { return orderId; }
+    public void setOrderId(int orderId) { this.orderId = orderId; }
 
-    public List<ProductListEntry> getProductList() {
-        return productList;
-    }
+    public List<ProductListEntry> getProductList() { return productList; }
+    public void setProductList(List<ProductListEntry> productList) { this.productList = productList; }
 
-    public Payment getPayment() {
-        return payment;
-    }
 
-    public Timestamp getDatePlaced() {
-        return datePlaced;
-    }
+    public Payment getPayment() { return payment; }
+    public void setPayment(Payment payment) { this.payment = payment; }
 
-    public OrderStatus getOrderStatus() {
-        return status;
-    }
+
+    public Timestamp getDatePlaced() { return datePlaced; }
+    public void setDatePlaced(Timestamp datePlaced) { this.datePlaced = datePlaced; }
+
+
+    public OrderStatus getOrderStatus() { return status; }
+    public void setOrderStatus(OrderStatus status) { this.status = status; }
+
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
+
+    public int getCartId() { return cartId; }
+    public void setCartId(int cartId) { this.cartId = cartId; }
+
+    public int getPaymentId() { return paymentId; }
+    public void setPaymentId(int paymentId) { this.paymentId = paymentId; }
 
     @Override
     public boolean equals(Object obj) {
@@ -80,4 +90,3 @@ public class Order implements Serializable {
     }
     
 }
-

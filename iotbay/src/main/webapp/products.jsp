@@ -1,6 +1,5 @@
 <%@ page import="model.Product, model.dao.ProductDBManager, java.util.List, model.Staff" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<jsp:include page="/ConnServlet" flush="true"/>
 <%
     if (session.getAttribute("productDBManager") == null) {
         response.sendRedirect("ConnServlet?redirect=products.jsp");
@@ -22,6 +21,7 @@
 
 <!DOCTYPE html>
 <html lang="en"> 
+<jsp:include page="/ConnServlet" flush="true"/>
 <head>
     <meta charset="UTF-8" />
     <title>Products</title>
