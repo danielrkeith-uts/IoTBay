@@ -66,6 +66,7 @@
     
         <div class="customer-card <%= isDeactivated ? "deactivated" : "" %>">
             <div class="content-wrapper">
+                <p><strong>ID:</strong> <%= customer.getUserId() %></p>
                 <p><strong>First Name:</strong> <%= customer.getFirstName() %></p>
                 <p><strong>Last Name:</strong> <%= customer.getLastName() %></p>
                 <p><strong>Email:</strong> <%= customer.getEmail() %></p>
