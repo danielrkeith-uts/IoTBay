@@ -16,6 +16,7 @@
         const staffSection = document.getElementById('staff-password-section');
         const adminSection = document.getElementById('admin-password-section');
         const staffIdSection = document.getElementById('staff-id-section');
+        const positionSection = document.getElementById('position-section');
         const customerTypeSection = document.getElementById('customer-type-section');
 
         if (role === 'staff') {
@@ -27,9 +28,10 @@
         const isStaffChecked = staffCheckbox.checked;
         const isAdminChecked = adminCheckbox.checked;
 
-        staffSection.style.display        = isStaffChecked ? 'block' : 'none';
-        adminSection.style.display        = isAdminChecked ? 'block' : 'none';
-        staffIdSection.style.display      = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
+        staffSection.style.display = isStaffChecked ? 'block' : 'none';
+        adminSection.style.display = isAdminChecked ? 'block' : 'none';
+        staffIdSection.style.display = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
+        positionSection.style.display = (isStaffChecked || isAdminChecked) ? 'block' : 'none';
         customerTypeSection.style.display = (isStaffChecked || isAdminChecked) ? 'none'  : 'block';
     }
     </script>
@@ -52,18 +54,17 @@
             <p class="fst-italic">Must be at least 8 characters long and include a lowercase, uppercase, number, and special character</p>
         </div>
         <div class="mb-3">
-            <label for="firstName" class="form-label">First Name</label>
-            <input type="text" name="firstName" id="firstName" class="form-control" required />
+            <label for="firstName" class="form-label">First Name (optional)</label>
+            <input type="text" name="firstName" id="firstName" class="form-control" />
         </div>
         <div class="mb-3">
-            <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" name="lastName" id="lastName" class="form-control" required />
+            <label for="lastName" class="form-label">Last Name (optional)</label>
+            <input type="text" name="lastName" id="lastName" class="form-control" />
         </div>
         <div class="mb-3">
-            <label for="phone" class="form-label">Phone</label>
+            <label for="phone" class="form-label">Phone (optional)</label>
             <input type="tel" name="phone" id="phone" class="form-control" />
         </div>
-
         <div class="mb-3" id="customer-type-section">
             <label for="type" class="form-label">Customer Type</label>
             <select name="type" id="type" class="form-select">
@@ -89,7 +90,6 @@
         <div class="mb-3" id="position-section" style="display: none;">
             <label for="position" class="form-label">Position</label>
             <select name="position" id="position" class="form-select">
-                <option value="">– choose one –</option>
                 <option value="TECH">Tech</option>
                 <option value="SALES">Sales</option>
                 <option value="MANAGER">Manager</option>
