@@ -77,6 +77,9 @@
                 <form action="OrderServlet" method="post">
                     <button type="submit" class="btn-green">Buy Now</button>
                 </form>
+                <form action="SaveCartServlet" method="post" style="display:inline;">
+                    <button type="submit" class="btn-green">Save Cart</button>
+                </form>
             </div>
         <% } %>
     </body>
