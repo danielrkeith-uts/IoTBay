@@ -43,6 +43,15 @@
     <h2>Register</h2>
     <form action="RegisterServlet" method="post">
         <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required />
+            <p class="fst-italic">Must be at least 8 characters long and include a lowercase, uppercase, number, and special character</p>
+        </div>
+        <div class="mb-3">
             <label for="firstName" class="form-label">First Name</label>
             <input type="text" name="firstName" id="firstName" class="form-control" required />
         </div>
@@ -51,16 +60,8 @@
             <input type="text" name="lastName" id="lastName" class="form-control" required />
         </div>
         <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control" required />
-        </div>
-        <div class="mb-3">
             <label for="phone" class="form-label">Phone</label>
             <input type="tel" name="phone" id="phone" class="form-control" />
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" name="password" id="password" class="form-control" required />
         </div>
 
         <div class="mb-3" id="customer-type-section">
