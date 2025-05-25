@@ -91,7 +91,7 @@
                                     <form action="UpdateOrderServlet" method="get">
                                     <input type="hidden" name="orderId" value="<%= o.getOrderId() %>" />
                                         <button type="submit" class="btn btn-sm btn-primary">
-                                            Update Order
+                                            Edit Order
                                         </button>
                                     </form>
                                     <form action="CancelOrderServlet" method="post">
