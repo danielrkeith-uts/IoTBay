@@ -23,16 +23,26 @@
         List<Order> orders = orderDBManager.getAllCustomerOrders(user.getUserId());
 
         String query = request.getParameter("query");
-        if (query != null && !query.trim().isEmpty()) {
-            try {
-                int searchId = Integer.parseInt(query.trim());
-                orders = orders.stream()
-                    .filter(o -> o.getOrderId() == searchId)
-                    .collect(java.util.stream.Collectors.toList());
-            } catch (NumberFormatException e) {
-                request.setAttribute("orderError", "Invalid order ID.");
-            }
+        try {
+        query = query.trim();
+        if (query.matches("\\d+")) {
+            // Numeric: search by order ID
+            int searchId = Integer.parseInt(query);
+            orders = orders.stream()
+                .filter(o -> o.getOrderId() == searchId)
+                .collect(java.util.stream.Collectors.toList());
+        } else if (query.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            // Date format: search by datePlaced (YYYY-MM-DD)
+            String finalQuery = query;
+            orders = orders.stream()
+                .filter(o -> o.getDatePlaced().toString().startsWith(finalQuery))
+                .collect(java.util.stream.Collectors.toList());
+        } else {
+            request.setAttribute("orderError", "Please enter a valid Order ID or date (YYYY-MM-DD).");
         }
+    } catch (Exception e) {
+        request.setAttribute("orderError", "Search error.");
+    }
     %>
     <head>
         <link rel="stylesheet" href="main.css" />
@@ -69,7 +79,7 @@
         </div>
         <form method="get" action="myorders.jsp" class="mb-4">
             <div class="input-group">
-                <input type="text" name="query" class="form-control" placeholder="Search by Order ID" value="<%= query != null ? query : "" %>" />
+                <input type="text" name="query" class="form-control" placeholder="Search by Order ID or Date (YYYY-MM-DD)" value="<%= query != null ? query : "" %>" />
                 <button type="submit" class="btn btn-outline-secondary">Search</button>
             </div>
         </form>

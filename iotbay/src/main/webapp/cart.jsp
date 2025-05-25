@@ -32,8 +32,24 @@
     <body class="cart-page">
         <div class="banner">
             <h1>Place an Order</h1>
-            <jsp:include page="navbar.jsp" />
-
+            <navbar>
+                <a href="index.jsp">Home</a>
+                <a href="products.jsp">Products</a>
+                <% if (user == null) { %>
+                    <a href="login.jsp">Login</a>
+                <% } else { %>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">My Account</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="account.jsp">Account Details</a></li>
+                            <li><a class="dropdown-item" href="applicationaccesslogs.jsp">Application Access Logs</a></li>
+                            <li><a class="dropdown-item" href="logout.jsp">Logout</a></li>
+                            <li><a class="dropdown-item text-danger" href="deleteaccount.jsp">Delete Account</a></li>
+                        </ul>
+                    </div>
+                <% } %>
+                <a href="cart.jsp" class="bi bi-cart active"></a>
+            </navbar>
             <%
                 List<ProductListEntry> cartItems = cart.getProductList();
             %>
@@ -58,30 +74,9 @@
             <p><strong>Total: $<%= df.format(cart.totalCost()) %></strong></p>
             <div class="cart-card">
                 <a href="products.jsp" class="btn-green">Return to Products</a>
-                <%
-                    Integer editingOrderId = (Integer) session.getAttribute("editingOrderId");
-                    boolean isEditingOrder = editingOrderId != null;
-                %>
-                <% if (isEditingOrder) { %>
-                    <form action="FinaliseOrderServlet" method="post">
-                        <input type="hidden" name="orderId" value="<%= order.getOrderId() %>" />
-                        <label>Card ID:</label>
-                        <input type="number" name="cardId" required />
-                        <label>Amount:</label>
-                        <input type="text" name="amount" required />
-                        <input type="hidden" name="paymentstatus" value="PENDING" />
-                        <button type="submit">Finalise Order</button>
-                    </form>
-                <% } else { %>
-                    <form action="OrderServlet" method="post">
-                        <button type="submit" class="btn-green">Buy Now</button>
-                    </form>
-                <% } %>
-                <% if (user != null) { %>
-                    <form action="SaveCartServlet" method="post">
-                        <button type="submit" class="btn-green">Save Cart</button>
-                    </form>
-                <% } %>
+                <form action="OrderServlet" method="post">
+                    <button type="submit" class="btn-green">Buy Now</button>
+                </form>
             </div>
         <% } %>
     </body>
