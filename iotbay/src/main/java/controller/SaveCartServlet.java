@@ -50,18 +50,35 @@ public class SaveCartServlet extends HttpServlet {
         }
 
         try {
+            CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+            int newCartId = cartDBManager.addCart(new Timestamp(System.currentTimeMillis()));
+            cart.setCartId(newCartId);
+
+            ProductListEntryDBManager productListEntryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
+            for (ProductListEntry entry : cart.getProductList()) {
+                productListEntryDBManager.addProduct(newCartId, entry.getProduct().getProductId(), entry.getQuantity());
+            }
+
+
             Timestamp datePlaced = new Timestamp(System.currentTimeMillis());
             int orderId = orderDBManager.addOrderAsSavedCart(
                 user.getUserId(),
-                cart.getCartId(),
+                newCartId,
                 datePlaced
             );
             if (orderId <= 0) {
                 throw new SQLException("Order insert failed or returned invalid ID.");
             }
 
-            // Clear cart after order is placed
+            // Clear cart and create new one after order is placed
             session.removeAttribute("cart");
+            session.setAttribute("cart", new Cart());
+
+            Cart newCart = new Cart();
+            session.setAttribute("cart", newCart);
+            if (user instanceof Customer) {
+                ((Customer) user).setCart(newCart);
+            }
 
             // Redirect to confirmation page
             response.sendRedirect("savedconfirmation.jsp?orderId=" + orderId);

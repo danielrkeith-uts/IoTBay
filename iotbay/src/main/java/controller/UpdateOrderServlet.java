@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,10 +30,18 @@ public class UpdateOrderServlet extends HttpServlet {
             if (order != null && order.getOrderStatus() == OrderStatus.SAVED) {
 
                 // Create a new cart based on the saved product list
+                CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
+
                 Cart updatedCart = new Cart();
                 for (ProductListEntry entry : order.getProductList()) {
                     updatedCart.addProduct(entry.getProduct(), entry.getQuantity());
                 }
+                int newCartId = cartDBManager.addCart(new Timestamp(System.currentTimeMillis()));
+                updatedCart.setCartId(newCartId);
+
+                // Save to session
+                session.setAttribute("cart", updatedCart);
+                session.setAttribute("editingOrderId", orderId);
 
                 // Store the cart in session for editing
                 session.setAttribute("cart", updatedCart);
