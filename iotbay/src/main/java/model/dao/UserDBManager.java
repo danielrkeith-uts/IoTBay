@@ -437,5 +437,27 @@ public class UserDBManager {
             updateStaffPs.executeUpdate();
         }
     }
+
+    public List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM User";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                ExtendedUser user = new ExtendedUser(
+                    rs.getInt("UserId"),
+                    rs.getString("FirstName"),
+                    rs.getString("LastName"),
+                    rs.getString("Email"),
+                    rs.getString("Phone"),
+                    rs.getString("Password")
+                );
+                user.setDeactivated(rs.getBoolean("Deactivated"));
+                users.add(user);
+            }
+        }
+        return users;
+    }
 }
 

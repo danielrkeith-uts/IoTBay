@@ -38,22 +38,26 @@
         <h1>Registered Customers</h1>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-    
-    <button class="btn-green" onclick="window.location.href='addcustomer.jsp'">
-        <i class="fas fa-user-plus"></i> Add New Customer
-    </button>
-        <form method="get" action="CustomerListServlet" class="d-flex gap-2">
-            <input type="text" name="searchName" placeholder="Search by name" 
-                value="<%= request.getParameter("searchName") != null ? request.getParameter("searchName") : "" %>" 
-                class="form-control" />
-            <select name="searchType" class="form-select">
-                <option value="">All Types</option>
-                <option value="INDIVIDUAL" <%= "INDIVIDUAL".equals(request.getParameter("searchType")) ? "selected" : "" %>>Individual</option>
-                <option value="COMPANY" <%= "COMPANY".equals(request.getParameter("searchType")) ? "selected" : "" %>>Company</option>
-            </select>
-            <button type="submit" class="btn-custom">Filter</button>
-        </form>
-    </div>
+            <div class="d-flex gap-2">
+                <button class="btn-green" onclick="window.location.href='addcustomer.jsp'">
+                    <i class="fas fa-user-plus"></i> Add New Customer
+                </button>
+                <button class="btn-green" onclick="window.location.href='addaccesslogform.jsp'">
+                    <i class="fas fa-clipboard-list"></i> Add Logs
+                </button>
+            </div>
+            <form method="get" action="CustomerListServlet" class="d-flex gap-2">
+                <input type="text" name="searchName" placeholder="Search by name" 
+                    value="<%= request.getParameter("searchName") != null ? request.getParameter("searchName") : "" %>" 
+                    class="form-control" />
+                <select name="searchType" class="form-select">
+                    <option value="">All Types</option>
+                    <option value="INDIVIDUAL" <%= "INDIVIDUAL".equals(request.getParameter("searchType")) ? "selected" : "" %>>Individual</option>
+                    <option value="COMPANY" <%= "COMPANY".equals(request.getParameter("searchType")) ? "selected" : "" %>>Company</option>
+                </select>
+                <button type="submit" class="btn-custom">Filter</button>
+            </form>
+        </div>
         
         <div class="customer-grid">
     <% for (Customer customer : customers) { 
@@ -95,7 +99,7 @@
         <% } %>
                 <button 
                     onclick="window.location.href='/iotbay/ApplicationAccessLogServlet?customer_id=<%= customer.getUserId() %>'" 
-                    <%= isDeactivated ? "disabled class='btn btn-secondary'" : (isStaff ? "" : "disabled class='btn btn-secondary'") %>>
+                    <%= (isAdmin || isStaff) ? "" : "disabled class='btn btn-secondary'" %>>
                     View Logs
                 </button>
             </div>

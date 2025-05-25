@@ -12,8 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.ApplicationAccessLog;
 import model.User;
+import model.Customer;
 import model.Enums.ApplicationAction;
 import model.dao.ApplicationAccessLogDBManager;
+import model.dao.UserDBManager;
 
 @WebServlet("/AddAccessLogServlet")
 public class AddAccessLogServlet extends HttpServlet {
@@ -30,13 +32,21 @@ public class AddAccessLogServlet extends HttpServlet {
         String actionStr = request.getParameter("applicationAction");
         ApplicationAction action = ApplicationAction.valueOf(actionStr);
 
+        UserDBManager userDBManager = (UserDBManager) session.getAttribute("userDBManager");
         ApplicationAccessLogDBManager dbManager = (ApplicationAccessLogDBManager) session.getAttribute("applicationAccessLogDBManager");
 
         try {
+            Customer customer = userDBManager.getCustomer(userId);
+            if (customer == null) {
+                request.setAttribute("error", "Customer not found");
+                request.getRequestDispatcher("addaccesslogform.jsp").forward(request, response);
+                return;
+            }
+
             ApplicationAccessLog log = new ApplicationAccessLog(action, new Date());
             dbManager.addApplicationAccessLog(userId, log);
 
-            response.sendRedirect("ApplicationAccessLogServlet");
+            response.sendRedirect("CustomerListServlet");
         } catch (SQLException e) {
             throw new ServletException("Failed to add access log", e);
         }
