@@ -80,6 +80,16 @@ public class ConnServlet extends HttpServlet {
                 session.setAttribute("deliveryDBManager", deliveryDBManager);
             }
 
+            if (session.getAttribute("cardDBManager") == null) {
+                CardDBManager cardDBManager = new CardDBManager(conn);
+                session.setAttribute("cardDBManager", cardDBManager);
+            }
+
+            if (session.getAttribute("paymentDBManager") == null) {
+                PaymentDBManager paymentDBManager = new PaymentDBManager(conn);
+                session.setAttribute("paymentDBManager", paymentDBManager);
+            }
+
             logger.info("Session ID: " + session.getId());
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error opening DB connection", e);

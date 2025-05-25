@@ -15,7 +15,7 @@ import model.*;
 @WebServlet("/UpdateOrderServlet")
 public class UpdateOrderServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int orderId = Integer.parseInt(request.getParameter("orderId"));
         HttpSession session = request.getSession();
 
