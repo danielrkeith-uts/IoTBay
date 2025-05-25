@@ -3,6 +3,8 @@ package model.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.ExtendedUser;
 import model.Customer;
 import model.Staff;
 import model.User;
@@ -12,7 +14,7 @@ public class UserDBManager {
 
     private static final String ADD_USER_STMT = "INSERT INTO User (FirstName, LastName, Email, Phone, Password) VALUES (?, ?, ?, ?, ?);";
     private static final String ADD_CUSTOMER_STMT  = "INSERT INTO Customer (UserId) VALUES (?);";
-    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId, Admin) VALUES (?, ?, ?);";
+    private static final String ADD_STAFF_STMT = "INSERT INTO Staff (UserId, StaffCardId, Admin, Position) VALUES (?, ?, ?, ?);";
     private static final String GET_CUSTOMER_STMT_A = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
     private static final String GET_CUSTOMER_STMT_B = "SELECT * FROM User INNER JOIN Customer ON User.UserId = Customer.UserId WHERE User.UserId = ? LIMIT 1;";
     private static final String GET_STAFF_STMT_A = "SELECT * FROM User INNER JOIN Staff ON User.UserId = Staff.UserId WHERE Email = ? AND Password = ? LIMIT 1;";
@@ -150,6 +152,7 @@ public class UserDBManager {
         addStaffPs.setInt(1, id);
         addStaffPs.setInt(2, staff.getStaffCardId());
         addStaffPs.setBoolean(3, staff.isAdmin());
+        addStaffPs.setString(4, staff.getPosition());
         addStaffPs.executeUpdate();
     }
 
@@ -353,7 +356,86 @@ public class UserDBManager {
         }
         return list;
     }
+
+    public List<ExtendedUser> getAllUsersFilteredByName(String searchTerm) throws SQLException {
+        List<ExtendedUser> users = new ArrayList<>();
+    
+        String sql = "SELECT u.UserId, u.FirstName, u.LastName, u.Email, u.Phone, u.Password, u.Deactivated, " +
+                     "c.Type as CustomerType, " +
+                     "s.StaffCardId, s.Admin as IsAdmin " +
+                     "FROM User u " +
+                     "LEFT JOIN Customer c ON u.UserId = c.UserId " +
+                     "LEFT JOIN Staff s ON u.UserId = s.UserId " +
+                     "WHERE u.FirstName LIKE ? OR u.LastName LIKE ? OR u.Email LIKE ? OR u.Phone LIKE ? " +
+                     "ORDER BY u.UserId";
+    
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String filter = "%" + searchTerm + "%";
+            stmt.setString(1, filter);
+            stmt.setString(2, filter);
+            stmt.setString(3, filter);
+            stmt.setString(4, filter);
+    
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    ExtendedUser user = new ExtendedUser(
+                        rs.getInt("UserId"),
+                        rs.getString("FirstName"),
+                        rs.getString("LastName"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        rs.getString("Password")
+                    );
+    
+                    user.setDeactivated(rs.getBoolean("Deactivated"));
+    
+                    if (rs.getString("CustomerType") != null) {
+                        user.setCustomer(true);
+                        String custType = rs.getString("CustomerType");
+                        user.setCustomerType("COMPANY".equalsIgnoreCase(custType) ? Customer.Type.COMPANY : Customer.Type.INDIVIDUAL);
+                    }
+    
+                    if (rs.getString("StaffCardId") != null) {
+                        user.setStaff(true);
+                        user.setStaffCardId(rs.getInt("StaffCardId"));
+                        user.setAdmin(rs.getBoolean("IsAdmin"));
+                    }
+    
+                    users.add(user);
+                }
+            }
+        }
+        return users;
+    }
+
+    public void updateExtendedUser(ExtendedUser user) throws SQLException {
+        // Update base user fields
+        updateUserPs.setString(1, user.getFirstName());
+        updateUserPs.setString(2, user.getLastName());
+        updateUserPs.setString(3, user.getEmail());
+        updateUserPs.setString(4, user.getPhone());
+        updateUserPs.setString(5, user.getPassword());
+        updateUserPs.setInt(6, user.getUserId());
+        updateUserPs.executeUpdate();
+
+        // If user is a customer, update customer details
+        if (user.isCustomer()) {
+            String sql = "UPDATE Customer SET Type = ? WHERE UserId = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, user.getCustomerType().name());
+                stmt.setInt(2, user.getUserId());
+                stmt.executeUpdate();
+            }
+        }
+
+        // If user is a staff member, update staff details
+        if (user.isStaff()) {
+            updateStaffPs.setInt(1, user.getStaffCardId());
+            updateStaffPs.setBoolean(2, user.isAdmin());
+            updateStaffPs.setString(3, ""); // Position is not part of ExtendedUser
+            updateStaffPs.setInt(4, user.getUserId());
+            updateStaffPs.executeUpdate();
+        }
+    }
 }
-
-
 

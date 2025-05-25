@@ -71,18 +71,17 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (user == null) {
-            session.setAttribute(ERROR_ATTR, "Incorrect email or password.");
+            session.setAttribute(ERROR_ATTR, "Invalid email or password");
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
-
+        
         if (user.isDeactivated()) {
-            session.setAttribute(ERROR_ATTR,
-                "Your account is currently deactivated. Contact an administrator.");
+            session.setAttribute("deactivatedUser", user);
+            session.setAttribute(ERROR_ATTR, "Your account is deactivated. Please contact an administrator.");
             request.getRequestDispatcher(PAGE).forward(request, response);
             return;
         }
-
         ApplicationAccessLog appLog =
             new ApplicationAccessLog(ApplicationAction.LOGIN, new Date());
         try {
