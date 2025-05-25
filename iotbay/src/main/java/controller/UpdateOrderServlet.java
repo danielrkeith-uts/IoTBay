@@ -21,6 +21,7 @@ public class UpdateOrderServlet extends HttpServlet {
         int orderId = Integer.parseInt(request.getParameter("orderId"));
         HttpSession session = request.getSession();
 
+        User user = (User) session.getAttribute("user");
         OrderDBManager orderDBManager = (OrderDBManager) session.getAttribute("orderDBManager");
         ProductListEntryDBManager entryDBManager = (ProductListEntryDBManager) session.getAttribute("productListEntryDBManager");
         ProductDBManager productDBManager = (ProductDBManager) session.getAttribute("productDBManager");
@@ -29,7 +30,6 @@ public class UpdateOrderServlet extends HttpServlet {
             Order order = orderDBManager.getOrder(orderId);
             if (order != null && order.getOrderStatus() == OrderStatus.SAVED) {
 
-                // Create a new cart based on the saved product list
                 CartDBManager cartDBManager = (CartDBManager) session.getAttribute("cartDBManager");
 
                 Cart updatedCart = new Cart();
@@ -39,15 +39,16 @@ public class UpdateOrderServlet extends HttpServlet {
                 int newCartId = cartDBManager.addCart(new Timestamp(System.currentTimeMillis()));
                 updatedCart.setCartId(newCartId);
 
-                // Save to session
                 session.setAttribute("cart", updatedCart);
                 session.setAttribute("editingOrderId", orderId);
 
-                // Store the cart in session for editing
                 session.setAttribute("cart", updatedCart);
                 session.setAttribute("editingOrderId", orderId); 
+                
+                if (user instanceof Customer) {
+                    ((Customer) user).setCart(updatedCart);
+                }
 
-                // Redirect to cart page for editing
                 response.sendRedirect("cart.jsp");
                 return;
             }
