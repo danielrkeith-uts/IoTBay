@@ -11,7 +11,7 @@
     if (logManager == null) {
         throw new ServletException("ApplicationAccessLogDBManager not found in session");
     }
-
+    boolean isAdmin = (user instanceof Staff) && ((Staff)user).isAdmin();
     List<ApplicationAccessLog> logs = logManager.getApplicationAccessLogs(user.getUserId());
 %>
     <head>

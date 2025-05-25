@@ -31,7 +31,7 @@
     <body>
         <div class="banner">
             <h1>Internet of Things Store</h1>
-                       <jsp:include page="navbar.jsp" />
+            <jsp:include page="navbar.jsp" />
 
         </div>
         <div class="content">
