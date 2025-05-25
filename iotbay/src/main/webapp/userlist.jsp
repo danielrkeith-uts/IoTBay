@@ -124,7 +124,7 @@
                     
                     <% if (isAdmin) { %>
                         <div class="actions">
-                            <div class="button-row">
+                            <div class="button-row top-row">
                                 <a href="EditUserServlet?userId=<%= user.getUserId() %>" class="btn btn-primary">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
@@ -134,12 +134,8 @@
                                 <button type="button" class="btn btn-primary" onclick="document.getElementById('deactivateForm<%= user.getUserId() %>').submit();">
                                     <i class="fas fa-user-slash"></i> <%= user.isDeactivated() ? "Reactivate" : "Deactivate" %>
                                 </button>
-                                <form id="deactivateForm<%= user.getUserId() %>" action="DeactivateUserServlet" method="POST" style="display: none;">
-                                    <input type="hidden" name="userId" value="<%= user.getUserId() %>">
-                                    <input type="hidden" name="action" value="<%= user.isDeactivated() ? "activate" : "deactivate" %>">
-                                </form>
                             </div>
-                            <div class="button-row">
+                            <div class="button-row bottom-row">
                                 <form action="DeleteUserServlet" method="POST" style="display: inline;" 
                                       onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
                                     <input type="hidden" name="userId" value="<%= user.getUserId() %>">
@@ -148,6 +144,10 @@
                                     </button>
                                 </form>
                             </div>
+                            <form id="deactivateForm<%= user.getUserId() %>" action="DeactivateUserServlet" method="POST" style="display: none;">
+                                <input type="hidden" name="userId" value="<%= user.getUserId() %>">
+                                <input type="hidden" name="action" value="<%= user.isDeactivated() ? "activate" : "deactivate" %>">
+                            </form>
                         </div>
                     <% } %>
                 </div>

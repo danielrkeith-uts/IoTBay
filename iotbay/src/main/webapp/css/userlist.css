@@ -44,17 +44,27 @@
 }
 
 .user-card .actions {
-    margin-top: 15px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 10px; /* increased gap between rows */
 }
 
 .user-card .actions .button-row {
     display: flex;
-    flex-wrap: wrap;      
-    gap: 10px;
+    flex-wrap: nowrap;
+    gap: 8px;
     justify-content: center;
+    width: 100%;
+}
+
+.user-card .actions .button-row.top-row .btn {
+    min-width: fit-content;
+    padding: 8px 12px;
+}
+
+.user-card .actions .button-row.bottom-row .btn {
+    min-width: 120px;
 }
 
 .user-card .actions .button-row form {
@@ -85,7 +95,6 @@
     background-color: #0dcaf0 !important;
 }
 
-
 .user-card button,
 .user-card .btn {
     background-color: #5e8c4e;
@@ -97,8 +106,11 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 10px;
+    margin: 0;
     border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-card button:hover,
